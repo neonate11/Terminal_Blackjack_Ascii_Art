@@ -510,7 +510,10 @@ while playing:
         question_string = f'Continue playing? You have ${player_bank}. [yes or no] '
         decision = yes_no_question(question_string)
         if decision == 'n':
-            print(f'Your maximum chip total was ${most_money}')
+            clear_terminal()
+            print('\n'*int((screen_height)/2))
+            left_space = int((screen_width-102)/2)* ' '
+            print(f'{left_space}Your maximum chip total was ${most_money}')
             playing = False
 
 #First: Optimize code
@@ -531,3 +534,4 @@ while playing:
 #Fix Instructions to have categories like: double down, and explain which hands are first
 #What if hit messages pointed to the hand they were talking about
 #Make bet circle display outcome, not text
+        
