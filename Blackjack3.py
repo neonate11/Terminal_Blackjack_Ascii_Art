@@ -512,8 +512,12 @@ while playing:
         if decision == 'n':
             clear_terminal()
             print('\n'*int((screen_height)/2))
-            left_space = int((screen_width-102)/2)* ' '
-            print(f'{left_space}Your maximum chip total was ${most_money}')
+            left_space = int((screen_width-33)/2)* ' '
+            print(f'{left_space}┌───────────────────────────────────────────────────┐')
+            print(f'{left_space}│                                                   │')
+            print(f'{left_space}│     Your maximum chip total was ${most_money}     │')
+            print(f'{left_space}│                                                   │')
+            print(f'{left_space}└───────────────────────────────────────────────────┘')
             playing = False
 
 #First: Optimize code
