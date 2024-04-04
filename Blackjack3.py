@@ -511,11 +511,18 @@ while playing:
         decision = yes_no_question(question_string)
         if decision == 'n':
             clear_terminal()
+            length_record = len(int(most_money))
+            if length_record == 3:
+                record_spacing = 3 * ' '
+            elif length_record == 4:
+                record_spacing = 3 * ' '
+            elif length_record == 5:
+                record_spacing = 3 * ' '
             print('\n'*int((screen_height)/2))
             left_space = int((screen_width-33)/2)* ' '
             print(f'{left_space}┌───────────────────────────────────────────────────┐')
             print(f'{left_space}│                                                   │')
-            print(f'{left_space}│     Your maximum chip total was ${most_money}     │')
+            print(f'{left_space}│     Your maximum chip total was ${most_money,record_spacing}     │')
             print(f'{left_space}│                                                   │')
             print(f'{left_space}└───────────────────────────────────────────────────┘')
             playing = False
