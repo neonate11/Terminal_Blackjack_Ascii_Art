@@ -82,13 +82,26 @@ def make_deck():
     return deck
 
 #Function for asking the user a yes or no question
-def yes_no_question(question):
+def yes_no_question(input_pointer_with_spacing):
     while True:
-        answer = input(question)
+        answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n' or answer.lower() == 'yes' or answer.lower() == 'no'):
             return answer.lower()[0]
         else:
             clear_terminal()
+
+#Function for printing information to the user in a formatted box
+def text_box(line1,line2,line3,line4):
+    print(top_space)
+    print(f'{left_space}┌───────────────────────────────────────────────────┐')
+    len(line1)
+#print(f'{left_space}│         Welcome to Nate\'s blackjack table         │')
+#print(f'{left_space}│   Your friend Ralph has lent you $100 in chips    │')
+#print(f'{left_space}│             Win $2000 to bankrupt Nate            │')
+#print(f'{left_space}│   Would you like to read the rules? [yes or no]   │')
+#print(f'{left_space}│                                                   │')
+#print(f'{left_space}└───────────────────────────────────────────────────┘')
+#print('')
 
 #Function for betting
 def make_bet():
@@ -336,29 +349,38 @@ highscore_run = False #For remembering if the player has already beat the dealer
 most_money = 100 #For printing the player's highscore when they lose or quit
 screen_width = os.get_terminal_size()[0] #0 is the width, 1 is the height
 screen_height = os.get_terminal_size()[1]
+input_pointer_with_spacing = ((int((screen_width/2)-0)* ' ')+'>')
+left_space = int((screen_width/2)-27)* ' '
+top_space = '\n'*int((screen_height/2)-4)
 
 #Print Boot Screen
 print('\n'*int((screen_height-11)/2))
-left_space = int((screen_width-102)/2)* ' '
-print(left_space,'▀█████████▄   ▄█          ▄████████  ▄████████    ▄█   ▄█▄      ▄█    ▄████████  ▄████████    ▄█   ▄█▄')
-print(left_space,'  ███    ███ ███         ███    ███ ███    ███   ███ ▄███▀     ███   ███    ███ ███    ███   ███ ▄███▀')
-print(left_space,'  ███    ███ ███         ███    ███ ███    █▀    ███▐██▀       ███   ███    ███ ███    █▀    ███▐██▀  ')
-print(left_space,' ▄███▄▄▄██▀  ███         ███    ███ ███         ▄█████▀        ███   ███    ███ ███         ▄█████▀   ')
-print(left_space,'▀▀███▀▀▀██▄  ███       ▀███████████ ███        ▀▀█████▄        ███ ▀███████████ ███        ▀▀█████▄   ')
-print(left_space,'  ███    ██▄ ███         ███    ███ ███    █▄    ███▐██▄       ███   ███    ███ ███    █▄    ███▐██▄  ')
-print(left_space,'  ███    ███ ███▌    ▄   ███    ███ ███    ███   ███ ▀███▄     ███   ███    ███ ███    ███   ███ ▀███▄')
-print(left_space,'▄█████████▀  █████▄▄██   ███    █▀  ████████▀    ███   ▀█▀ █▄ ▄███   ███    █▀  ████████▀    ███   ▀█▀')
-print(left_space,'             ▀                                   ▀         ▀▀▀▀▀▀                            ▀        ')
+bj_space = int((screen_width-102)/2)* ' '
+print(bj_space,'▀█████████▄   ▄█          ▄████████  ▄████████    ▄█   ▄█▄      ▄█    ▄████████  ▄████████    ▄█   ▄█▄')
+print(bj_space,'  ███    ███ ███         ███    ███ ███    ███   ███ ▄███▀     ███   ███    ███ ███    ███   ███ ▄███▀')
+print(bj_space,'  ███    ███ ███         ███    ███ ███    █▀    ███▐██▀       ███   ███    ███ ███    █▀    ███▐██▀  ')
+print(bj_space,' ▄███▄▄▄██▀  ███         ███    ███ ███         ▄█████▀        ███   ███    ███ ███         ▄█████▀   ')
+print(bj_space,'▀▀███▀▀▀██▄  ███       ▀███████████ ███        ▀▀█████▄        ███ ▀███████████ ███        ▀▀█████▄   ')
+print(bj_space,'  ███    ██▄ ███         ███    ███ ███    █▄    ███▐██▄       ███   ███    ███ ███    █▄    ███▐██▄  ')
+print(bj_space,'  ███    ███ ███▌    ▄   ███    ███ ███    ███   ███ ▀███▄     ███   ███    ███ ███    ███   ███ ▀███▄')
+print(bj_space,'▄█████████▀  █████▄▄██   ███    █▀  ████████▀    ███   ▀█▀ █▄ ▄███   ███    █▀  ████████▀    ███   ▀█▀')
+print(bj_space,'             ▀                                   ▀         ▀▀▀▀▀▀                            ▀        ')
 print('')
-print(left_space,'                                       [press enter to continue]')
+print(bj_space,'                                       [press enter to continue]')
 input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-print('Welcome to Nate\'s blackjack table.')
-print('Your friend Ralph has lent you $100 in chips. He says win $2000 to bankrupt Nate.')
+print(top_space)
+print(f'{left_space}┌───────────────────────────────────────────────────┐')
+print(f'{left_space}│         Welcome to Nate\'s blackjack table         │')
+print(f'{left_space}│   Your friend Ralph has lent you $100 in chips    │')
+print(f'{left_space}│             Win $2000 to bankrupt Nate            │')
+print(f'{left_space}│   Would you like to read the rules? [yes or no]   │')
+print(f'{left_space}│                                                   │')
+print(f'{left_space}└───────────────────────────────────────────────────┘')
 print('')
-see_rules = yes_no_question("Would you like to read the rules? [yes or no]")
+see_rules = yes_no_question(input_pointer_with_spacing)
 if see_rules == 'y':
     clear_terminal()
     while True:
@@ -511,18 +533,12 @@ while playing:
         decision = yes_no_question(question_string)
         if decision == 'n':
             clear_terminal()
-            length_record = len(int(most_money))
-            if length_record == 3:
-                record_spacing = 3 * ' '
-            elif length_record == 4:
-                record_spacing = 3 * ' '
-            elif length_record == 5:
-                record_spacing = 3 * ' '
-            print('\n'*int((screen_height)/2))
-            left_space = int((screen_width-33)/2)* ' '
+            most_money =str(most_money) + (' '*(9-len(str(most_money)))) #appropriate spacing for varying money records
+            print('\n'*int((screen_height/2)-2))
+            left_space = int((screen_width/2)-27)* ' '
             print(f'{left_space}┌───────────────────────────────────────────────────┐')
             print(f'{left_space}│                                                   │')
-            print(f'{left_space}│     Your maximum chip total was ${most_money,record_spacing}     │')
+            print(f'{left_space}│        Your maximum chip total was ${most_money}     │')
             print(f'{left_space}│                                                   │')
             print(f'{left_space}└───────────────────────────────────────────────────┘')
             playing = False
@@ -546,3 +562,7 @@ while playing:
 #What if hit messages pointed to the hand they were talking about
 #Make bet circle display outcome, not text
         
+
+#Message Spacing
+#The box is 5 x 53
+#The final message box spacing is screen height /2 -2 for above, screenwidth /2 -27 for left
