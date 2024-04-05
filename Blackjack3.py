@@ -91,18 +91,23 @@ def yes_no_question(input_pointer_with_spacing):
             clear_terminal()
 
 #Function for printing information to the user in a formatted box
-def text_box(line1,line2,line3,line4):
+def text_box(*args):
     print(top_space)
-    print(f'{left_space}┌───────────────────────────────────────────────────┐')
-    len(line1)
-#print(f'{left_space}│         Welcome to Nate\'s blackjack table         │')
-#print(f'{left_space}│   Your friend Ralph has lent you $100 in chips    │')
-#print(f'{left_space}│             Win $2000 to bankrupt Nate            │')
-#print(f'{left_space}│   Would you like to read the rules? [yes or no]   │')
-#print(f'{left_space}│                                                   │')
-#print(f'{left_space}└───────────────────────────────────────────────────┘')
-#print('')
-
+    print(f'{left_space}┌────────────────────────────────────────────────────┐')
+    print(f'{left_space}│                                                    │')
+    for arg in args:
+        raw_spacing = 52-len(arg) #total box is 54 chars wide, minus edges is 52 spaces available to print on per line
+        odd = raw_spacing % 2
+        if odd == False:
+            half_spacing = int(raw_spacing/2)* ' '
+            print(f'{left_space}│{half_spacing}{arg}{half_spacing}│')
+        else:
+            half_spacing = int((raw_spacing-1)/2)* ' '
+            print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
+    print(f'{left_space}│                                                    │')
+    print(f'{left_space}└────────────────────────────────────────────────────┘')
+    print('\n')
+          
 #Function for betting
 def make_bet():
     bet = 0
@@ -371,15 +376,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-print(top_space)
-print(f'{left_space}┌───────────────────────────────────────────────────┐')
-print(f'{left_space}│         Welcome to Nate\'s blackjack table         │')
-print(f'{left_space}│   Your friend Ralph has lent you $100 in chips    │')
-print(f'{left_space}│             Win $2000 to bankrupt Nate            │')
-print(f'{left_space}│   Would you like to read the rules? [yes or no]   │')
-print(f'{left_space}│                                                   │')
-print(f'{left_space}└───────────────────────────────────────────────────┘')
-print('')
+text_box('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?','[yes or no]')
 see_rules = yes_no_question(input_pointer_with_spacing)
 if see_rules == 'y':
     clear_terminal()
@@ -457,8 +454,9 @@ while playing:
         for i, hand in enumerate(all_player_hands):
             if player_bank >= (total_bet_this_round + bet_per_hand) and hand.check_for_split_option():
                 draw_entire_game(all_player_hands,bet_per_hand,1,i)
-                question_string = f'Would you like to split your{ordinals[i]} hand? [yes or no] '
-                decision = yes_no_question(question_string)
+                question_string = f'Would you like to split your{ordinals[i]} hand?'
+                text_box(question_string,'[yes or no]')
+                decision = yes_no_question(input_pointer_with_spacing)
                 if decision == 'y':
                     total_bet_this_round += bet_per_hand #deduct another bet from the player bank
                     new_hand_position = len(all_player_hands) #
@@ -470,13 +468,15 @@ while playing:
         #Give Player Option to Double Down
         if player_bank >= (total_bet_this_round + bet_per_hand):
             draw_entire_game(all_player_hands,bet_per_hand,1,'n')
-            decision = yes_no_question("Would you like to double down on any of your hands? [yes or no]")
+            text_box('Would you like to double down on any of your hands?','[yes or no]')
+            decision = yes_no_question(input_pointer_with_spacing)
             if decision == 'y':
                 for i, hand in enumerate(all_player_hands):
                     if hand.calculate_value() < 21 and player_bank >= (total_bet_this_round + bet_per_hand):
                         draw_entire_game(all_player_hands,bet_per_hand,1,i)
-                        question_string = f"Would you like to double down on your{ordinals[i]} hand? [yes or no]"
-                        decision = yes_no_question(question_string)
+                        question_string = f"Would you like to double down on your{ordinals[i]} hand?"
+                        text_box(question_string,'[yes or no]')
+                        decision = yes_no_question(input_pointer_with_spacing)
                         if decision == 'y':
                             total_bet_this_round += bet_per_hand
                             hand.doubleddown()
@@ -487,11 +487,12 @@ while playing:
             Stand = False
             while hand.calculate_value() < 21 and hand.if_doubledown() == False and Stand == False and len(hand.cards)<5:
                 if len(all_player_hands) == 1: #Say this if they only have one hand
-                        question_string = f'Would you like to hit? [yes or no] '
+                        question_string = f'Would you like to hit?'
                 else:                          #Say this if they have multiple hands
-                    question_string = f'Would you like to hit on your{ordinals[i]} hand? [yes or no] '
+                    question_string = f'Would you like to hit on your{ordinals[i]} hand?'
                 draw_entire_game(all_player_hands,bet_per_hand,1,i)
-                decision = yes_no_question(question_string)
+                text_box(question_string,'[yes or no]')
+                decision = yes_no_question(input_pointer_with_spacing)
                 if decision == 'y':
                     hand.deal_card(deck)
                 elif decision =='n':     #Player decides to stand
@@ -517,31 +518,28 @@ while playing:
         most_money = player_bank
     #Check if the player is broke or won, and wants to play again
     if player_bank < 10:
-        print('You can no longer afford the table minimum bet. Ralph is coming to collect on his loan')
-        print(f'Your maximum chip total was ${most_money}')
+        string = f'Your maximum chip total was ${most_money}'
+        text_box('You can no longer afford the table minimum bet. Ralph is coming to collect on his loan',string)
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
-        print('You Bankrupt Nate! You and Ralph are planning a trip to Spain')
-        go_for_highscore = yes_no_question('Would you like to keep playing for a highscore? [yes or no]')
+        text_box('You Bankrupt Nate! You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?','[yes or no]')
+        go_for_highscore = yes_no_question(input_pointer_with_spacing)
         if go_for_highscore == 'n':
-            print(f'Your maximum chip total was ${most_money}')
+            chip_total = f'Your maximum chip total was ${most_money}'
+            text_box(chip_total)
             playing = False
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
-        question_string = f'Continue playing? You have ${player_bank}. [yes or no] '
-        decision = yes_no_question(question_string)
+        question_string = f'Continue playing? You have ${player_bank}.'
+        text_box(question_string,'[yes or no]')
+        decision = yes_no_question(input_pointer_with_spacing)
         if decision == 'n':
             clear_terminal()
-            most_money =str(most_money) + (' '*(9-len(str(most_money)))) #appropriate spacing for varying money records
-            print('\n'*int((screen_height/2)-2))
-            left_space = int((screen_width/2)-27)* ' '
-            print(f'{left_space}┌───────────────────────────────────────────────────┐')
-            print(f'{left_space}│                                                   │')
-            print(f'{left_space}│        Your maximum chip total was ${most_money}     │')
-            print(f'{left_space}│                                                   │')
-            print(f'{left_space}└───────────────────────────────────────────────────┘')
+            chip_total = f'Your maximum chip total was ${most_money}'
+            text_box(chip_total)
             playing = False
+
 
 #First: Optimize code
 #print message if a player busts or gets blackjack before they have option to hit on next hand
@@ -561,6 +559,7 @@ while playing:
 #Fix Instructions to have categories like: double down, and explain which hands are first
 #What if hit messages pointed to the hand they were talking about
 #Make bet circle display outcome, not text
+#need text box function to not automatically print top space, since that is lowering the text box when things are already printed on the screen
         
 
 #Message Spacing
