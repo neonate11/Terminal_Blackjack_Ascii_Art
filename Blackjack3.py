@@ -591,3 +591,5 @@ while playing:
 #make error messages formatted better than being in top left corner
 #need to check if player can afford 3-5 hands
 #can probably simpllify the part that asks how many hands the player wants to play(set up a library or whatever it was called that maps words to numbers)
+#add buttons or links for questions so the user doesn't have to type
+#add a bank in the top left corner
