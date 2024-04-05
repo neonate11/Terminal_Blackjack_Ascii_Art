@@ -92,7 +92,7 @@ def yes_no_question(input_pointer_with_spacing):
 
 #Function for printing information to the user in a formatted box
 def text_box(*args):
-    print(top_space)
+    print('\n')
     print(f'{left_space}┌────────────────────────────────────────────────────┐')
     print(f'{left_space}│                                                    │')
     for arg in args:
@@ -376,6 +376,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
+print(top_space)
 text_box('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?','[yes or no]')
 see_rules = yes_no_question(input_pointer_with_spacing)
 if see_rules == 'y':
@@ -519,24 +520,29 @@ while playing:
     #Check if the player is broke or won, and wants to play again
     if player_bank < 10:
         string = f'Your maximum chip total was ${most_money}'
+        print(top_space)
         text_box('You can no longer afford the table minimum bet. Ralph is coming to collect on his loan',string)
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
+        print(top_space)
         text_box('You Bankrupt Nate! You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?','[yes or no]')
         go_for_highscore = yes_no_question(input_pointer_with_spacing)
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
+            print(top_space)
             text_box(chip_total)
             playing = False
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
         question_string = f'Continue playing? You have ${player_bank}.'
+        print(top_space)
         text_box(question_string,'[yes or no]')
         decision = yes_no_question(input_pointer_with_spacing)
         if decision == 'n':
             clear_terminal()
             chip_total = f'Your maximum chip total was ${most_money}'
+            print(top_space)
             text_box(chip_total)
             playing = False
 
@@ -559,9 +565,7 @@ while playing:
 #Fix Instructions to have categories like: double down, and explain which hands are first
 #What if hit messages pointed to the hand they were talking about
 #Make bet circle display outcome, not text
-#need text box function to not automatically print top space, since that is lowering the text box when things are already printed on the screen
+#make top space a fixed value based on the display of the cards and bets, not a calculation like it is now
+#look at making yes not question not require an input every time for the pointer spacing
+#make all questions like hitting, where if the player only has one hand ask them"do you want to split" instead of do you want to split your first hand
         
-
-#Message Spacing
-#The box is 5 x 53
-#The final message box spacing is screen height /2 -2 for above, screenwidth /2 -27 for left
