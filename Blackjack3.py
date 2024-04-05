@@ -84,6 +84,7 @@ def make_deck():
 #Function for asking the user a yes or no question
 def yes_no_question(input_pointer_with_spacing):
     while True:
+        print('\n')
         answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n' or answer.lower() == 'yes' or answer.lower() == 'no'):
             return answer.lower()[0]
@@ -92,7 +93,6 @@ def yes_no_question(input_pointer_with_spacing):
 
 #Function for printing information to the user in a formatted box
 def text_box(*args):
-    print('\n')
     print(f'{left_space}┌────────────────────────────────────────────────────┐')
     print(f'{left_space}│                                                    │')
     for arg in args:
@@ -106,8 +106,7 @@ def text_box(*args):
             print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
     print(f'{left_space}│                                                    │')
     print(f'{left_space}└────────────────────────────────────────────────────┘')
-    print('\n')
-          
+             
 #Function for betting
 def make_bet():
     bet = 0
@@ -298,11 +297,11 @@ def draw_all_player_hands(all_player_hands,location):
             linestoprint[i]+= ' '*spacing
         for i in range(13,15): #Add the spacing for these lines
             linestoprint[i]+= ' '*spacing
-        if location == z:
+        if location == z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
             linestoprint[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             linestoprint[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             linestoprint[12]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-        else:
+        else:                  #if we aren't referring to this hand currently put just spaces
             linestoprint[10]+= ' '*spacing 
             linestoprint[11]+= ' '*spacing 
             linestoprint[12]+= ' '*spacing 
@@ -317,7 +316,7 @@ def draw_all_player_hands(all_player_hands,location):
 #Function to draw bets under their associated hand
 def draw_bets(all_player_hands,bet_per_hand):
     lines = []
-    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1))
+    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
     for i in range(6):
         lines.append('')
     for i, hand in enumerate(all_player_hands):
@@ -355,9 +354,9 @@ highscore_run = False #For remembering if the player has already beat the dealer
 most_money = 100 #For printing the player's highscore when they lose or quit
 screen_width = os.get_terminal_size()[0] #0 is the width, 1 is the height
 screen_height = os.get_terminal_size()[1]
-input_pointer_with_spacing = ((int((screen_width/2)-0)* ' ')+'>')
+input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
-top_space = '\n'*int((screen_height/2)-4)
+top_space = '\n'*27 #this is the total height of the dealer card with the player cards and bet underneath it, to match text box placement this spacing variable exists to use when the game isn't displayed but a text box is
 
 #Print Boot Screen
 print('\n'*int((screen_height-11)/2))
@@ -429,18 +428,45 @@ while playing:
     #Give PLayer Option of How Many Hands to Start with
     if player_bank >= 20: #Player can't play two hands if they don't have at least $20
         while True:
-            one_or_two = input("Would you like to play one or two hands this round? [one or two] ")
-            if one_or_two.isalpha() and (one_or_two.lower() == 'o' or one_or_two.lower() == 'one'):
-                break
-            elif one_or_two.isalpha() and (one_or_two.lower() == 't' or one_or_two.lower() == 'two'):
-                second_hand = Hand()
-                all_player_hands.append(second_hand)
-                second_hand.deal_card(deck)
-                second_hand.deal_card(deck)
+            print(top_space)
+            text_box('How many hands would you like to play this round?','You can play up to five if you can afford to','[one, two, etc.]')
+            number_hands = input(input_pointer_with_spacing)
+            if number_hands.isalpha() and (number_hands.lower() in ['one', 'two', 'three', 'four', 'five']):    #need to check if they can afford to play these hands
                 break
             else:
                 clear_terminal()
 
+        count_of_hands = 1
+        if number_hands.isalpha() and (number_hands.lower() == 'two'):
+            count_of_hands += 1
+        elif number_hands.isalpha() and (number_hands.lower() == 'three'):
+            count_of_hands += 2
+        elif number_hands.isalpha() and (number_hands.lower() == 'four'):
+            count_of_hands += 3
+        elif number_hands.isalpha() and (number_hands.lower() == 'five'):
+            count_of_hands += 4
+
+        if count_of_hands >= 2:
+            second_hand = Hand()
+            all_player_hands.append(second_hand)
+            second_hand.deal_card(deck)
+            second_hand.deal_card(deck)
+        if count_of_hands >= 3:
+            third_hand = Hand()
+            all_player_hands.append(third_hand)
+            third_hand.deal_card(deck)
+            third_hand.deal_card(deck)
+        if count_of_hands >= 4:
+            fourth_hand = Hand()
+            all_player_hands.append(fourth_hand)
+            fourth_hand.deal_card(deck)
+            fourth_hand.deal_card(deck)
+        if count_of_hands == 5:
+            fifth_hand = Hand()
+            all_player_hands.append(fifth_hand)
+            fifth_hand.deal_card(deck)
+            fifth_hand.deal_card(deck)
+                  
     #Find out how much the player wants to bet
     total_bet_this_round = 0 
     bet_per_hand = make_bet() #Take Player's Initial Bet
@@ -537,7 +563,6 @@ while playing:
             highscore_run == True
     else:
         question_string = f'Continue playing? You have ${player_bank}.'
-        print(top_space)
         text_box(question_string,'[yes or no]')
         decision = yes_no_question(input_pointer_with_spacing)
         if decision == 'n':
@@ -564,3 +589,5 @@ while playing:
 #look at making yes no question function not require an input every time for the pointer spacing
 #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
 #make error messages formatted better than being in top left corner
+#need to check if player can afford 3-5 hands
+#can probably simpllify the part that asks how many hands the player wants to play(set up a library or whatever it was called that maps words to numbers)
