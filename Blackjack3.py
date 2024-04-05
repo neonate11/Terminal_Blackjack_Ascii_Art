@@ -113,11 +113,12 @@ def make_bet():
     bet = 0
     i = len(all_player_hands)
     clear_terminal()
+    line1 = f'You are playing {i} hands. Available funds: ${player_bank}'
     while True:
-        print(f'You are playing {i} hands. Available funds: ${player_bank}')
-        print(f'You will be unable to split or double down if you don\'t have an extra bet leftover')
-        print('')
-        bet = input("How much would you like to bet per hand? $")
+        print(top_space)
+        text_box(line1,"How much would you like to bet per hand?",'','(You will be unable to split or double down','if you don\'t have enough money leftover)')
+        pointer_string = f'{left_space}                            $'  #the set amount of spaces is to account for half of the text box width
+        bet = input(pointer_string)
         if not bet.isdigit():
             clear_terminal()
             print('Bet must be a positive, whole number')
@@ -355,7 +356,7 @@ most_money = 100 #For printing the player's highscore when they lose or quit
 screen_width = os.get_terminal_size()[0] #0 is the width, 1 is the height
 screen_height = os.get_terminal_size()[1]
 input_pointer_with_spacing = ((int((screen_width/2)-0)* ' ')+'>')
-left_space = int((screen_width/2)-27)* ' '
+left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
 top_space = '\n'*int((screen_height/2)-4)
 
 #Print Boot Screen
@@ -547,25 +548,19 @@ while playing:
             playing = False
 
 
-#First: Optimize code
 #print message if a player busts or gets blackjack before they have option to hit on next hand
-#Center text messages
 #Make ordinal list unlimited
 #splitting limit
 #Add timer to seal dealing, and make deal clockwise
-#insurance
 #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
 #Add Insurance
 #See if you can delete all player hands as an input to those functions
 #Add a fun things where if you pay off ralph something cool happens
-#Update screen displays stuff now that I can center things (Such as the blackjack logo)
 #make doubled down card hidden until after dealer show
 #Add ability to start more than two hands
-#Make starting game questions all in a box that is centered, ie you answer one question and it stays up on screen
 #Fix Instructions to have categories like: double down, and explain which hands are first
-#What if hit messages pointed to the hand they were talking about
 #Make bet circle display outcome, not text
-#make top space a fixed value based on the display of the cards and bets, not a calculation like it is now
-#look at making yes not question not require an input every time for the pointer spacing
-#make all questions like hitting, where if the player only has one hand ask them"do you want to split" instead of do you want to split your first hand
-        
+#make top spacing before text boxes a fixed value based on the display of the cards and bets, not a calculation like it is now
+#look at making yes no question function not require an input every time for the pointer spacing
+#make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
+#make error messages formatted better than being in top left corner
