@@ -620,3 +620,4 @@ while playing:
 #fix end of game message so it is more clear what happend to each hand, this will let you fix error where it shows the wrong chip count in the top left at the end of the game
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #Check splitting I don't think it works anymore
+#don't let the player play enough hands or split hands if the amount of hands could not be displayed on the screen
