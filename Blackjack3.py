@@ -79,6 +79,7 @@ def make_deck():
             for rank in ranks:
                 deck.append(f'{rank} {suit}')
     random.shuffle(deck)
+    random.shuffle(deck)
     return deck
 
 #Function for asking the user a yes or no question
@@ -617,3 +618,4 @@ while playing:
 #make drawing 5 cards win automatically regardless of what the dealer has
 #under determining game outcome reference near the bottom of the code there is a space i think that was fucking up some other spacing somewhere
 #fix end of game message so it is more clear what happend to each hand, this will let you fix error where it shows the wrong chip count in the top left at the end of the game
+#I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
