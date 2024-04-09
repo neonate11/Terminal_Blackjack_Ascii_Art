@@ -114,7 +114,7 @@ def make_bet():
     clear_terminal()
     line1 = f'You are playing {i} hands. Available funds: ${player_bank}'
     while True:
-        print(top_space)
+        draw_dealer_hand(0,1)
         text_box(line1,"How much would you like to bet per hand?",'','(You will be unable to split or double down','if you don\'t have enough money leftover)')
         pointer_string = f'{left_space}                            $'  #the set amount of spaces is to account for half of the text box width
         bet = input(pointer_string)
@@ -149,43 +149,60 @@ def determine_outcome(player_bank,bet_per_hand):
         #The Player Busted:
         if hand.calculate_value() > 21:                                                   
             print(f'Your{ordinals[i]} hand busted, you lost ${bet_per_hand_with_double}')
-            player_bank -= bet_per_hand_with_double
         #The Player and Dealer Tied:
         elif hand.calculate_value() == nate_hand.calculate_value():
             print(f'Your{ordinals[i]} hand was a push, you got your bet back')
+            player_bank += bet_per_hand_with_double
         #The Dealer got Blackjack:
         elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
             print(f'Nate beat your{ordinals[i]} hand with Blackjack, you lost ${bet_per_hand_with_double}')
-            player_bank -= bet_per_hand_with_double
         #The Player got BLackjack:
         elif hand.calculate_value() == 21 and len(hand.cards) == 2:
             print(f'Your{ordinals[i]} hand got Blackjack! You won ${1.5*bet_per_hand_with_double}')
-            player_bank += (1.5*bet_per_hand_with_double)
+            player_bank += 2*(1.5*bet_per_hand_with_double)
         #The Player got 5 cards without busting:
         elif len(hand.cards) == 5:                                                         
             print(f'You have five cards and didn\'t bust, you won ${bet_per_hand_with_double}!')
-            player_bank += bet_per_hand_with_double
+            player_bank += 2*(bet_per_hand_with_double)
         #The Dealer Busted:
         elif nate_hand.calculate_value() > 21:
             print(f'Nate busts, your{ordinals[i]} hand won ${bet_per_hand_with_double}!')
-            player_bank += bet_per_hand_with_double
+            player_bank += 2* (bet_per_hand_with_double)
         #The Dealer total was higher:
         elif hand.calculate_value() > nate_hand.calculate_value():
             print(f'Your{ordinals[i]} hand beat Nate! You won ${bet_per_hand_with_double}')
-            player_bank += bet_per_hand_with_double
+            player_bank += 2*(bet_per_hand_with_double)
         #The Player total was higher:
         elif hand.calculate_value() < nate_hand.calculate_value():
             print(f'Nate beat your{ordinals[i]} hand, you lost ${bet_per_hand_with_double}')
-            player_bank -= bet_per_hand_with_double
     return player_bank
 
 ##################################### GRAPHICS #####################################################
 
-#Function to draw the dealer's hand
-def draw_dealer_hand(hide): #This draws one hand
-        lines= []
-        for i in range(7):
-            lines.append(dealer_spacing*' ') #Space the dealer hand in the middle
+#Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
+def draw_dealer_hand(hide,just_bank): 
+    lines= []
+    length_money = len(str(player_bank))
+    odd = length_money % 2
+    lines.append('┌───────────┐' + (dealer_spacing-13)*' ')
+    lines.append('│Your Chips:│' + (dealer_spacing-13)*' ')
+    if odd: 
+        half_space = int((9-length_money)/2) * ' '
+        Bank_three_string = f'│{half_space}${player_bank} {half_space}│'
+        lines.append(Bank_three_string + ((dealer_spacing-13)*' '))
+    else:
+        half_space = int((10-length_money)/2) * ' '
+        Bank_three_string= f'│{half_space}${player_bank}{half_space}│'
+        lines.append(Bank_three_string + ((dealer_spacing-13)*' '))
+    lines.append('└───────────┘' + (dealer_spacing-13)*' ')
+    if just_bank: #if just drawing the bank
+        for i in lines:
+            print(i)
+        print('\n'*24)
+    else:   #if drawing the bank and the dealer's cards
+        for i in range(4,7):
+            lines.append(dealer_spacing*' ') #Add spaces before the 6th and 7th lines of the cards that don't have the bank to their left
+
         num_cards_to_print = len(nate_hand.cards)
         if hide: 
             num_cards_to_print = 1
@@ -342,7 +359,7 @@ def draw_bets(all_player_hands,bet_per_hand):
 #Function to call all graphics functions
 def draw_entire_game(all_player_hands,bet_per_hand,hide,location):
     clear_terminal()
-    draw_dealer_hand(hide)
+    draw_dealer_hand(hide,0)
     draw_all_player_hands(all_player_hands,location)
     draw_bets(all_player_hands,bet_per_hand)
 
@@ -356,7 +373,8 @@ screen_width = os.get_terminal_size()[0] #0 is the width, 1 is the height
 screen_height = os.get_terminal_size()[1]
 input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
-top_space = '\n'*27 #this is the total height of the dealer card with the player cards and bet underneath it, to match text box placement this spacing variable exists to use when the game isn't displayed but a text box is
+dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
+top_space = '\n'*27
 
 #Print Boot Screen
 print('\n'*int((screen_height-11)/2))
@@ -376,7 +394,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-print(top_space)
+draw_dealer_hand(0,1)
 text_box('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?','[yes or no]')
 see_rules = yes_no_question(input_pointer_with_spacing)
 if see_rules == 'y':
@@ -423,12 +441,11 @@ while playing:
 
     #determining spacing between hands and bets
     num_hands = len(all_player_hands)
-    dealer_spacing = int((screen_width -36)/2)
-       
+           
     #Give PLayer Option of How Many Hands to Start with
     if player_bank >= 20: #Player can't play two hands if they don't have at least $20
         while True:
-            print(top_space)
+            draw_dealer_hand(0,1)
             text_box('How many hands would you like to play this round?','You can play up to five if you can afford to','[one, two, etc.]')
             number_hands = input(input_pointer_with_spacing)
             if number_hands.isalpha() and (number_hands.lower() in ['one', 'two', 'three', 'four', 'five']):    #need to check if they can afford to play these hands
@@ -472,6 +489,7 @@ while playing:
     bet_per_hand = make_bet() #Take Player's Initial Bet
     for i, hand in enumerate(all_player_hands):
         total_bet_this_round += bet_per_hand #Sum the total amount bet so far
+        player_bank -= bet_per_hand
 
     dealing = True #Setup Game Phase where cards are dealt
     while dealing:
@@ -487,6 +505,7 @@ while playing:
                 decision = yes_no_question(input_pointer_with_spacing)
                 if decision == 'y':
                     total_bet_this_round += bet_per_hand #deduct another bet from the player bank
+                    player_bank -= bet_per_hand
                     new_hand_position = len(all_player_hands) #
                     all_player_hands.append(Hand()) #Make the list one longer
                     all_player_hands[new_hand_position].cards.append(hand.cards.pop(0))
@@ -507,6 +526,7 @@ while playing:
                         decision = yes_no_question(input_pointer_with_spacing)
                         if decision == 'y':
                             total_bet_this_round += bet_per_hand
+                            player_bank -= bet_per_hand
                             hand.doubleddown()
                             hand.deal_card(deck)
 
@@ -547,8 +567,7 @@ while playing:
     #Check if the player is broke or won, and wants to play again
     if player_bank < 10:
         string = f'Your maximum chip total was ${most_money}'
-        print(top_space)
-        text_box('You can no longer afford the table minimum bet. Ralph is coming to collect on his loan',string)
+        text_box('You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',string)
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
         print(top_space)
@@ -593,3 +612,8 @@ while playing:
 #can probably simpllify the part that asks how many hands the player wants to play(set up a library or whatever it was called that maps words to numbers)
 #add buttons or links for questions so the user doesn't have to type
 #add a bank in the top left corner
+#delete the total bet this round variable
+#Can shorten the logic/overall code of the section #Give PLayer Option of How Many Hands to Start with
+#make drawing 5 cards win automatically regardless of what the dealer has
+#under determining game outcome reference near the bottom of the code there is a space i think that was fucking up some other spacing somewhere
+#fix end of game message so it is more clear what happend to each hand, this will let you fix error where it shows the wrong chip count in the top left at the end of the game
