@@ -499,7 +499,7 @@ while playing:
 
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
-            if player_bank >= (total_bet_this_round + bet_per_hand) and hand.check_for_split_option():
+            if player_bank >= bet_per_hand and hand.check_for_split_option():
                 draw_entire_game(all_player_hands,bet_per_hand,1,i)
                 question_string = f'Would you like to split your{ordinals[i]} hand?'
                 text_box(question_string,'[yes or no]')
@@ -514,7 +514,7 @@ while playing:
                     all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
                                
         #Give Player Option to Double Down
-        if player_bank >= (total_bet_this_round + bet_per_hand):
+        if player_bank >= bet_per_hand:
             draw_entire_game(all_player_hands,bet_per_hand,1,'n')
             text_box('Would you like to double down on any of your hands?','[yes or no]')
             decision = yes_no_question(input_pointer_with_spacing)
@@ -619,3 +619,4 @@ while playing:
 #under determining game outcome reference near the bottom of the code there is a space i think that was fucking up some other spacing somewhere
 #fix end of game message so it is more clear what happend to each hand, this will let you fix error where it shows the wrong chip count in the top left at the end of the game
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
+#Check splitting I don't think it works anymore
