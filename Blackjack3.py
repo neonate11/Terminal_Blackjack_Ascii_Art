@@ -106,7 +106,7 @@ def yes_no_question(*args):
         draw_dealer_hand(0,1)
         text_box(*args,error_spacing,error_message)
         print('\n')
-        answer = input((int((screen_width/2)-1)* ' ')+'>')
+        answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
             return answer.lower()
         else:
@@ -427,6 +427,7 @@ screen_height = os.get_terminal_size()[1]
 left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
 dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
 top_space = '\n'*27
+input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 
 #Print Boot Screen
 print('\n'*int((screen_height-11)/2))
