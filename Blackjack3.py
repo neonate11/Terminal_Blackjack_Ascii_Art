@@ -99,12 +99,16 @@ def text_box(*args):
     print(f'{left_space}└────────────────────────────────────────────────────┘')
 
 #Function for asking the user a yes or no question
-def yes_no_question(*args):
+def yes_no_question(*args): #this function will draw the entire game above the question box if the first argument is a 0, a 1 will just print the bank above
     error_spacing = ''
     error_message = ''
+    ##############################################################################need to name a new args: nargs = args minus the first three values, then put nargs into the text box function below
     while True:
-        draw_dealer_hand(0,1)
-        text_box(*args,error_spacing,error_message)
+        if args[0] == 1: #just draw the bank
+            draw_dealer_hand(0,1) 
+        elif args[0] == 0:
+            draw_entire_game(all_player_hands, bet_per_hand,args[1],args[2])  #if you want to draw everything you need to input 0,[hide],[card]
+        text_box(*args,error_spacing,error_message) 
         print('\n')
         answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
@@ -447,7 +451,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-see_rules = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
+see_rules = yes_no_question(1,'Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 if see_rules == 'y':
     clear_terminal()
     while True:
@@ -494,6 +498,7 @@ while playing:
     num_hands = len(all_player_hands)
            
     #Give PLayer Option of How Many Hands to Start with
+    draw_dealer_hand(0,1)
     starting_hands()
                   
     #Find out how much the player wants to bet
