@@ -102,12 +102,14 @@ def text_box(*args):
 def yes_no_question(*args): #this function will draw the entire game above the question box if the first argument is a 0, a 1 will just print the bank above
     error_spacing = ''
     error_message = ''
-    ##############################################################################need to name a new args: nargs = args minus the first three values, then put nargs into the text box function below
-    while True:
         if args[0] == 1: #just draw the bank
             draw_dealer_hand(0,1) 
-        elif args[0] == 0:
-            draw_entire_game(all_player_hands, bet_per_hand,args[1],args[2])  #if you want to draw everything you need to input 0,[hide],[card]
+            args.pop(0)
+        elif args[0] == 0: #draw the entire game
+            draw_entire_game(all_player_hands, bet_per_hand,args[1],args[2])  #if you want to draw everything you need to input 0,[hide],[location]
+            args.pop(0)
+            args.pop(0)
+            args.pop(0)
         text_box(*args,error_spacing,error_message) 
         print('\n')
         answer = input(input_pointer_with_spacing)
@@ -516,8 +518,7 @@ while playing:
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
             if player_bank >= bet_per_hand and hand.check_for_split_option():
-                draw_entire_game(all_player_hands,bet_per_hand,1,i)
-                decision = yes_no_question(f'Would you like to split your{ordinals[i]} hand?')
+                decision = yes_no_question(0,1,i,f'Would you like to split your{ordinals[i]} hand?')
                 if decision == 'y':
                     total_bet_this_round += bet_per_hand #deduct another bet from the player bank
                     player_bank -= bet_per_hand
@@ -529,9 +530,7 @@ while playing:
                                
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand:
-            draw_entire_game(all_player_hands,bet_per_hand,1,'n')
-            text_box('Would you like to double down on any of your hands?','[y or n]')
-            decision = yes_no_question(input_pointer_with_spacing)
+            decision = yes_no_question(0,1,'n','Would you like to double down on any of your hands?')
             if decision == 'y':
                 for i, hand in enumerate(all_player_hands):
                     if hand.calculate_value() < 21 and player_bank >= (total_bet_this_round + bet_per_hand):
