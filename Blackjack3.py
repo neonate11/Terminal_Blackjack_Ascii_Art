@@ -82,16 +82,6 @@ def make_deck():
     random.shuffle(deck)
     return deck
 
-#Function for asking the user a yes or no question
-def yes_no_question(input_pointer_with_spacing):
-    while True:
-        print('\n')
-        answer = input(input_pointer_with_spacing)
-        if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n' or answer.lower() == 'yes' or answer.lower() == 'no'):
-            return answer.lower()[0]
-        else:
-            clear_terminal()
-
 #Function for printing information to the user in a formatted box
 def text_box(*args):
     print(f'{left_space}┌────────────────────────────────────────────────────┐')
@@ -107,8 +97,24 @@ def text_box(*args):
             print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
     print(f'{left_space}│                                                    │')
     print(f'{left_space}└────────────────────────────────────────────────────┘')
+
+#Function for asking the user a yes or no question
+def yes_no_question(*args):
+    error_spacing = ''
+    error_message = ''
+    while True:
+        draw_dealer_hand(0,1)
+        text_box(*args,error_spacing,error_message)
+        print('\n')
+        answer = input((int((screen_width/2)-1)* ' ')+'>')
+        if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
+            return answer.lower()
+        else:
+            error_spacing = ' '
+            error_message = 'Please respond with y or n.'
+            clear_terminal()
              
-#Function for betting
+#Function for accepting a bet from the player
 def make_bet():
     bet = 0
     i = len(all_player_hands)
@@ -418,7 +424,6 @@ highscore_run = False #For remembering if the player has already beat the dealer
 most_money = 100 #For printing the player's highscore when they lose or quit
 screen_width = os.get_terminal_size()[0] #0 is the width, 1 is the height
 screen_height = os.get_terminal_size()[1]
-input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
 dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
 top_space = '\n'*27
@@ -441,9 +446,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-draw_dealer_hand(0,1)
-text_box('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?','[yes or no]')
-see_rules = yes_no_question(input_pointer_with_spacing)
+see_rules = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 if see_rules == 'y':
     clear_terminal()
     while True:
@@ -508,9 +511,7 @@ while playing:
         for i, hand in enumerate(all_player_hands):
             if player_bank >= bet_per_hand and hand.check_for_split_option():
                 draw_entire_game(all_player_hands,bet_per_hand,1,i)
-                question_string = f'Would you like to split your{ordinals[i]} hand?'
-                text_box(question_string,'[yes or no]')
-                decision = yes_no_question(input_pointer_with_spacing)
+                decision = yes_no_question(f'Would you like to split your{ordinals[i]} hand?')
                 if decision == 'y':
                     total_bet_this_round += bet_per_hand #deduct another bet from the player bank
                     player_bank -= bet_per_hand
@@ -523,7 +524,7 @@ while playing:
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand:
             draw_entire_game(all_player_hands,bet_per_hand,1,'n')
-            text_box('Would you like to double down on any of your hands?','[yes or no]')
+            text_box('Would you like to double down on any of your hands?','[y or n]')
             decision = yes_no_question(input_pointer_with_spacing)
             if decision == 'y':
                 for i, hand in enumerate(all_player_hands):
