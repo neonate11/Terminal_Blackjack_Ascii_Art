@@ -99,10 +99,10 @@ def text_box(*args):
     for arg in args:
         raw_spacing = 52-len(arg) #total box is 54 chars wide, minus edges is 52 spaces available to print on per line
         odd = raw_spacing % 2
-        if odd == False:
+        if arg!= '' and odd == False: #I added the functionality where the programmer can input a '' as a placeholder for a potential error message that won't be printed
             half_spacing = int(raw_spacing/2)* ' '
             print(f'{left_space}│{half_spacing}{arg}{half_spacing}│')
-        else:
+        elif arg!= '' and odd == True:
             half_spacing = int((raw_spacing-1)/2)* ' '
             print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
     print(f'{left_space}│                                                    │')
@@ -113,30 +113,76 @@ def make_bet():
     bet = 0
     i = len(all_player_hands)
     clear_terminal()
-    line1 = f'You are playing {i} hands. Available funds: ${player_bank}'
+    error_spacing = ''
+    error_message = ''
     while True:
-        draw_dealer_hand(0,1)
-        text_box(line1,"How much would you like to bet per hand?",'','(You will be unable to split or double down','if you don\'t have enough money leftover)')
+        draw_dealer_hand(0,1) #draw the player bank
+        text_box(f'You are playing {i} hands.',"How much would you like to bet per hand?",'','(You will be unable to split or double down','if you don\'t have enough money leftover)',error_spacing,error_message)
         pointer_string = f'{left_space}                            $'  #the set amount of spaces is to account for half of the text box width
         bet = input(pointer_string)
         if not bet.isdigit():
+            error_spacing = ' '
+            error_message = 'Bet must be a positive, whole number'
             clear_terminal()
-            print('Bet must be a positive, whole number')
         elif int(bet) > player_bank:
+            error_spacing = ' '
+            error_message = 'Bet exceeds available funds'
             clear_terminal()
-            print('Bet exceeds available funds')
         elif int(bet) > 500:
+            error_spacing = ' '
+            error_message = 'Bet above table maximum ($500)'
             clear_terminal()
-            print('Bet above table maximum ($500)')
         elif (int(bet)*i) > player_bank:
+            error_spacing = ' '
+            error_message = 'Amount bet across all hands exceeds available funds'
             clear_terminal()
-            print('Amount bet across all hands exceeds available funds')
         elif int(bet) < 10:
+            error_spacing = ' '
+            error_message = 'Bet below table minimum ($10)'
             clear_terminal()
-            print('Bet below table minimum ($10)')
         else:
             return int(bet)
 
+#Function for determining number of starting hands:
+def starting_hands():
+    if player_bank >= 20: #Player can't play two hands if they don't have at least $20
+        error_spacing = ''
+        error_message = ''
+        while True:
+            draw_dealer_hand(0,1)
+            text_box('How many hands would you like to play this round?','The table maximum is starting five hands.',error_spacing,error_message)
+            number_hands = input(input_pointer_with_spacing)
+            if not number_hands.isdigit() or (int(number_hands) < 1) or (int(number_hands) > 5):
+                error_spacing = ' '
+                error_message = 'Please provide an integer from 1 to 5.'
+                clear_terminal()
+            elif int(number_hands) * 10 > player_bank:
+                error_spacing = ' '
+                error_message = 'You can\'t afford to play that many hands with a $10 min bet'
+                clear_terminal()
+            else:
+                break
+        if int(number_hands) >=2:
+            second_hand = Hand()
+            all_player_hands.append(second_hand)
+            second_hand.deal_card(deck)
+            second_hand.deal_card(deck)
+        if int(number_hands) >=3:
+            third_hand = Hand()
+            all_player_hands.append(third_hand)
+            third_hand.deal_card(deck)
+            third_hand.deal_card(deck)
+        if int(number_hands) >=4:
+            fourth_hand = Hand()
+            all_player_hands.append(fourth_hand)
+            fourth_hand.deal_card(deck)
+            fourth_hand.deal_card(deck)
+        if int(number_hands) ==5:
+            fifth_hand = Hand()
+            all_player_hands.append(fifth_hand)
+            fifth_hand.deal_card(deck)
+            fifth_hand.deal_card(deck)
+          
 #Function to Determine the outcome of the game
 def determine_outcome(player_bank,bet_per_hand):
     if len(all_player_hands) == 1:
@@ -444,46 +490,7 @@ while playing:
     num_hands = len(all_player_hands)
            
     #Give PLayer Option of How Many Hands to Start with
-    if player_bank >= 20: #Player can't play two hands if they don't have at least $20
-        while True:
-            draw_dealer_hand(0,1)
-            text_box('How many hands would you like to play this round?','You can play up to five if you can afford to','[one, two, etc.]')
-            number_hands = input(input_pointer_with_spacing)
-            if number_hands.isalpha() and (number_hands.lower() in ['one', 'two', 'three', 'four', 'five']):    #need to check if they can afford to play these hands
-                break
-            else:
-                clear_terminal()
-
-        count_of_hands = 1
-        if number_hands.isalpha() and (number_hands.lower() == 'two'):
-            count_of_hands += 1
-        elif number_hands.isalpha() and (number_hands.lower() == 'three'):
-            count_of_hands += 2
-        elif number_hands.isalpha() and (number_hands.lower() == 'four'):
-            count_of_hands += 3
-        elif number_hands.isalpha() and (number_hands.lower() == 'five'):
-            count_of_hands += 4
-
-        if count_of_hands >= 2:
-            second_hand = Hand()
-            all_player_hands.append(second_hand)
-            second_hand.deal_card(deck)
-            second_hand.deal_card(deck)
-        if count_of_hands >= 3:
-            third_hand = Hand()
-            all_player_hands.append(third_hand)
-            third_hand.deal_card(deck)
-            third_hand.deal_card(deck)
-        if count_of_hands >= 4:
-            fourth_hand = Hand()
-            all_player_hands.append(fourth_hand)
-            fourth_hand.deal_card(deck)
-            fourth_hand.deal_card(deck)
-        if count_of_hands == 5:
-            fifth_hand = Hand()
-            all_player_hands.append(fifth_hand)
-            fifth_hand.deal_card(deck)
-            fifth_hand.deal_card(deck)
+    starting_hands()
                   
     #Find out how much the player wants to bet
     total_bet_this_round = 0 
