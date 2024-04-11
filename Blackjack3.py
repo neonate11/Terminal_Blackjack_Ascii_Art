@@ -138,6 +138,13 @@ def starting_hands():
                 clear_terminal()
             else:
                 break
+        number_hands = int(number_hands)
+        while number_hands > 1:
+            all_player_hands.append(Hand())
+            all_player_hands[-1].deal_card(deck)
+            all_player_hands[-1].deal_card(deck)
+            number_hands -= 1
+        '''
         if int(number_hands) >=2:
             second_hand = Hand()
             all_player_hands.append(second_hand)
@@ -158,6 +165,20 @@ def starting_hands():
             all_player_hands.append(fifth_hand)
             fifth_hand.deal_card(deck)
             fifth_hand.deal_card(deck)
+'''
+
+
+
+
+'''
+if decision == 'y':
+                    player_bank -= bet_per_hand
+                    new_hand_position = len(all_player_hands) #
+                    all_player_hands.append(Hand()) #Make the list one longer
+                    all_player_hands[new_hand_position].cards.append(hand.cards.pop(0))
+                    hand.deal_card(deck) #deal one card to the og hand
+                    all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
+'''
           
 #Function to Determine the outcome of the game
 def determine_outcome(player_bank,bet_per_hand):
@@ -528,6 +549,7 @@ while playing:
         player_bank -= bet_per_hand
 
     if nate_hand.calculate_value() != 21: #Don't Deal Cards if Dealer already got Blackjack
+
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
             if player_bank >= bet_per_hand and hand.check_for_split_option():
