@@ -504,6 +504,7 @@ while playing:
     nate_hand.deal_card(deck)
     first_hand.deal_card(deck)
     nate_hand.deal_card(deck)
+    previous_bank = player_bank
 
     #determining spacing between hands and bets
     num_hands = len(all_player_hands)
@@ -565,7 +566,6 @@ while playing:
                 nate_hand.deal_card(deck)
 
 #Determine Game Outcome, see if player can/wants to play again
-    previous_bank = player_bank
     player_bank = determine_outcome(player_bank,bet_per_hand)
     if player_bank > most_money:
         most_money = player_bank
@@ -587,7 +587,7 @@ while playing:
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
-        go_for_highscore = yes_no_question(0,0,'n',dealer_outcome,result,'You Bankrupt Nate! You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
+        go_for_highscore = yes_no_question(0,0,'n',dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
             print(top_space)
