@@ -232,14 +232,21 @@ def draw_dealer_hand(hide,just_bank):
             num_cards_to_print = 1
         for card in nate_hand.cards[:num_cards_to_print]:  # Iterate over the cards to print
             rank = card[0]
+            rank2 = card[1]
             suit = card[-1]
+            if rank2.isdigit(): #If the card is a 10, need to print the second integer (0) and delete the extra space
+                left_data = rank + rank2 + suit
+                right_data = rank + rank2 + suit
+            else:
+                left_data = rank + suit + ' '
+                right_data = ' ' + rank + suit
             formatted_data = rank + suit
             lines[0] += '┌─────────┐'
-            lines[1] += '│{}       │'.format(formatted_data)
+            lines[1] += '│{}      │'.format(left_data)
             lines[2] += '│         │'
             lines[3] += '│    {}    │'.format(suit)
             lines[4] += '│         │'
-            lines[5] += '│       {}│'.format(formatted_data)
+            lines[5] += '│      {}│'.format(right_data)
             lines[6] += '└─────────┘'
         if hide:
             lines[0] += '┌─────────┐'
@@ -407,6 +414,7 @@ def yes_no_question(*args):
             draw_entire_game(all_player_hands,bet_per_hand,args[1],args[2])
         text_box(*args[3:],error_spacing,error_message) 
         print('\n')
+        print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
         answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
             return answer.lower()
@@ -462,6 +470,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
+'''
 see_rules = yes_no_question(1,0,'n','Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 if see_rules == 'y':
     clear_terminal()
@@ -490,7 +499,7 @@ if see_rules == 'y':
         print('')
         input("[press enter to continue]")
         break
-   
+'''
 ############################################ the game loop ############################################
 playing = True
 while playing:
