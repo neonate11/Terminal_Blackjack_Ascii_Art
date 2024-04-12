@@ -10,6 +10,30 @@ class Hand:
     def deal_card(self, deck):  #ability of the hand class to be dealt a card
         card=deck.pop()
         self.cards.append(card)
+        '''
+    def check_for_split_option(self):  #This returns true if you have the option to split
+        split = False
+        if len(self.cards) == 2:  #Make sure the player only has two cards
+            card1_value = 0
+            card2_value = 0
+            card1 = self.cards[0].split(' ')[0] #Calculate the value of the first card
+            if card1 == 'A':
+                card1_value = 11
+            elif card1 in ['K', 'Q', 'J']:
+                card1_value = 10
+            else:
+                card1_value = int(card1)
+            card2 = self.cards[1].split(' ')[0] #Calculate the value of the second card
+            if card2 == 'A':
+                card2_value = 11
+            elif card2 in ['K', 'Q', 'J']:
+                card2_value = 10
+            else:
+                card2_value = int(card2)
+            if  card1_value == card2_value:  #See if the card values are the same
+                split = True
+        return split
+        '''
     def check_for_split_option(self):  #This returns true if you have the option to split
         split = False
         if len(self.cards) == 2:  #Make sure the player only has two cards
