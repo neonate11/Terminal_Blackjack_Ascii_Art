@@ -6,7 +6,6 @@ import platform #For the ability to check the OS
 class Hand:
     def __init__(self):
         self.cards = [] #the cards in a hand, starting empty
-        self.bet = 0
         self.double = False
     def deal_card(self, deck):  #ability of the hand class to be dealt a card
         card=deck.pop()
@@ -14,23 +13,9 @@ class Hand:
     def check_for_split_option(self):  #This returns true if you have the option to split
         split = False
         if len(self.cards) == 2:  #Make sure the player only has two cards
-            card1_value = 0
-            card2_value = 0
-            card1 = self.cards[0].split(' ')[0] #Calculate the value of the first card
-            if card1 == 'A':
-                card1_value = 11
-            elif card1 in ['K', 'Q', 'J']:
-                card1_value = 10
-            else:
-                card1_value = int(card1)
-            card2 = self.cards[1].split(' ')[0] #Calculate the value of the second card
-            if card2 == 'A':
-                card2_value = 11
-            elif card2 in ['K', 'Q', 'J']:
-                card2_value = 10
-            else:
-                card2_value = int(card2)
-            if  card1_value == card2_value:  #See if the card values are the same
+            card1 = self.cards[0].split(' ')[0]
+            card2 = self.cards[1].split(' ')[0]
+            if  card1 == card2:  #See if the cards are the same
                 split = True
         return split
     def calculate_value(self):  #ability of the hand class to calculate it's value
@@ -50,10 +35,6 @@ class Hand:
             value -= 10
             num_aces -= 1
         return value
-    def save_bet(self,bet): #save a bet to a specific hand
-        self.bet = bet
-    def print_bet(self): #return the bet associated with a specific hand
-        return self.bet
     def doubleddown(self): #Remember if you doubled down
         self.double = True
     def if_doubledown(self): #Return whether you doubled down
@@ -144,41 +125,6 @@ def starting_hands():
             all_player_hands[-1].deal_card(deck)
             all_player_hands[-1].deal_card(deck)
             number_hands -= 1
-        '''
-        if int(number_hands) >=2:
-            second_hand = Hand()
-            all_player_hands.append(second_hand)
-            second_hand.deal_card(deck)
-            second_hand.deal_card(deck)
-        if int(number_hands) >=3:
-            third_hand = Hand()
-            all_player_hands.append(third_hand)
-            third_hand.deal_card(deck)
-            third_hand.deal_card(deck)
-        if int(number_hands) >=4:
-            fourth_hand = Hand()
-            all_player_hands.append(fourth_hand)
-            fourth_hand.deal_card(deck)
-            fourth_hand.deal_card(deck)
-        if int(number_hands) ==5:
-            fifth_hand = Hand()
-            all_player_hands.append(fifth_hand)
-            fifth_hand.deal_card(deck)
-            fifth_hand.deal_card(deck)
-'''
-
-
-
-
-'''
-if decision == 'y':
-                    player_bank -= bet_per_hand
-                    new_hand_position = len(all_player_hands) #
-                    all_player_hands.append(Hand()) #Make the list one longer
-                    all_player_hands[new_hand_position].cards.append(hand.cards.pop(0))
-                    hand.deal_card(deck) #deal one card to the og hand
-                    all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
-'''
           
 #Function to Determine the outcome of the game
 def determine_outcome(player_bank,bet_per_hand):
@@ -212,16 +158,16 @@ def determine_outcome(player_bank,bet_per_hand):
         elif nate_hand.calculate_value() > 21:
             print(f'Nate busts, your{ordinals[i]} hand won ${bet_per_hand_with_double}!')
             player_bank += 2* (bet_per_hand_with_double)
-        #The Dealer total was higher:
+        #The Players total was higher:
         elif hand.calculate_value() > nate_hand.calculate_value():
             print(f'Your{ordinals[i]} hand beat Nate! You won ${bet_per_hand_with_double}')
             player_bank += 2*(bet_per_hand_with_double)
-        #The Player total was higher:
+        #The Dealer total was higher:
         elif hand.calculate_value() < nate_hand.calculate_value():
             print(f'Nate beat your{ordinals[i]} hand, you lost ${bet_per_hand_with_double}')
     return player_bank
 
-##################################### GRAPHICS #####################################################
+##################################### GRAPHICS FUNCTIONS #####################################################
 
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
 def draw_dealer_hand(hide,just_bank): 
@@ -261,7 +207,6 @@ def draw_dealer_hand(hide,just_bank):
             else:
                 left_data = rank + suit + ' '
                 right_data = ' ' + rank + suit
-            formatted_data = rank + suit
             lines[0] += '┌─────────┐'
             lines[1] += '│{}      │'.format(left_data)
             lines[2] += '│         │'
@@ -300,11 +245,11 @@ def draw_all_player_hands(all_player_hands,location):
             rank2 = card[1]
             suit=card[-1]
             suits.append(suit)
-            if rank2.isdigit(): #If the card is a 10, need to print the second integer (0) and delete the extra space
+            if rank2.isdigit(): #If the hidden card is a 10, need the 10 to not print its suit
                 left_edge_data.append(rank+rank2+suit)
                 right_edge_data.append(rank+rank2+suit)
                 covered_data.append(rank+rank2)
-            else: #If the card is not a 10, need an extra space
+            else: #If the card is not a 10, need an extra space for the top cards, and for the hidden non 10 card to print its suit
                 left_edge_data.append(rank+suit+' ')
                 right_edge_data.append(' '+rank+suit)
                 covered_data.append(rank+suit)    
@@ -435,7 +380,7 @@ def yes_no_question(*args):
             draw_entire_game(all_player_hands,bet_per_hand,args[1],args[2])
         text_box(*args[3:],error_spacing,error_message) 
         print('\n')
-        print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
+        #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
         answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
             return answer.lower()
@@ -491,7 +436,7 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-'''
+
 see_rules = yes_no_question(1,0,'n','Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 if see_rules == 'y':
     clear_terminal()
@@ -520,7 +465,7 @@ if see_rules == 'y':
         print('')
         input("[press enter to continue]")
         break
-'''
+
 ############################################ the game loop ############################################
 playing = True
 while playing:
@@ -611,7 +556,7 @@ while playing:
         dealer_outcome = 'Nate got Blackjack! Womp Womp'
     elif nate_hand.calculate_value() > 21:
         dealer_outcome = 'Nate busted!'
-    elif nate_hand.calculate_value() < 21:
+    elif nate_hand.calculate_value() <= 21:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
     if player_bank < 10:
         draw_entire_game(all_player_hands,bet_per_hand,0,'n')
@@ -652,3 +597,4 @@ while playing:
 #add a bank in the top left corner
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #amount won at the end of the game needs to account for how much was bet, the number shown now is incorrect
+#Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
