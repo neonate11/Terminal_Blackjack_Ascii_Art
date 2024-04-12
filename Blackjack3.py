@@ -598,3 +598,5 @@ while playing:
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #amount won at the end of the game needs to account for how much was bet, the number shown now is incorrect
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
+#Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
+#when it says maximum chip total make it say, thank you for playing at nate's blackjack table
