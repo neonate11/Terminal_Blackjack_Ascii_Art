@@ -178,7 +178,9 @@ def payout_player(player_bank):
     return player_bank
 
 def print_interim_message(): #this function will print the interim message if necessary
-    interim_messages = ''
+    interim_message_line1 = ''
+    interim_message_line2 = ''
+    interim_message_line3 = ''
     outcome = determine_outcome()
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #this is the raw space between hands drawn on the screen
     for i, hand in enumerate(all_player_hands):
@@ -191,11 +193,15 @@ def print_interim_message(): #this function will print the interim message if ne
             interim_message = 'Five cards w/o Busting'
         else:
             interim_message = f'Count:{hand.calculate_value()}'
-        raw_spacing = (21-len(interim_message))* ' '
-        interim_message = f'  {interim_message}{raw_spacing}' 
-        interim_messages += (spacing * ' ')
-        interim_messages += interim_message
-    print(interim_messages)
+        raw_spacing = (19-len(interim_message))* ' '
+        interim_message = f'│  {interim_message}{raw_spacing}│' 
+        interim_message_line1 += (spacing * ' ')
+        interim_message_line2 += (spacing * ' ')
+        interim_message_line3 += (spacing * ' ')
+        interim_message_line1 += '┌─────────────────────┐'
+        interim_message_line2 += f'│        Hand {i}       │'
+        interim_message_line3 += interim_message
+    print(interim_message_line1 + '\n',interim_message_line2 + '\n',interim_message_line3)
 
 '''
 def print_result_message(): #this function will print the outcome of a hand at the end of the game
@@ -300,7 +306,6 @@ def draw_dealer_hand(hide,just_bank):
             lines[4] += '│ ▓▓▓▓▓▓▓ │'
             lines[5] += '│ ▓▓▓▓▓▓▓ │'
             lines[6] += '└─────────┘'
-
         for i in lines:
             print(i)
 
@@ -456,7 +461,6 @@ def yes_no_question(*args):
             draw_dealer_hand(1,1)
         elif args[0] == 0:
             draw_entire_game(all_player_hands,bet_per_hand,args[1],args[2])
-            print_interim_message()
         text_box(*args[3:],error_spacing,error_message) 
         print('\n')
         #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
@@ -471,6 +475,7 @@ def yes_no_question(*args):
 #Function to call all graphics functions
 def draw_entire_game(all_player_hands,bet_per_hand,hide,location): 
     draw_dealer_hand(hide,0)
+    print_interim_message()
     draw_all_player_hands(all_player_hands,location)
     draw_bets(all_player_hands,bet_per_hand)
     
