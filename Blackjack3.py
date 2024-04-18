@@ -178,10 +178,14 @@ def payout_player(player_bank):
     return player_bank
 
 '''
+'''
 def print_interim_message(): #this function will print the interim message if necessary
+    lines = []
     lines = []
     outcome = determine_outcome()
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #this is the raw space between hands drawn on the screen
+    for i in range(2):
+            lines.append('')
     for i in range(2):
             lines.append('')
     for i, hand in enumerate(all_player_hands):
@@ -195,6 +199,15 @@ def print_interim_message(): #this function will print the interim message if ne
         else:
             interim_message = f'Count:{hand.calculate_value()}'
         raw_spacing = (19-len(interim_message))* ' '
+        interim_message = f'   {interim_message}{raw_spacing} ' 
+        for n in range(2):
+            lines[n]+=(spacing * ' ')
+        lines[0]+=f'   Hand {i+1}:             '
+        lines[1]+=interim_message
+    for i in lines:
+        print(i)
+
+'''
         interim_message = f'   {interim_message}{raw_spacing} ' 
         for n in range(2):
             lines[n]+=(spacing * ' ')
@@ -413,12 +426,16 @@ def draw_all_player_hands(all_player_hands,location):
 
 #Function to draw bets under their associated hand
 def draw_bets(all_player_hands,bet_per_hand,endgame):
+def draw_bets(all_player_hands,bet_per_hand,endgame):
     lines = []
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
+    outcome = determine_outcome()
     outcome = determine_outcome()
     for i in range(6):
         lines.append('')
     for i, hand in enumerate(all_player_hands):
+        for n in range(6):
+            lines[n]+= ' '*spacing
         for n in range(6):
             lines[n]+= ' '*spacing
         bet = bet_per_hand
@@ -429,6 +446,35 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
             bet_spacing = ' '
         elif len(str(bet_per_hand)) == 4:
             bet_spacing = ''
+        if endgame:
+            print('final bet results will go here')
+        else:
+            lines[0] += '    =  =               '                  
+            lines[1] += ' =        =            '                  
+            lines[5] += '    =  =               '
+            result = outcome[i]
+            if result == 'player_bust':
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
+                lines[4] += ' =        =            '        
+            elif hand.calculate_value()==21 and len(hand.cards) ==2:
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=          =           '
+                lines[4] += ' =        =            '      
+            elif result == 'five_no_bust':
+                lines[2] += '=You drew 5=           '
+                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
+            elif hand.calculate_value()==21:
+                lines[2] += '=Your count =           '
+                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
+                lines[4] += ' =        =            '   
+            else:
+                lines[2] += '=   Bet:   =           '
+                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
+    for n in lines:
+        print(n)     
         if endgame:
             print('final bet results will go here')
         else:
@@ -494,7 +540,11 @@ def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no err
 #Function to call all graphics functions
 def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
     draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
+def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
+    draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
     draw_all_player_hands(all_player_hands,location)
+    draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
+    print('')
     draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
     print('')
     
@@ -686,6 +736,7 @@ while playing:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
     if player_bank < 10:
         draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
         print('This is where the final messages will go')
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
         playing = False
@@ -698,6 +749,7 @@ while playing:
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
             print(top_space)
+            text_box(chip_total,'Thank you for playing at Nate\'s blackjack table!')
             text_box(chip_total,'Thank you for playing at Nate\'s blackjack table!')
             playing = False
         elif go_for_highscore == 'y':
@@ -716,6 +768,9 @@ while playing:
             playing = False
 
 
+#I redid the calling of the yes_no_question function so it no longer does everything which was impossible. Need to fix its' implementtaiton still.
+#the game doesn't pay out blackjack correctly (ie 3 to 2)
+#make the results print in the bet circles, right now it just interim results
 #I redid the calling of the yes_no_question function so it no longer does everything which was impossible. Need to fix its' implementtaiton still.
 #the game doesn't pay out blackjack correctly (ie 3 to 2)
 #make the results print in the bet circles, right now it just interim results
