@@ -57,7 +57,7 @@ def make_deck():
     suits = ['\u2663', '\u2665', '\u2666', '\u2660']
     ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
     deck = []
-    for _ in range(6): #Use 6 Decks
+    for i in range(6): #Use 6 Decks
         for suit in suits:
             for rank in ranks:
                 deck.append(f'{rank} {suit}')
@@ -84,9 +84,9 @@ def make_bet():
             error_spacing = ' '
             error_message = 'Bet exceeds available funds'
             clear_terminal()
-        elif int(bet) > 500:
+        elif int(bet) > 1000:
             error_spacing = ' '
-            error_message = 'Bet above table maximum ($500)'
+            error_message = 'Bet above table maximum ($1000)'
             clear_terminal()
         elif (int(bet)*i) > player_bank:
             error_spacing = ' '
@@ -426,16 +426,12 @@ def draw_all_player_hands(all_player_hands,location):
 
 #Function to draw bets under their associated hand
 def draw_bets(all_player_hands,bet_per_hand,endgame):
-def draw_bets(all_player_hands,bet_per_hand,endgame):
     lines = []
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
-    outcome = determine_outcome()
     outcome = determine_outcome()
     for i in range(6):
         lines.append('')
     for i, hand in enumerate(all_player_hands):
-        for n in range(6):
-            lines[n]+= ' '*spacing
         for n in range(6):
             lines[n]+= ' '*spacing
         bet = bet_per_hand
@@ -446,35 +442,6 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
             bet_spacing = ' '
         elif len(str(bet_per_hand)) == 4:
             bet_spacing = ''
-        if endgame:
-            print('final bet results will go here')
-        else:
-            lines[0] += '    =  =               '                  
-            lines[1] += ' =        =            '                  
-            lines[5] += '    =  =               '
-            result = outcome[i]
-            if result == 'player_bust':
-                lines[2] += '=  BUSTED  =           '
-                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
-                lines[4] += ' =        =            '        
-            elif hand.calculate_value()==21 and len(hand.cards) ==2:
-                lines[2] += '=BLACKJACK!=           '
-                lines[3] += '=          =           '
-                lines[4] += ' =        =            '      
-            elif result == 'five_no_bust':
-                lines[2] += '=You drew 5=           '
-                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '    
-            elif hand.calculate_value()==21:
-                lines[2] += '=Your count =           '
-                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
-                lines[4] += ' =        =            '   
-            else:
-                lines[2] += '=   Bet:   =           '
-                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '    
-    for n in lines:
-        print(n)     
         if endgame:
             print('final bet results will go here')
         else:
@@ -540,11 +507,7 @@ def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no err
 #Function to call all graphics functions
 def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
     draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
-def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
-    draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
     draw_all_player_hands(all_player_hands,location)
-    draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
-    print('')
     draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
     print('')
     
