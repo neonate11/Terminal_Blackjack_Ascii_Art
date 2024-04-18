@@ -310,46 +310,7 @@ def draw_all_player_hands(all_player_hands,location):
     #Add the correct line for the current hand to the final output list
     for i in linestoprint:
         print(i)
-'''
-def determine_outcome(): DELETE DELETE DELETE DELETE DELETE DELETE
-    result = []
-    for i, hand in enumerate(all_player_hands):
-        #The Player Busted:
-        if hand.calculate_value() > 21:                                                   
-            result.append('player_bust')
-        #The Player got 5 cards without busting:
-        elif len(hand.cards) == 5:                                                         
-            result.append('five_no_bust')
-        #The Player and Dealer Tied:
-        elif hand.calculate_value() == nate_hand.calculate_value():
-            result.append('push')
-        #The Dealer got Blackjack:
-        elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
-            result.append('dealer_blackjack')
-        #The Player got BLackjack:
-        elif hand.calculate_value() == 21 and len(hand.cards) == 2:
-            result.append('player_blackjack')
-        #The Dealer Busted:
-        elif nate_hand.calculate_value() > 21:
-            result.append('dealer_bust')
-        #The Players total was higher:
-        elif hand.calculate_value() > nate_hand.calculate_value():
-            result.append('player_higher')
-        #The Dealer total was higher:
-        elif hand.calculate_value() < nate_hand.calculate_value():
-            result.append('dealer_higher')
-    return result
 
-  
-     
-        elif nate_hand.calculate_value() > 21:                       #Dealer Busted
-            player_bank += payout
-        elif hand.calculate_value() > nate_hand.calculate_value():   #The Players total was higher:
-            player_bank += payout
-        elif hand.calculate_value() < nate_hand.calculate_value():   #The Dealer Total was higher:
-            pass
- 
-'''
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
 def draw_bets(all_player_hands,bet_per_hand,endgame):
     lines = []
@@ -362,66 +323,68 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
         bet = bet_per_hand
         if hand.if_doubledown():
             bet = bet_per_hand*2
+        if hand.calculate_value() == 21 and len(hand.cards) == 2: 
+            bet = bet * 1.5
         bet_spacing = '  '
-        if len(str(bet_per_hand)) == 3:
+        if len(str(bet)) == 3:
             bet_spacing = ' '
-        elif len(str(bet_per_hand)) == 4:
+        elif len(str(bet)) == 4:
             bet_spacing = ''
         lines[0] += '    =  =               '                 
-        lines[5] += '    =  =               '
-        if endgame: #the dealer's hand has already been revealed, you can now show the results of every hand
-            if hand.calculate_value() > 21:                                             #Player Busted 
+        lines[5] += '    =  =               '                               #these first two scenarios always win or lose so we can print no matter what stage of the game we are in
+        if hand.calculate_value() > 21:                                                    #Player Busted 
                 lines[1] += ' =        =            '   
                 lines[2] += '=  BUSTED  =           '
                 lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
-                lines[4] += ' =        =            '             
-            elif len(hand.cards) == 5:                                                  #The Player got 5 cards without busting: 
+                lines[4] += ' =        =            '         
+        elif len(hand.cards) == 5:                                                     #The Player got 5 cards without busting: 
+                lines[1] += ' =  five  =            '   
+                lines[2] += '= cards w/o =          '
+                lines[3] += '=  busting  =          '.format(bet,bet_spacing)     
+                lines[4] += ' = +${}{} =            '.format(bet,bet_spacing)   
+        elif endgame:                                                         #the dealer's hand has already been revealed, you can now show the results of every hand
+            if hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
                 lines[1] += ' =        =            '   
-                lines[2] += '=You drew 5=           '
-                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '
-            elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
-                pass
+                lines[2] += '=   PUSH   =           '
+                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)  
+                lines[4] += ' =  back  =            '    
             elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:       #Dealer Blackjack
-                pass
+                lines[1] += ' =        =            ' 
+                lines[2] += '=   lost   =           '   
+                lines[3] += '=  to Nate =           '
+                lines[4] += ' = -${}{} =            '.format(bet,bet_spacing)
             elif hand.calculate_value() == 21 and len(hand.cards) == 2:                 #Player Blackjack
                 lines[1] += ' =        =            '   
-                lines[2] += '=BLACKJACK!=           '
-                lines[3] += '=          =           '
-                lines[4] += ' =        =            ' 
+                lines[2] += '=  BLACK   =           '
+                lines[3] += '=  JACK!   =           '
+                lines[4] += ' = +${}{} =            '.format(bet,bet_spacing)  
             elif nate_hand.calculate_value() > 21:                                      #Dealer Busted
-                pass
+                lines[1] += ' =       =             '    
+                lines[2] += '=   Nate   =           '   
+                lines[3] += '=  Busted! =           '
+                lines[4] += ' = +${}{}=             '.format(bet,bet_spacing)  
             elif hand.calculate_value() > nate_hand.calculate_value():                  #The Players total was higher:
-                pass
+                lines[1] += ' =       =             '   
+                lines[2] += '=   You    =           '
+                lines[3] += '=beat Nate!=           '  
+                lines[4] += ' = +${}{}=             '.format(bet,bet_spacing) 
             elif hand.calculate_value() < nate_hand.calculate_value():                  #The Dealer Total was higher:
-                pass
-            elif hand.calculate_value()==21:
+                lines[1] += ' =        =            ' 
+                lines[2] += '=   lost   =           '   
+                lines[3] += '=  to Nate =           '
+                lines[4] += ' = -${}{} =            '.format(bet,bet_spacing)    
+        else:                                                                 #The dealer's cards have not been shown yet
+            if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
                 lines[1] += ' =        =            '   
-                lines[2] += '=Your count =           '
-                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
+                lines[2] += '=  BLACK   =           '
+                lines[3] += '=  JACK!   =           '
+                lines[4] += ' =        =            '  
+            elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
+                lines[1] += ' =        =            '   
+                lines[2] += '=Your count =          '
+                lines[3] += '=  is 21!   =          '.format(bet,bet_spacing)   
                 lines[4] += ' =        =            '   
-        else:
-            if result == 'player_bust':
-                lines[1] += ' =        =            '   
-                lines[2] += '=  BUSTED  =           '
-                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
-                lines[4] += ' =        =            '        
-            elif hand.calculate_value()==21 and len(hand.cards) ==2:
-                lines[1] += ' =        =            '   
-                lines[2] += '=BLACKJACK!=           '
-                lines[3] += '=          =           '
-                lines[4] += ' =        =            '      
-            elif result == 'five_no_bust':
-                lines[1] += ' =        =            '   
-                lines[2] += '=You drew 5=           '
-                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '    
-            elif hand.calculate_value()==21:
-                lines[1] += ' =        =            '   
-                lines[2] += '=Your count =           '
-                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
-                lines[4] += ' =        =            '   
-            else:
+            else:                                                                      #It is unknow if the player has won or lost at this point
                 lines[1] += ' =        =            '   
                 lines[2] += '=   Bet:   =           '
                 lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
@@ -646,7 +609,7 @@ while playing:
     if profit > 0:
         result = f'You won ${profit} this round!'
     if profit <= 0:
-        result = f'You lost ${abs(profit)} this round' #abs(profit) takes the absolute value, removing the negative sign
+        result = f'You lost ${abs(profit)} this round' #abs removes the negative sign
 
     if nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
         dealer_outcome = 'Nate got Blackjack! Womp Womp'
@@ -688,12 +651,8 @@ while playing:
             playing = False
 
 
-#I redid the calling of the yes_no_question function so it no longer does everything which was impossible. Need to fix its' implementtaiton still.
+
 #the game doesn't pay out blackjack correctly (ie 3 to 2)
-#make the results print in the bet circles, right now it just interim results
-#I redid the calling of the yes_no_question function so it no longer does everything which was impossible. Need to fix its' implementtaiton still.
-#the game doesn't pay out blackjack correctly (ie 3 to 2)
-#make the results print in the bet circles, right now it just interim results
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #Add timer to seal dealing, and make deal clockwise
@@ -703,15 +662,19 @@ while playing:
 #Add a fun things where if you pay off ralph something cool happens
 #make doubled down card hidden until after dealer show
 #Fix Instructions to have categories like: double down, and explain which hands are first
-#Make bet circle display outcome, not text
 #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
 #add buttons or links for questions so the user doesn't have to type
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
 #Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
-#make the word bet changes to say won or lost at the end of the hand
-#replace the yes no question thing where it draws everything so that it's easier to program in the future what you want to draw without hacing to plug in random integers
 #make the hearts and diamonds print red characters
+#make the bet spacing not a hard coded calculation like it is now
+#add debug mode
+#spencer suggestion: Make a prompt to ask the player when they would like to split so they don't have to answer every time, ie A ask me every time B ask me for 10/11, C never ask me
+#IF a blackjack pushes it displays 15$ back even though it should display 10$ back
+#shorten the cursor logic at the bottom of the main card printing function
+#you can't split more than once rn for some reason
+#I don't think the bet circles can handle a bet size of four digits right now
 
 #if len(all_player_hands) == 1:
 #        ordinals = ['']
