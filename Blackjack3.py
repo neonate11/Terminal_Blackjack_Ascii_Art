@@ -177,12 +177,13 @@ def payout_player(player_bank):
             player_bank += 1.5* payout            
     return player_bank
 
+'''
 def print_interim_message(): #this function will print the interim message if necessary
-    interim_message_line1 = ''
-    interim_message_line2 = ''
-    interim_message_line3 = ''
+    lines = []
     outcome = determine_outcome()
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #this is the raw space between hands drawn on the screen
+    for i in range(2):
+            lines.append('')
     for i, hand in enumerate(all_player_hands):
         result = outcome[i]
         if result == 'player_bust':
@@ -194,15 +195,15 @@ def print_interim_message(): #this function will print the interim message if ne
         else:
             interim_message = f'Count:{hand.calculate_value()}'
         raw_spacing = (19-len(interim_message))* ' '
-        interim_message = f'│  {interim_message}{raw_spacing}│' 
-        interim_message_line1 += (spacing * ' ')
-        interim_message_line2 += (spacing * ' ')
-        interim_message_line3 += (spacing * ' ')
-        interim_message_line1 += '┌─────────────────────┐'
-        interim_message_line2 += f'│        Hand {i}       │'
-        interim_message_line3 += interim_message
-    print(interim_message_line1 + '\n',interim_message_line2 + '\n',interim_message_line3)
+        interim_message = f'   {interim_message}{raw_spacing} ' 
+        for n in range(2):
+            lines[n]+=(spacing * ' ')
+        lines[0]+=f'   Hand {i+1}:             '
+        lines[1]+=interim_message
+    for i in lines:
+        print(i)
 
+'''
 '''
 def print_result_message(): #this function will print the outcome of a hand at the end of the game
     for i, hand in enumerate(all_player_hands):
@@ -411,14 +412,15 @@ def draw_all_player_hands(all_player_hands,location):
         print(i)
 
 #Function to draw bets under their associated hand
-def draw_bets(all_player_hands,bet_per_hand):
+def draw_bets(all_player_hands,bet_per_hand,endgame):
     lines = []
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
+    outcome = determine_outcome()
     for i in range(6):
         lines.append('')
     for i, hand in enumerate(all_player_hands):
-        for i in range(6):
-            lines[i]+= ' '*spacing
+        for n in range(6):
+            lines[n]+= ' '*spacing
         bet = bet_per_hand
         if hand.if_doubledown():
             bet = bet_per_hand*2
@@ -427,14 +429,35 @@ def draw_bets(all_player_hands,bet_per_hand):
             bet_spacing = ' '
         elif len(str(bet_per_hand)) == 4:
             bet_spacing = ''
-        lines[0] += '    =  =               '                  
-        lines[1] += ' =        =            ' 
-        lines[2] += '=   Bet:   =           '
-        lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)                
-        lines[4] += ' =        =            '                       
-        lines[5] += '    =  =               '
-    for i in lines:
-        print(i)     
+        if endgame:
+            print('final bet results will go here')
+        else:
+            lines[0] += '    =  =               '                  
+            lines[1] += ' =        =            '                  
+            lines[5] += '    =  =               '
+            result = outcome[i]
+            if result == 'player_bust':
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
+                lines[4] += ' =        =            '        
+            elif hand.calculate_value()==21 and len(hand.cards) ==2:
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=          =           '
+                lines[4] += ' =        =            '      
+            elif result == 'five_no_bust':
+                lines[2] += '=You drew 5=           '
+                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
+            elif hand.calculate_value()==21:
+                lines[2] += '=Your count =           '
+                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
+                lines[4] += ' =        =            '   
+            else:
+                lines[2] += '=   Bet:   =           '
+                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
+    for n in lines:
+        print(n)     
 
 #Function for printing information to the user in a formatted box
 def text_box(*args):
@@ -453,31 +476,27 @@ def text_box(*args):
     print(f'{left_space}└────────────────────────────────────────────────────┘')
 
 #Function for asking the user a yes or no question
-def yes_no_question(*args): 
+def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no error or 1 for error
     error_spacing = ''
     error_message = ''
-    while True:
-        if args[0] == 1: #If the programmer is asking a yes no question without the game above, make the first argument 1, then the function will print the appropriate spacing above
-            draw_dealer_hand(1,1)
-        elif args[0] == 0:
-            draw_entire_game(all_player_hands,bet_per_hand,args[1],args[2])
-        text_box(*args[3:],error_spacing,error_message) 
-        print('\n')
-        #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
-        answer = input(input_pointer_with_spacing)
-        if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
-            return answer.lower()
-        else:
-            error_spacing = ' '
-            error_message = 'Please respond with y or n.'
-            clear_terminal()
+    if args[-1] == 1:
+        error_spacing = ' '
+        error_message = 'Please respond with y or n.'
+    text_box(*args[:-1],error_spacing,error_message) 
+    print('\n')
+    #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
+    answer = input(input_pointer_with_spacing)
+    if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
+        return answer.lower()
+    else:
+        return 'bad_input'
 
 #Function to call all graphics functions
-def draw_entire_game(all_player_hands,bet_per_hand,hide,location): 
-    draw_dealer_hand(hide,0)
-    print_interim_message()
+def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
+    draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
     draw_all_player_hands(all_player_hands,location)
-    draw_bets(all_player_hands,bet_per_hand)
+    draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
+    print('')
     
 '''
 How to use graphics functions
@@ -520,9 +539,12 @@ input()
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
-
-see_rules = yes_no_question(1,0,'n','Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
-if see_rules == 'y':
+draw_dealer_hand(1,1)
+decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?',0)
+while decision == 'bad_input':
+    draw_dealer_hand(1,1)
+    decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?',1)
+if decision == 'y':
     clear_terminal()
     while True:
         print('How to play Blackjack')
@@ -582,7 +604,11 @@ while playing:
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
             if player_bank >= bet_per_hand and hand.check_for_split_option():
-                decision = yes_no_question(0,1,i,f'Would you like to split your{ordinals[i]} hand?')
+                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                decision = yes_no_question(f'Would you like to split your{ordinals[i]} hand?',0)
+                while decision == 'bad_input':
+                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                    decision = yes_no_question(f'Would you like to split your{ordinals[i]} hand?',1)
                 if decision == 'y':
                     player_bank -= bet_per_hand
                     new_hand_position = len(all_player_hands) #
@@ -593,11 +619,19 @@ while playing:
                                
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand:
-            decision = yes_no_question(0,1,'n','Would you like to double down on any of your hands?')
+            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            decision = yes_no_question('Would you like to double down on any of your hands?',0)
+            while decision == 'bad_input':
+                draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                decision = yes_no_question('Would you like to double down on any of your hands?',1)
             if decision == 'y':
                 for i, hand in enumerate(all_player_hands):
                     if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
-                        decision = yes_no_question(0,1,i,f"Would you like to double down on your{ordinals[i]} hand?")
+                        draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                        decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
+                        while decision =='bad_input':
+                            draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
                         if decision == 'y':
                             player_bank -= bet_per_hand
                             hand.doubleddown()
@@ -608,9 +642,17 @@ while playing:
             Stand = False
             while hand.calculate_value() < 21 and hand.if_doubledown() == False and Stand == False and len(hand.cards)<5:
                 if len(all_player_hands) == 1: #Say this if they only have one hand
-                    decision = yes_no_question(0,1,'n',f'Would you like to hit?')
+                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    decision = yes_no_question(f'Would you like to hit?',0)
+                    while decision == 'bad_input':
+                        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                        decision = yes_no_question(f'Would you like to hit?',1)
                 else:                          #Say this if they have multiple hands
-                    decision = yes_no_question(0,1,i,f'Would you like to hit on your{ordinals[i]} hand?')
+                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                    decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',0)
+                    while decision == 'bad_input':
+                        draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                        decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',1)
                 if decision == 'y':
                     hand.deal_card(deck)
                 elif decision =='n':     #Player decides to stand
@@ -643,21 +685,29 @@ while playing:
     elif nate_hand.calculate_value() <= 21:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
     if player_bank < 10:
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n')
+        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
         print('This is where the final messages will go')
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
-        go_for_highscore = yes_no_question(0,0,'n',dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
+        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        go_for_highscore = yes_no_question(dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',0)
+        while go_for_highscore == 'bad_input':
+            draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+            go_for_highscore = yes_no_question(dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',1)
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
             print(top_space)
-            text_box(chip_total)
+            text_box(chip_total,'Thank you for playing at Nate\'s blackjack table!')
             playing = False
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
-        decision = yes_no_question(0,0,'n',dealer_outcome,result,f'Continue playing?')
+        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        decision = yes_no_question(dealer_outcome,result,f'Continue playing?',0)
+        while decision == 'bad_input':
+            draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+            decision = yes_no_question(dealer_outcome,result,f'Continue playing?',1)
         if decision == 'n':
             clear_terminal()
             chip_total = f'Your maximum chip total was ${most_money}'
@@ -666,7 +716,9 @@ while playing:
             playing = False
 
 
-#print message if a player busts or gets blackjack before they have option to hit on next hand
+#I redid the calling of the yes_no_question function so it no longer does everything which was impossible. Need to fix its' implementtaiton still.
+#the game doesn't pay out blackjack correctly (ie 3 to 2)
+#make the results print in the bet circles, right now it just interim results
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #Add timer to seal dealing, and make deal clockwise
@@ -679,12 +731,9 @@ while playing:
 #Make bet circle display outcome, not text
 #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
 #add buttons or links for questions so the user doesn't have to type
-#add a bank in the top left corner
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
-#amount won at the end of the game needs to account for how much was bet, the number shown now is incorrect
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
 #Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
-#when it says maximum chip total make it say, thank you for playing at nate's blackjack table
 #make the word bet changes to say won or lost at the end of the hand
 #replace the yes no question thing where it draws everything so that it's easier to program in the future what you want to draw without hacing to plug in random integers
 
