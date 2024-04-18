@@ -443,7 +443,31 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
         elif len(str(bet_per_hand)) == 4:
             bet_spacing = ''
         if endgame:
-            print('final bet results will go here')
+            #print('final bet results will go here')
+            lines[0] += '    =  =               '                  
+            lines[1] += ' =        =            '                  
+            lines[5] += '    =  =               '
+            result = outcome[i]
+            if result == 'player_bust':
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
+                lines[4] += ' =        =            '        
+            elif hand.calculate_value()==21 and len(hand.cards) ==2:
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=          =           '
+                lines[4] += ' =        =            '      
+            elif result == 'five_no_bust':
+                lines[2] += '=You drew 5=           '
+                lines[3] += '=  cards!  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
+            elif hand.calculate_value()==21:
+                lines[2] += '=Your count =           '
+                lines[3] += '=  is 21!   =           '.format(bet,bet_spacing)   
+                lines[4] += ' =        =            '   
+            else:
+                lines[2] += '=   Bet:   =           '
+                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
+                lines[4] += ' =        =            '    
         else:
             lines[0] += '    =  =               '                  
             lines[1] += ' =        =            '                  
