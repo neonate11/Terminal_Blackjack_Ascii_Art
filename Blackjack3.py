@@ -639,14 +639,14 @@ while playing:
             if i.calculate_value()<21:
                 dealer_draw = True
         draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) #add an animation here for the card flipping
-        time.sleep(.75)
+        time.sleep(1)
         draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) #add an animation here for the card flipping
-        time.sleep(.75)
+        time.sleep(1)
         if dealer_draw == True:
             while nate_hand.calculate_value()<17:  #Make the Dealer draw cards
                 nate_hand.deal_card(deck)
                 draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) 
-                time.sleep(.75)
+                time.sleep(1)
 
 #Determine Game Outcome, see if player can/wants to play again
     player_bank = payout_player(player_bank)
