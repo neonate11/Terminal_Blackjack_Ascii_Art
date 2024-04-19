@@ -1,6 +1,7 @@
 import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
+import time
 
 ##################################### Unique Hand Class ###############################################
 class Hand:
@@ -68,7 +69,7 @@ def make_deck():
 #Function for accepting a bet from the player
 def make_bet():
     bet = 0
-    i = len(all_player_hands)
+    i = num_hands
     clear_terminal()
     error_spacing = ''
     error_message = ''
@@ -121,12 +122,13 @@ def starting_hands():
                 clear_terminal()
             else:
                 break
-        number_hands = int(number_hands)
-        while number_hands > 1:
-            all_player_hands.append(Hand())
-            all_player_hands[-1].deal_card(deck)
-            all_player_hands[-1].deal_card(deck)
-            number_hands -= 1
+        #number_hands = int(number_hands)
+        #while number_hands > 1:
+            #all_player_hands.append(Hand())
+            #all_player_hands[-1].deal_card(deck)
+            #all_player_hands[-1].deal_card(deck)
+            #number_hands -= 1
+        return(int(number_hands))
 
  #this function will adjust the player bank if they won money
 def payout_player(player_bank): 
@@ -377,8 +379,8 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
         else:
             if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
                 lines[1] += ' =        =            '   
-                lines[2] += '=   BLACK  =           '
-                lines[3] += '=   JACK!  =           '
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=          =           '
                 lines[4] += ' =        =            '  
             elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
                 lines[1] += ' =        =            ' 
@@ -511,30 +513,47 @@ playing = True
 while playing:
     clear_terminal()
     deck = make_deck()  
-    all_player_hands = []
-    first_hand = Hand()
-    all_player_hands.append(first_hand)
-    nate_hand = Hand()
-    first_hand.deal_card(deck)
-    nate_hand.deal_card(deck)
-    first_hand.deal_card(deck)
-    nate_hand.deal_card(deck)
     previous_bank = player_bank
+    all_player_hands = []
 
-    #determining spacing between hands and bets
-    num_hands = len(all_player_hands)
-           
     #Give PLayer Option of How Many Hands to Start with
-    draw_dealer_hand(0,1)
-    starting_hands()
+    num_hands = starting_hands()
                   
     #Find out how much the player wants to bet
     bet_per_hand = make_bet() 
     for i, hand in enumerate(all_player_hands):
         player_bank -= bet_per_hand
 
-    if nate_hand.calculate_value() != 21: #Don't Deal Cards if Dealer already got Blackjack
+    #Deal the first card to each hand
+    hand_counter = num_hands
+    nate_hand = Hand()
+    for i in range(hand_counter):
+        all_player_hands.append(Hand())
 
+    for i in range(hand_counter):
+        all_player_hands[i].deal_card(deck)
+        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+        time.sleep(2)
+    
+    #Deal the dealer's first card
+    nate_hand.deal_card(deck)
+    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+    time.sleep(2)
+
+    #Deal the second card to each hand
+    for i in range(hand_counter):
+        all_player_hands[i].deal_card(deck)
+        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+        time.sleep(2)
+
+    #Deal Nate's second card
+    nate_hand.deal_card(deck)
+    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+    time.sleep(2)
+
+    #Don't Give Option to Split, Double Down, or hit if they dealer was dealt blackjack
+    if nate_hand.calculate_value() != 21: 
+    
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
             if player_bank >= bet_per_hand and hand.check_for_split_option():
@@ -671,9 +690,7 @@ while playing:
 #make the bet spacing not a hard coded calculation like it is now
 #add debug mode
 #spencer suggestion: Make a prompt to ask the player when they would like to split so they don't have to answer every time, ie A ask me every time B ask me for 10/11, C never ask me
-#IF a blackjack pushes it displays 15$ back even though it should display 10$ back
 #shorten the cursor logic at the bottom of the main card printing function
-#you can't split more than once rn for some reason
 #I don't think the bet circles can handle a bet size of four digits right now
 
 #if len(all_player_hands) == 1:
