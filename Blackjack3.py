@@ -2,6 +2,7 @@ import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
 import time
+Debug = False
 
 ##################################### Unique Hand Class ###############################################
 class Hand:
@@ -200,7 +201,7 @@ def draw_dealer_hand(hide,just_bank):
             lines[4] += '│         │'
             lines[5] += '│      {}│'.format(right_data)
             lines[6] += '└─────────┘'
-        if hide:
+        if hide and len(nate_hand.cards)>1: #Don't print a hidden card before one is dealt
             lines[0] += '┌─────────┐'
             lines[1] += '│ ▓▓▓▓▓▓▓ │'
             lines[2] += '│ ▓▓▓▓▓▓▓ │'
@@ -219,7 +220,7 @@ def draw_all_player_hands(all_player_hands,location):
         lines.append('')
         linestoprint.append('')
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1))
-    for z, hand in enumerate(all_player_hands):
+    for z, hand in enumerate(reversed(all_player_hands)):
         left_edge_data = [] #For left edge data, space is on right
         right_edge_data = [] #For right edge data, space is on left
         covered_data = [] #if a 10 is underneath another card, don't print the suit
@@ -245,13 +246,21 @@ def draw_all_player_hands(all_player_hands,location):
         lines[5]='                       '
         lines[6]='                       '
         lines[7]='                       '
-        lines[8]='┌─────────┐            '
-        lines[9]='│{}      │            '.format(left_edge_data[0])
-        lines[10]='│         │            '
-        lines[11]='│    {}    │            '.format(suits[0])
-        lines[12]='│         │            '
-        lines[13]='│      {}│            '.format(right_edge_data[0])
-        lines[14]='└─────────┘            '
+        lines[8]='                       '
+        lines[9]='                       '
+        lines[10]='                       '
+        lines[11]='                       '
+        lines[12]='                       '
+        lines[13]='                       '
+        lines[14]='                       '
+        if len(hand.cards) >= 1:
+            lines[8]='┌─────────┐            '
+            lines[9]='│{}      │            '.format(left_edge_data[0])
+            lines[10]='│         │            '
+            lines[11]='│    {}    │            '.format(suits[0])
+            lines[12]='│         │            '
+            lines[13]='│      {}│            '.format(right_edge_data[0])
+            lines[14]='└─────────┘            '
         if len(hand.cards) >= 2:
             lines[6]  = '   ┌─────────┐         '
             lines[7]  = '   │{}      │         '.format(left_edge_data[1])
@@ -291,15 +300,16 @@ def draw_all_player_hands(all_player_hands,location):
                 lines[4] = '      ┌──│  │         │'
                 lines[5] = '      │{}│  │      {}│'.format(covered_data[2],right_edge_data[4])
                 lines[6] = '   ┌──│  │  └─────────┘'
-            
         for i in range(0,10): #Add the spacing for these lines
             linestoprint[i]+= ' '*spacing
         for i in range(13,15): #Add the spacing for these lines
             linestoprint[i]+= ' '*spacing
-        if location == z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
+        if location == (len(all_player_hands) -1)-z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
             linestoprint[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             linestoprint[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             linestoprint[12]+= ' '*(spacing-2)+'➤ ' #Add the cursor
+            if Debug:
+                linestoprint.append(f'The z value is set to {z} and the current location receved was {location}')
         else:                  #if we aren't referring to this hand currently put just spaces
             linestoprint[10]+= ' '*spacing 
             linestoprint[11]+= ' '*spacing 
@@ -315,7 +325,7 @@ def draw_bets(all_player_hands,bet_per_hand,endgame):
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
     for i in range(6):
         lines.append('')
-    for i, hand in enumerate(all_player_hands):
+    for i, hand in enumerate(reversed(all_player_hands)):
         for n in range(6):
             lines[n]+= ' '*spacing
         bet = bet_per_hand
@@ -422,7 +432,7 @@ def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no err
     print('\n')
     #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
     answer = input(input_pointer_with_spacing)
-    if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n'):
+    if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n' or answer == 'DEBUG'):
         return answer.lower()
     else:
         return 'bad_input'
@@ -433,17 +443,11 @@ def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #le
     draw_all_player_hands(all_player_hands,location)
     draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
     print('')
+    if Debug:
+        print(f'Nate has {len(nate_hand.cards)} cards, the value of his cards is {nate_hand.calculate_value()}')
+        for i, hand in enumerate(all_player_hands):
+            print(f'Your {i+1} hand has {len(hand.cards)} cards and has a total value of {hand.calculate_value()}')
     
-'''
-How to use graphics functions
-yes_no_question()
-    if just bank : 1,0,0,text
-    if whole game: 0,hide,location,text                      location should be 'n' if there should be no cursor
-def draw_entire_game()
-    all_player_hands, bet_per_hand,hide, location
-text_box()
-    text
-'''
 ##################################### actions to only do once on startup ######################################
 #General Variable Setup
 player_bank = 100 #Player Starting Cash
@@ -469,9 +473,7 @@ print(bj_space,'  ███    ██▄ ███         ███    ██�
 print(bj_space,'  ███    ███ ███▌    ▄   ███    ███ ███    ███   ███ ▀███▄     ███   ███    ███ ███    ███   ███ ▀███▄')
 print(bj_space,'▄█████████▀  █████▄▄██   ███    █▀  ████████▀    ███   ▀█▀ █▄ ▄███   ███    █▀  ████████▀    ███   ▀█▀')
 print(bj_space,'             ▀                                   ▀         ▀▀▀▀▀▀                            ▀        ')
-print('')
-print(bj_space,'                                       [press enter to continue]')
-input()
+time.sleep(3)
 clear_terminal()
 
 #Print Introductory Message, Give option to read rules
@@ -480,7 +482,9 @@ decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ral
 while decision == 'bad_input':
     draw_dealer_hand(1,1)
     decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?',1)
-if decision == 'y':
+if decision == 'debug':
+    Debug = True
+elif decision == 'y':
     clear_terminal()
     while True:
         print('How to play Blackjack')
@@ -517,39 +521,57 @@ while playing:
     all_player_hands = []
 
     #Give PLayer Option of How Many Hands to Start with
-    num_hands = starting_hands()
+    if Debug:
+        num_hands = 7
+    else:
+        num_hands = starting_hands()
                   
     #Find out how much the player wants to bet
-    bet_per_hand = make_bet() 
-    for i, hand in enumerate(all_player_hands):
-        player_bank -= bet_per_hand
+    if Debug:
+        bet_per_hand = 10
+    else:
+        bet_per_hand = make_bet() 
+        for i, hand in enumerate(all_player_hands):
+            player_bank -= bet_per_hand
 
-    #Deal the first card to each hand
-    hand_counter = num_hands
-    nate_hand = Hand()
-    for i in range(hand_counter):
-        all_player_hands.append(Hand())
+    #Dealing Animation Section###########################################
+    if Debug:
+        nate_hand = Hand()
+        nate_hand.deal_card(deck)
+        nate_hand.deal_card(deck)
+        for i in range(num_hands):
+            all_player_hands.append(Hand())
+            all_player_hands[i].deal_card(deck)
+            all_player_hands[i].deal_card(deck)
 
-    for i in range(hand_counter):
-        all_player_hands[i].deal_card(deck)
+    else:
+        hand_counter = num_hands
+        nate_hand = Hand()
+        for i in range(hand_counter):
+            all_player_hands.append(Hand())
+        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) #draw a blank board with no cards that is shown for a second
+        time.sleep(.75)
+
+        #Deal the first card to each of the player's hands
+        for i in range(hand_counter):
+            all_player_hands[i].deal_card(deck)
+            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            time.sleep(.75)
+        
+        #Deal the dealer's first card
+        nate_hand.deal_card(deck)
         draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-        time.sleep(2)
-    
-    #Deal the dealer's first card
-    nate_hand.deal_card(deck)
-    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-    time.sleep(2)
+        time.sleep(.75)
 
-    #Deal the second card to each hand
-    for i in range(hand_counter):
-        all_player_hands[i].deal_card(deck)
+        #Deal the second card to each of the player's hands
+        for i in range(hand_counter):
+            all_player_hands[i].deal_card(deck)
+            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            time.sleep(.75)
+
+        #Deal Nate's second card
+        nate_hand.deal_card(deck)
         draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-        time.sleep(2)
-
-    #Deal Nate's second card
-    nate_hand.deal_card(deck)
-    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-    time.sleep(2)
 
     #Don't Give Option to Split, Double Down, or hit if they dealer was dealt blackjack
     if nate_hand.calculate_value() != 21: 
@@ -611,14 +633,20 @@ while playing:
                 elif decision =='n':     #Player decides to stand
                     Stand = True
        
-        #Make the dealer hit if they need to
+        #Make the dealer hit if they need to, dispay the animation for the dealing drawing
         dealer_draw = False
-        for i in all_player_hands: #Check the player doesn't have all blackjacks or all busts
+        for i in all_player_hands: #Check the player doesn't have all busts or all blackjacks
             if i.calculate_value()<21:
                 dealer_draw = True
+        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) #add an animation here for the card flipping
+        time.sleep(.75)
+        draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) #add an animation here for the card flipping
+        time.sleep(.75)
         if dealer_draw == True:
             while nate_hand.calculate_value()<17:  #Make the Dealer draw cards
                 nate_hand.deal_card(deck)
+                draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) 
+                time.sleep(.75)
 
 #Determine Game Outcome, see if player can/wants to play again
     player_bank = payout_player(player_bank)
@@ -671,7 +699,7 @@ while playing:
             playing = False
 
 
-
+#Payout is definitely bugged as a whole right now
 #the game doesn't pay out blackjack correctly (I think it doesn't pay out at all?)
 #Make ordinal list unlimited
 #splitting limit based on the screen size
@@ -688,7 +716,6 @@ while playing:
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
 #Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
 #make the bet spacing not a hard coded calculation like it is now
-#add debug mode
 #spencer suggestion: Make a prompt to ask the player when they would like to split so they don't have to answer every time, ie A ask me every time B ask me for 10/11, C never ask me
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
