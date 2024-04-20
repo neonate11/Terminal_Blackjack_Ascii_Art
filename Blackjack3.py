@@ -166,6 +166,29 @@ def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no err
     else:
         return 'bad_input'
 
+#Function for asking the user when they would like to be asked to double down
+def ask_when_to_double():
+    error_spacing = ''
+    error_message = ''
+    error_message2 = ''
+    while True:
+        draw_dealer_hand(0,1)
+        text_box('When would you like to be asked to double down?','A: for every hand','B: your hand total is 9-11','C: your hand total is 9-11 or soft 16-18','D: never',error_spacing,error_message,error_message2)
+        number_hands = input(input_pointer_with_spacing)
+        if not number_hands.isdigit() or (int(number_hands) < 1) or (int(number_hands) > 5):
+            error_spacing = ' '
+            error_message = 'Please provide an integer from 1 to 5.'
+            error_message2 = ''
+            clear_terminal()
+        elif int(number_hands) * 10 > player_bank:
+            error_spacing = ' '
+            error_message = 'You can\'t afford to play that many hands'
+            error_message2 = 'The table minimum bet is $10'
+            clear_terminal()
+        else:
+            break
+    return(int(number_hands))
+    
 ##################################### GRAPHICS FUNCTIONS #####################################################
 
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
@@ -714,9 +737,7 @@ while playing:
             text_box(chip_total)
             playing = False
 
-
-#Payout is definitely bugged as a whole right now
-#the game doesn't pay out blackjack correctly (I think it doesn't pay out at all?)
+#the game doesn't pay out blackjack correctly
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
