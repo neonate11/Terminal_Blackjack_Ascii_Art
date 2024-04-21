@@ -40,6 +40,13 @@ class Hand:
             value -= 10
             num_aces -= 1
         return value
+    def num_aces(self): #return the number of aces in a hand
+        number_aces = 0
+        for i in self.cards:
+            rank = i.split(' ')[0]
+            if rank == 'A':
+                number_aces += 1
+        return number_aces
     def doubleddown(self): #Remember if you doubled down
         self.double = True
     def if_doubledown(self): #Return whether you doubled down
@@ -170,24 +177,16 @@ def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no err
 def ask_when_to_double():
     error_spacing = ''
     error_message = ''
-    error_message2 = ''
     while True:
         draw_dealer_hand(0,1)
-        text_box('When would you like to be asked to double down?','A: for every hand','B: your hand total is 9-11','C: your hand total is 9-11 or soft 16-18','D: never',error_spacing,error_message,error_message2)
-        number_hands = input(input_pointer_with_spacing)
-        if not number_hands.isdigit() or (int(number_hands) < 1) or (int(number_hands) > 5):
-            error_spacing = ' '
-            error_message = 'Please provide an integer from 1 to 5.'
-            error_message2 = ''
-            clear_terminal()
-        elif int(number_hands) * 10 > player_bank:
-            error_spacing = ' '
-            error_message = 'You can\'t afford to play that many hands'
-            error_message2 = 'The table minimum bet is $10'
-            clear_terminal()
+        text_box('When would you like to be asked to double down?',' ','A: for every hand','B: your hand total is 9-11','C: your hand total is 9-11 or soft 16-18','D: never',error_spacing,error_message)
+        when_double = input(input_pointer_with_spacing)
+        if when_double.isalpha() and when_double.lower() in ['a','b','c','d']:
+            return(when_double.lower())
         else:
-            break
-    return(int(number_hands))
+            error_spacing = ' '
+            error_message = 'Please respond with A, B, C, or D'
+            clear_terminal()
     
 ##################################### GRAPHICS FUNCTIONS #####################################################
 
@@ -538,6 +537,11 @@ elif decision == 'y':
         input("[press enter to continue]")
         break
 
+if Debug:
+    when_double = 'c'
+else:
+    when_double = ask_when_to_double()
+
 ############################################ GAMEPLAY LOOP ########################################################################################
 playing = True
 while playing:
@@ -632,24 +636,50 @@ while playing:
                     all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
                               
         #Give Player Option to Double Down
-        if player_bank >= bet_per_hand:
-            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-            decision = yes_no_question('Would you like to double down on any of your hands?',0)
-            while decision == 'bad_input':
+        if player_bank >= bet_per_hand: 
+            if when_double == 'a': #Ask if they want to double down every hand
                 draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
-                decision = yes_no_question('Would you like to double down on any of your hands?',1)
-            if decision == 'y':
-                for i, hand in enumerate(all_player_hands):
-                    if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
-                        draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                        decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
-                        while decision =='bad_input':
+                decision = yes_no_question('Would you like to double down on any of your hands?',0)
+                while decision == 'bad_input':
+                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    decision = yes_no_question('Would you like to double down on any of your hands?',1)
+                if decision == 'y':
+                    for i, hand in enumerate(all_player_hands):
+                        if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
                             draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
-                        if decision == 'y':
-                            player_bank -= bet_per_hand
-                            hand.doubleddown()
-                            hand.deal_card(deck)
+                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
+                            while decision =='bad_input':
+                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
+                            if decision == 'y':
+                                player_bank -= bet_per_hand
+                                hand.doubleddown()
+                                hand.deal_card(deck)
+            elif when_double == 'b': #ask to double down if their total is 9-11
+                for i, hand in enumerate(all_player_hands):
+                        if hand.calculate_value() in [9,10,11] and player_bank >= bet_per_hand:
+                            draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
+                            while decision =='bad_input':
+                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
+                            if decision == 'y':
+                                player_bank -= bet_per_hand
+                                hand.doubleddown()
+                                hand.deal_card(deck)
+            elif when_double == 'c': #ask to double down if their total is 9-11 or soft 16-18
+                for i, hand in enumerate(all_player_hands):
+                        if player_bank >= bet_per_hand:
+                            if hand.calculate_value() in [9,10,11] or (hand.calculate_value() in [16,17,18] and hand.num_aces()):
+                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
+                                while decision =='bad_input':
+                                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                                    decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
+                                if decision == 'y':
+                                    player_bank -= bet_per_hand
+                                    hand.doubleddown()
+                                    hand.deal_card(deck)
 
         #Give Player Option to Hit
         for i, hand in enumerate(all_player_hands):
@@ -751,7 +781,6 @@ while playing:
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
 #Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
 #make the bet spacing not a hard coded calculation like it is now
-#spencer suggestion: Make a prompt to ask the player when they would like to split so they don't have to answer every time, ie A ask me every time B ask me for 10/11, C never ask me
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
 #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand (this may depend on it's position)
