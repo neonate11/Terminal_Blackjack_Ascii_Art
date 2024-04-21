@@ -768,6 +768,7 @@ while playing:
             playing = False
 
 #the game doesn't pay out blackjack correctly
+#you can shortedn the double down portion by making a function
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
