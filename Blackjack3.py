@@ -150,7 +150,7 @@ def payout_player(player_bank):
         elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2: #Dealer Blackjack
             pass
         elif hand.calculate_value() == 21 and len(hand.cards) == 2:  #Player Blackjack
-            player_bank += (1.5 * payout) 
+            player_bank += ((1.5 * bet_per_hand) + bet_per_hand)
         elif nate_hand.calculate_value() > 21:                       #Dealer Busted
             player_bank += payout
         elif hand.calculate_value() > nate_hand.calculate_value():   #The Players total was higher:
@@ -554,7 +554,6 @@ if Debug:
     when_double = 'c'
 else:
     when_double = ask_when_to_double()
-            print(f'Your {i+1} hand has {len(hand.cards)} cards and has a total value of {hand.calculate_value()}')
 #############################################################################################################################################################################################
 ##################################### GAMEPLAY LOOP ####################################### GAMEPLAY LOOP ###################################################################################
 #############################################################################################################################################################################################
