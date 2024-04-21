@@ -3,7 +3,9 @@ import random
 import platform #For the ability to check the OS
 import time
 
-##################################### Unique Hand Class ###############################################
+#############################################################################################################################################################################################
+##################################### CUSTOM CLASS SETUP ####################################### CUSTOM CLASS SETUP##########################################################################
+#############################################################################################################################################################################################
 class Hand:
     def __init__(self):
         self.cards = [] #the cards in a hand, starting empty
@@ -51,9 +53,9 @@ class Hand:
         self.double = True
     def if_doubledown(self): #Return whether you doubled down
         return self.double
-       
-##################################### Gameplay Functions and User Input Functions #####################################################
-
+#############################################################################################################################################################################################
+##################################### GAMEPLAY AND USER INPUT FUNCTIONS ####################################### GAMEPLAY AND USER INPUT FUNCTIONS############################################
+#############################################################################################################################################################################################
 #Function to clear terminal
 def clear_terminal():
     if platform.system() == 'Windows':
@@ -179,7 +181,7 @@ def ask_when_to_double():
     error_message = ''
     while True:
         draw_dealer_hand(0,1)
-        text_box('When would you like to be asked to double down?',' ','A: for every hand','B: your hand total is 9-11','C: your hand total is 9-11 or soft 16-18','D: never',error_spacing,error_message)
+        text_box('When would you like to be asked to double down?',' ','A: for every hand','B: your count is hard 9-11','C: your count is hard 9-11 or soft 16-18','D: never',error_spacing,error_message)
         when_double = input(input_pointer_with_spacing)
         if when_double.isalpha() and when_double.lower() in ['a','b','c','d']:
             return(when_double.lower())
@@ -187,9 +189,22 @@ def ask_when_to_double():
             error_spacing = ' '
             error_message = 'Please respond with A, B, C, or D'
             clear_terminal()
-    
-##################################### GRAPHICS FUNCTIONS #####################################################
 
+#Function for asking the user if they want to double down on a specific hand
+def double_hand(i,player_bank):
+    draw_entire_game(1,i,0)
+    decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
+    while decision =='bad_input':
+        draw_entire_game(1,i,0)
+        decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
+    if decision == 'y':
+        player_bank -= bet_per_hand
+        hand.doubleddown()
+        hand.deal_card(deck)
+    return player_bank
+#############################################################################################################################################################################################
+##################################### GRAPHICS FUNCTIONS ####################################### GRAPHICS FUNCTIONS##########################################################################
+#############################################################################################################################################################################################
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
 def draw_dealer_hand(hide,just_bank): 
     clear_terminal()
@@ -246,7 +261,7 @@ def draw_dealer_hand(hide,just_bank):
             print(i)
 
 #Function to draw all player hands
-def draw_all_player_hands(all_player_hands,location):
+def draw_all_player_hands(location):
     lines = []
     linestoprint = []
     for i in range(15):
@@ -353,7 +368,7 @@ def draw_all_player_hands(all_player_hands,location):
         print(i)
 
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
-def draw_bets(all_player_hands,bet_per_hand,endgame):
+def draw_bets(endgame):
     lines = []
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
     for i in range(6):
@@ -455,20 +470,18 @@ def text_box(*args):
     print(f'{left_space}└────────────────────────────────────────────────────┘')
 
 #Function to call all graphics functions
-def draw_entire_game(all_player_hands,bet_per_hand,hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
+def draw_entire_game(hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
     draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
-    draw_all_player_hands(all_player_hands,location)
-    draw_bets(all_player_hands,bet_per_hand,endgame) #put a 1 for endgame if the results of the hand should be shown
+    draw_all_player_hands(location)
+    draw_bets(endgame) #put a 1 for endgame if the results of the hand should be shown
     print('')
     if Debug:
         print(f'Nate has {len(nate_hand.cards)} cards, the value of his cards is {nate_hand.calculate_value()}')
         for i, hand in enumerate(all_player_hands):
             print(f'Your {i+1} hand has {len(hand.cards)} cards and has a total value of {hand.calculate_value()}')
-
-#draw_entire_game(all_player_hands,bet_per_hand,1,i,0) draw the game with dealer card hidden, with a cursor
-#draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) draw the game with dealer card hidden, with no cursor
-    
-##################################### THINGS THAT ONLY OCCUR WHEN GAME IS BOOTED FOR THE FIRST TIME ##################################################################################################################
+#############################################################################################################################################################################################
+##################################### STARTUP ACTIONS ####################################### STARTUP ACTIONS ###############################################################################
+#############################################################################################################################################################################################
 #General Variable Setup
 player_bank = 100 #Player Starting Cash
 ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
@@ -541,8 +554,10 @@ if Debug:
     when_double = 'c'
 else:
     when_double = ask_when_to_double()
-
-############################################ GAMEPLAY LOOP ########################################################################################
+            print(f'Your {i+1} hand has {len(hand.cards)} cards and has a total value of {hand.calculate_value()}')
+#############################################################################################################################################################################################
+##################################### GAMEPLAY LOOP ####################################### GAMEPLAY LOOP ###################################################################################
+#############################################################################################################################################################################################
 playing = True
 while playing:
     clear_terminal()
@@ -579,29 +594,29 @@ while playing:
         nate_hand = Hand()
         for i in range(hand_counter):
             all_player_hands.append(Hand())
-        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) #draw a blank board with no cards that is shown for a second
+        draw_entire_game(1,'n',0) #draw a blank board with no cards that is shown for a second
         time.sleep(.75)
 
         #Deal the first card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
-            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            draw_entire_game(1,'n',0)
             time.sleep(.75)
         
         #Deal the dealer's first card
         nate_hand.deal_card(deck)
-        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+        draw_entire_game(1,'n',0)
         time.sleep(.75)
 
         #Deal the second card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
-            draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            draw_entire_game(1,'n',0)
             time.sleep(.75)
 
         #Deal Nate's second card
         nate_hand.deal_card(deck)
-        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+        draw_entire_game(1,'n',0)
 
     #Don't Give Option to Split, Double Down, or hit if they dealer was dealt blackjack
     if nate_hand.calculate_value() != 21: 
@@ -614,88 +629,62 @@ while playing:
                     question_string = f'Do you want to split your {card}\'s?'
                 elif hand.check_for_split_option() == 'different_cards':
                     question_string = f'Do you want to split your{ordinals[i]} hand?'
-                else:
-                    question_string = 'It did not return the string same/different_card'
-                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                draw_entire_game(1,i,0)
                 decision = yes_no_question(question_string,0)
                 while decision == 'bad_input':
-                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                    draw_entire_game(1,i,0)
                     decision = yes_no_question(question_string,1)
                 if decision == 'y':
                     player_bank -= bet_per_hand
                     new_hand_position = len(all_player_hands) #
                     all_player_hands.append(Hand()) #Make the list one longer
-                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    draw_entire_game(1,'n',0)
                     time.sleep(.75)
                     all_player_hands[new_hand_position].cards.append(hand.cards.pop(0))
-                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    draw_entire_game(1,'n',0)
                     time.sleep(.75)
                     hand.deal_card(deck) #deal one card to the og hand
-                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    draw_entire_game(1,'n',0)
                     time.sleep(.75)
                     all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
                               
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand: 
-            if when_double == 'a': #Ask if they want to double down every hand
-                draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+            if when_double == 'a': #Ask to double on every hand
+                draw_entire_game(1,'n',0)
                 decision = yes_no_question('Would you like to double down on any of your hands?',0)
                 while decision == 'bad_input':
-                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    draw_entire_game(1,'n',0)
                     decision = yes_no_question('Would you like to double down on any of your hands?',1)
                 if decision == 'y':
                     for i, hand in enumerate(all_player_hands):
                         if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
-                            draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
-                            while decision =='bad_input':
-                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
-                            if decision == 'y':
-                                player_bank -= bet_per_hand
-                                hand.doubleddown()
-                                hand.deal_card(deck)
+                            player_bank = double_hand(i,player_bank)
             elif when_double == 'b': #ask to double down if their total is 9-11
                 for i, hand in enumerate(all_player_hands):
                         if hand.calculate_value() in [9,10,11] and player_bank >= bet_per_hand:
-                            draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                            decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
-                            while decision =='bad_input':
-                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
-                            if decision == 'y':
-                                player_bank -= bet_per_hand
-                                hand.doubleddown()
-                                hand.deal_card(deck)
+                            player_bank = double_hand(i,player_bank)
             elif when_double == 'c': #ask to double down if their total is 9-11 or soft 16-18
                 for i, hand in enumerate(all_player_hands):
                         if player_bank >= bet_per_hand:
                             if hand.calculate_value() in [9,10,11] or (hand.calculate_value() in [16,17,18] and hand.num_aces()):
-                                draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                                decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
-                                while decision =='bad_input':
-                                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
-                                    decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
-                                if decision == 'y':
-                                    player_bank -= bet_per_hand
-                                    hand.doubleddown()
-                                    hand.deal_card(deck)
+                                player_bank = double_hand(i,player_bank)
 
         #Give Player Option to Hit
         for i, hand in enumerate(all_player_hands):
             Stand = False
             while hand.calculate_value() < 21 and hand.if_doubledown() == False and Stand == False and len(hand.cards)<5:
                 if len(all_player_hands) == 1: #Say this if they only have one hand
-                    draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                    draw_entire_game(1,'n',0)
                     decision = yes_no_question(f'Would you like to hit?',0)
                     while decision == 'bad_input':
-                        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0)
+                        draw_entire_game(1,'n',0)
                         decision = yes_no_question(f'Would you like to hit?',1)
                 else:                          #Say this if they have multiple hands
-                    draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                    draw_entire_game(1,i,0)
                     decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',0)
                     while decision == 'bad_input':
-                        draw_entire_game(all_player_hands,bet_per_hand,1,i,0)
+                        draw_entire_game(1,i,0)
                         decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',1)
                 if decision == 'y':
                     hand.deal_card(deck)
@@ -707,14 +696,14 @@ while playing:
         for i in all_player_hands: #Check the player doesn't have all busts or all blackjacks
             if i.calculate_value()<21:
                 dealer_draw = True
-        draw_entire_game(all_player_hands,bet_per_hand,1,'n',0) #add an animation here for the card flipping
+        draw_entire_game(1,'n',0) #add an animation here for the card flipping
         time.sleep(1)
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) #add an animation here for the card flipping
+        draw_entire_game(0,'n',0) #add an animation here for the card flipping
         time.sleep(1)
         if dealer_draw == True:
             while nate_hand.calculate_value()<17:  #Make the Dealer draw cards
                 nate_hand.deal_card(deck)
-                draw_entire_game(all_player_hands,bet_per_hand,0,'n',0) 
+                draw_entire_game(0,'n',0) 
                 time.sleep(1)
 
 #Determine Game Outcome, see if player can/wants to play again
@@ -735,16 +724,16 @@ while playing:
     elif nate_hand.calculate_value() <= 21:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
     if player_bank < 10:
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        draw_entire_game(0,'n',1)
+        draw_entire_game(0,'n',1)
         print('This is where the final messages will go')
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        draw_entire_game(0,'n',1)
         go_for_highscore = yes_no_question(dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',0)
         while go_for_highscore == 'bad_input':
-            draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+            draw_entire_game(0,'n',1)
             go_for_highscore = yes_no_question(dealer_outcome,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',1)
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
@@ -755,10 +744,10 @@ while playing:
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
-        draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+        draw_entire_game(0,'n',1)
         decision = yes_no_question(dealer_outcome,result,f'Continue playing?',0)
         while decision == 'bad_input':
-            draw_entire_game(all_player_hands,bet_per_hand,0,'n',1)
+            draw_entire_game(0,'n',1)
             decision = yes_no_question(dealer_outcome,result,f'Continue playing?',1)
         if decision == 'n':
             clear_terminal()
@@ -768,19 +757,16 @@ while playing:
             playing = False
 
 #the game doesn't pay out blackjack correctly
-#you can shortedn the double down portion by making a function
+#you can shorten the double down portion by making a function
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
 #Add Insurance
-#See if you can delete all player hands as an input to those functions
 #Add a fun things where if you pay off ralph something cool happens
 #make doubled down card hidden until after dealer show
-#Fix Instructions to have categories like: double down, and explain which hands are first
 #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
 #I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
-#Instead of asking if you would like to split your 'x' hand ask 'would you like to split your jacks?'
 #make the bet spacing not a hard coded calculation like it is now
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
@@ -790,3 +776,9 @@ while playing:
 #        ordinals = ['']
 #    else:
 #        ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
+
+#Fix the Instructions
+#Nate's Casino Rules for later
+#There is not splitting limit (though the game won't let you have more hands than your screen can display)
+#If you split Aces, you are only allowed to hit once after
+#You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)

@@ -25,7 +25,6 @@ def draw_dealer_hand():
         print(i)
     time.sleep(1)
     clear_terminal()
-    time.sleep(1)
     lines= []
     for i in range(8):
         lines.append('')
