@@ -770,13 +770,13 @@ while playing:
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
 #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand (this may depend on it's position)
+#Change is from 'Do you want to split your J's' to 'do you want to split your Jacks'
 
 #if len(all_player_hands) == 1:
 #        ordinals = ['']
 #    else:
 #        ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
 
-#Fix the Instructions
 #Nate's Casino Rules for later
 #There is not splitting limit (though the game won't let you have more hands than your screen can display)
 #If you split Aces, you are only allowed to hit once after
