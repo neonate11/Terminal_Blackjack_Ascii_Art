@@ -624,7 +624,17 @@ while playing:
             if player_bank >= bet_per_hand and (hand.check_for_split_option() != 'no'):
                 if hand.check_for_split_option() == 'same_card':
                     card = hand.card1()
-                    question_string = f'Do you want to split your {card}\'s?'
+                    if card == 'A':
+                        card = 'Ace'
+                    elif card == 'K':
+                        card = 'King'
+                    elif card == 'Q':
+                        card = 'Queen'
+                    elif card == 'J':
+                        card = 'Jack'
+                    else:
+                        card += '\''
+                    question_string = f'Do you want to split your {card}s?'
                 elif hand.check_for_split_option() == 'different_cards':
                     question_string = f'Do you want to split your{ordinals[i]} hand?'
                 draw_entire_game(1,i,0)
@@ -712,8 +722,10 @@ while playing:
 
     if profit > 0:
         result = f'You won ${profit} this round!'
-    if profit <= 0:
-        result = f'You lost ${abs(profit)} this round' #abs removes the negative sign
+    elif profit < 0:
+        result = f'You lost ${abs(profit)} this round.' #abs removes the negative sign
+    elif profit == 0:
+        result = f'You broke even this round across your hands.'
 
     if nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
         dealer_outcome = 'Nate got Blackjack! Womp Womp'
@@ -721,6 +733,7 @@ while playing:
         dealer_outcome = 'Nate busted!'
     elif nate_hand.calculate_value() <= 21:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
+    
     if player_bank < 10:
         draw_entire_game(0,'n',1)
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
@@ -764,9 +777,7 @@ while playing:
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
 #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand (this may depend on it's position)
-#Change is from 'Do you want to split your J's' to 'do you want to split your Jacks'
 #if you have exactly $10 left it fucks it up
-#if you broke even don't say you lost $0 this round
 #if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
 
 #if len(all_player_hands) == 1:
@@ -775,6 +786,6 @@ while playing:
 #        ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
 
 #Nate's Casino Rules for later
-#There is not splitting limit (though the game won't let you have more hands than your screen can display)
-#If you split Aces, you are only allowed to hit once after
-#You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)
+     #There is not splitting limit (though the game won't let you have more hands than your screen can display)
+     #If you split Aces, you are only allowed to hit once after
+     #You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)
