@@ -752,8 +752,6 @@ while playing:
             text_box(chip_total)
             playing = False
 
-#the game doesn't pay out blackjack correctly
-#you can shorten the double down portion by making a function
 #Make ordinal list unlimited
 #splitting limit based on the screen size
 #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
@@ -761,13 +759,15 @@ while playing:
 #Add a fun things where if you pay off ralph something cool happens
 #make doubled down card hidden until after dealer show
 #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
-#I think there is a glitch where if you win blackjack and the won amount is a decimal it fucks stuff up
 #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
 #make the bet spacing not a hard coded calculation like it is now
 #shorten the cursor logic at the bottom of the main card printing function
 #I don't think the bet circles can handle a bet size of four digits right now
 #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand (this may depend on it's position)
 #Change is from 'Do you want to split your J's' to 'do you want to split your Jacks'
+#if you have exactly $10 left it fucks it up
+#if you broke even don't say you lost $0 this round
+#if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
 
 #if len(all_player_hands) == 1:
 #        ordinals = ['']
