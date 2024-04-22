@@ -2,7 +2,6 @@ import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
 import time
-
 #############################################################################################################################################################################################
 ##################################### CUSTOM CLASS SETUP ####################################### CUSTOM CLASS SETUP##########################################################################
 #############################################################################################################################################################################################
@@ -724,8 +723,6 @@ while playing:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
     if player_bank < 10:
         draw_entire_game(0,'n',1)
-        draw_entire_game(0,'n',1)
-        print('This is where the final messages will go')
         text_box(dealer_outcome,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your maximum chip total was ${most_money}')
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
