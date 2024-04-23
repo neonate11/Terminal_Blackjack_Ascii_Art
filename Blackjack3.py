@@ -230,6 +230,7 @@ def draw_dealer_hand(hide,just_bank):
         for i in range(4,7):
             lines.append(dealer_spacing*' ') #Add spaces before the 6th and 7th lines of the cards that don't have the bank to their left
         cards_to_print_faceup = len(nate_hand.cards)
+        cards_to_print_facedown = 0
         if hide == 'hide': #if the argument input is hide draw one card face up
             cards_to_print_faceup = 1
             cards_to_print_facedown = 1
@@ -602,33 +603,33 @@ while playing:
         for i in range(hand_counter):
             all_player_hands.append(Hand())
         draw_entire_game('hide','n',0) #draw a blank board with no cards that is shown for a second
-        time.sleep(.5)
+        time.sleep(.3)
 
         #Deal the first card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
             draw_entire_game('hide','n',0)
-            time.sleep(.5)
+            time.sleep(.3)
         
         #Deal the dealer's first card
         nate_hand.deal_card(deck)
         draw_entire_game('first','n',0)
-        time.sleep(.5)
+        time.sleep(.3)
 
         #Deal the second card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
             draw_entire_game('first','n',0)
-            time.sleep(.5)
+            time.sleep(.3)
 
         #Deal Nate's second card
         nate_hand.deal_card(deck)
         draw_entire_game('second','n',0)
-        time.sleep(.5)
+        time.sleep(.3)
         draw_entire_game('hide','n',0)
+        time.sleep(.3)
 
     #Offer Player option to buy insurance if the dealer is showing an Ace
-    input('enter')
     if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (.5 * bet_per_hand):
         draw_entire_game('hide',i,0)
         decision = yes_no_question('The Dealer is showing an Ace','Would you like to buy insurance?',0)
@@ -782,7 +783,7 @@ while playing:
             decision = yes_no_question(dealer_outcome,result,f'Continue playing?',1)
         if decision == 'n':
             clear_terminal()
-            chip_total = f'Your maximum chip total was ${most_money}'
+            chip_total = f'Your largest chip total was ${most_money}'
             print(top_space)
             text_box(chip_total)
             playing = False
@@ -804,6 +805,7 @@ while playing:
 #is the dealer's first card the hidden one?
 #Can you do the 'while error' thing inside the yes no question function
 #Make the last custom funciton a yes no question implementation
+#look into asciimatics
 
 #if len(all_player_hands) == 1:
 #        ordinals = ['']
