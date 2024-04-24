@@ -79,7 +79,7 @@ def make_deck():
 #Function for accepting a bet from the player
 def make_bet():
     bet = 0
-    i = num_hands
+    i = starting_hands
     clear_terminal()
     error_spacing = ''
     error_message = ''
@@ -111,7 +111,7 @@ def make_bet():
             return int(bet)
 
 #Function for determining number of starting hands:
-def starting_hands():
+def ask_how_many_starting_hands():
     if player_bank >= 20: #Player can't play two hands if they don't have at least $20
         error_spacing = ''
         error_message = ''
@@ -133,7 +133,7 @@ def starting_hands():
             else:
                 break
         return(int(number_hands))
-    else: #if the player can't afford to play two hands we still need to set the num_hands variable equal to 1
+    else: #if the player can't afford to play two hands we still need to set the starting_hands variable equal to 1
         return(1)
 
  #this function will adjust the player bank if they won money
@@ -161,20 +161,34 @@ def payout_player(player_bank):
     return player_bank
 
 #Function for asking the user a yes or no question
-def yes_no_question(*args):   #the last input to yes_no has to be a 0 for no error or 1 for error
+def yes_no_question(just_bank,hide,location,endgame,*args):   
     error_spacing = ''
     error_message = ''
-    if args[-1] == 1:
-        error_spacing = ' '
-        error_message = 'Please respond with y or n.'
-    text_box(*args[:-1],error_spacing,error_message) 
-    print('\n')
-    #print(len(nate_hand.cards),nate_hand.calculate_value())    #DEBUGGING DEBUGGING DEBUGGING DEBUGGING DEBUGGING
-    answer = input(input_pointer_with_spacing)
-    if answer.isalpha() and (answer.lower() == 'y' or answer.lower() == 'n' or answer == 'DEBUG'):
-        return answer.lower()
+    if just_bank == 'just_bank':
+        while True:
+            draw_dealer_hand(1,1)
+            text_box(*args,error_spacing,error_message) 
+            print('\n')
+            answer = input(input_pointer_with_spacing)
+            if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
+                return answer[0].lower()
+            else:
+                error_spacing = ' '
+                error_message = 'Please respond with y or n.'
+                clear_terminal()
     else:
-        return 'bad_input'
+        while True:
+            draw_entire_game(hide,location,endgame)
+            print('\n')
+            text_box(*args,error_spacing,error_message) 
+            print('\n')
+            answer = input(input_pointer_with_spacing)
+            if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
+                return answer[0].lower()
+            else:
+                error_spacing = ' '
+                error_message = 'Please respond with y or n.'
+                clear_terminal()
 
 #Function for asking the user when they would like to be asked to double down
 def ask_when_to_double():
@@ -193,11 +207,7 @@ def ask_when_to_double():
 
 #Function for asking the user if they want to double down on a specific hand
 def double_hand(i,player_bank):
-    draw_entire_game('hide',i,0)
-    decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",0)
-    while decision =='bad_input':
-        draw_entire_game('hide',i,0)
-        decision = yes_no_question(f"Would you like to double down on your{ordinals[i]} hand?",1)
+    decision = yes_no_question('print_entire_game','hide',i,'not_endgame',f"Would you like to double down on your{ordinals[i]} hand?")
     if decision == 'y':
         player_bank -= bet_per_hand
         hand.doubleddown()
@@ -400,73 +410,53 @@ def draw_bets(endgame):
         if hand.calculate_value() == 21 and len(hand.cards) == 2: 
             bet = bet * 1.5
         bet_spacing = ''
-        push_spacing = bet_spacing +(4-len(str(push_return_amt)))* ' '
-        bet_spacing += (4-len(str(bet)))* ' '
-        value = hand.calculate_value()
-        value_spacing = ''
-        value_spacing += (3 - len(str(value)))* ' '
-        lines[0] += '    =  =               '                 
+        push_spacing = bet_spacing +(6-len(str(push_return_amt)))* ' '
+        bet_spacing += (6-len(str(bet)))* ' '
+        lines[0] += '    =  =               '         
+        lines[1] += ' =        =            '         
+        lines[4] += ' =        =            '    
         lines[5] += '    =  =               '                               
         #these first two scenarios always win or lose so we can print no matter what stage of the game we are in
-        if hand.calculate_value() > 21 and not hand.if_doubledown():                   #Player Busted, don't reveal this is the player busted down on a double down since the card is hidden until the end
-                lines[1] += ' =        =            '   
+        if hand.calculate_value() > 21 and not hand.if_doubledown():                   #Player Busted, don't reveal this is the player busted down on a double down since the card is hidden until the end 
                 lines[2] += '=  BUSTED  =           '
-                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)    
-                lines[4] += ' =        =            '         
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)   
         elif len(hand.cards) == 5:                                                     #The Player got 5 cards without busting: 
-                lines[1] += ' =        =            '   
                 lines[2] += '=5 no bust =           '
-                lines[3] += '=  +${}{}  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '  
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)    
         #the dealer's hand has already been revealed, you can now show the results of every hand
         elif endgame == 'endgame':
-            if hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
-                lines[1] += ' =        =            '   
+            if hand.calculate_value() > 21:                                             #this is needed if the player busts on a double down card that was hidden previously
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)    
+            elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
                 lines[2] += '=   PUSH   =           '
-                lines[3] += '=   ${}{}  =           '.format(push_return_amt,push_spacing)  
-                lines[4] += ' =        =            '    
+                lines[3] += '=   ${}{}=           '.format(push_return_amt,push_spacing)  
             elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:       #Dealer Blackjack
-                lines[1] += ' =        =            ' 
-                lines[2] += '=   Lost:  =           '.format(value,value_spacing)
-                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)
-                lines[4] += ' =        =            ' 
+                lines[2] += '=   Lost:  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() == 21 and len(hand.cards) == 2:                 #Player Blackjack
-                lines[1] += ' =        =            '   
                 lines[2] += '=BLACKJACK!=           '
-                lines[3] += '=  +${}{}  =           '.format(bet,bet_spacing)  
-                lines[4] += ' =        =            ' 
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)  
             elif nate_hand.calculate_value() > 21:                                      #Dealer Busted
-                lines[1] += ' =        =            ' 
                 lines[2] += '=  Payout: =           '
-                lines[3] += '=  +${}{}  =           '.format(bet,bet_spacing)
-                lines[4] += ' =        =            '   
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() > nate_hand.calculate_value():                  #The Players total was higher:
-                lines[1] += ' =        =            ' 
                 lines[2] += '=  Payout: =           '
-                lines[3] += '=  +${}{}  =           '.format(bet,bet_spacing)
-                lines[4] += ' =        =            '  
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() < nate_hand.calculate_value():                  #The Dealer Total was higher:
-                lines[1] += ' =        =            ' 
-                lines[2] += '=   Lost:  =           '.format(value,value_spacing)
-                lines[3] += '=  -${}{}  =           '.format(bet,bet_spacing)
-                lines[4] += ' =        =            '   
+                lines[2] += '=   Lost:  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)
         #The dealer's cards have not been shown yet    
         else:
             if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
-                lines[1] += ' =        =            '   
                 lines[2] += '=BLACKJACK!=           '
                 lines[3] += '=          =           '
-                lines[4] += ' =        =            '  
             elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
-                lines[1] += ' =        =            ' 
-                lines[2] += '= Count:{}{}=           '.format(value,value_spacing)
+                lines[2] += '= Count:21 =           '
                 lines[3] += '=          =           '
-                lines[4] += ' =        =            ' 
             else:                                                                      #It is unknow if the player has won or lost at this point
-                lines[1] += ' =        =            '   
                 lines[2] += '=   Bet:   =           '
-                lines[3] += '=   ${}{}  =           '.format(bet,bet_spacing)     
-                lines[4] += ' =        =            '    
+                lines[3] += '=   ${}{}=           '.format(bet,bet_spacing)     
     for n in lines:
         print(n)     
 
@@ -491,7 +481,6 @@ def draw_entire_game(hide,location,endgame):   #leave the all_player_hands and b
     draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
     draw_all_player_hands(location,endgame)
     draw_bets(endgame) #put a 1 for endgame if the results of the hand should be shown
-    print('')
     if Debug:
         print(f'Nate has {len(nate_hand.cards)} cards, the value of his cards is {nate_hand.calculate_value()}')
         for i, hand in enumerate(all_player_hands):
@@ -532,11 +521,7 @@ input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 
 #Print Introductory Message, Give option to read rules
 Debug = False
-draw_dealer_hand(1,1)
-decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?',0)
-while decision == 'bad_input':
-    draw_dealer_hand(1,1)
-    decision = yes_no_question('Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?',1)
+decision = yes_no_question('just_bank',0,0,0,'Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 #decision = 'debug'
 if decision == 'debug':
     Debug = True
@@ -584,16 +569,16 @@ while playing:
 
     #Give PLayer Option of How Many Hands to Start with
     if Debug:
-        num_hands = 5
+        starting_hands = 5
     else:
-        num_hands = starting_hands()
+        starting_hands = ask_how_many_starting_hands()
                   
     #Find out how much the player wants to bet
     if Debug:
         bet_per_hand = 10
     else:
         bet_per_hand = make_bet() 
-    for i in range(num_hands):
+    for i in range(starting_hands):
         player_bank -= bet_per_hand
 
     #Dealing Animation Section###########################################
@@ -601,13 +586,13 @@ while playing:
         nate_hand = Hand()
         nate_hand.deal_card(deck)
         nate_hand.deal_card(deck)
-        for i in range(num_hands):
+        for i in range(starting_hands):
             all_player_hands.append(Hand())
             all_player_hands[i].deal_card(deck)
             all_player_hands[i].deal_card(deck)
 
     else:
-        hand_counter = num_hands
+        hand_counter = starting_hands
         nate_hand = Hand()
         for i in range(hand_counter):
             all_player_hands.append(Hand())
@@ -641,25 +626,32 @@ while playing:
     #Offer Player option to buy insurance if the dealer is showing an Ace
     prompted_insurance = 'no'
     bought_insurance = 'no'
-    if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (.5 * bet_per_hand * num_hands):
-        draw_entire_game('hide',i,'not_endgame')
+    hands_not_dealt_blackjack = starting_hands
+    for i, hand in enumerate(all_player_hands):
+        if hand.calculate_value() == 21 and len(hand.cards) == 2: 
+            hands_not_dealt_blackjack -= 1
+    insurance_cost = .5*bet_per_hand*hands_not_dealt_blackjack
+
+    if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (insurance_cost):
         prompted_insurance = 'yes'
-        decision = yes_no_question('Nate is showing an Ace','Do you want to buy insurance?',f'Insurance will cost ${.5*bet_per_hand*num_hands} for all your hands','Insurance pays out 2:1 if Nate is dealt Blackjack',0)
-        while decision =='bad_input':
-            draw_entire_game('hide',i,'not_endgame')
-            decision = yes_no_question('Nate is showing an Ace, would you like to buy insurance?',f'Insurance will cost ${.5*bet_per_hand*num_hands} for all your hands','Insurance pays out 2:1 if Nate is dealt Blackjack',0)
+        insurance_payout = insurance_cost * 3 #return the bet amount and two times bet amount
+        decision = yes_no_question('print_entire_game','hide',i,'not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
         if decision == 'y':
-            player_bank -= (.5 * bet_per_hand * num_hands)
+            player_bank -= insurance_cost
             bought_insurance = 'yes'
 
     #Don't Give Option to Split, Double Down, or hit if they dealer was dealt blackjack
     if nate_hand.calculate_value() != 21: 
 
-        #let the player know that the dealer was not dealt Blackjack if it was possible
-        if nate_hand.cards[0].split(' ')[0] in ['A','K','Q','J','10']:
+        #let the player know that the dealer was not dealt Blackjack they bought insurance
+        if prompted_insurance == 'yes':
+            extra_line = ''
+            if bought_insurance == 'yes':
+                extra_line = f'Thanks for the ${insurance_cost} bozo.'
             draw_entire_game('hide','n','not_endgame')
-            text_box('Nate was not dealt Blackjack.')
-            time.sleep(3)
+            text_box('Nate was not dealt Blackjack.',extra_line)
+            time.sleep(4)
+        
     
         #Give Player Option to Split
         for i, hand in enumerate(all_player_hands):
@@ -679,11 +671,7 @@ while playing:
                     question_string = f'Do you want to split your {card}s?'
                 elif hand.check_for_split_option() == 'different_cards':
                     question_string = f'Do you want to split your{ordinals[i]} hand?'
-                draw_entire_game('hide',i,'not_endgame')
-                decision = yes_no_question(question_string,0)
-                while decision == 'bad_input':
-                    draw_entire_game('hide',i,'not_endgame')
-                    decision = yes_no_question(question_string,1)
+                decision = yes_no_question('print_entire_game','hide',i,'not_engame',question_string)
                 if decision == 'y':
                     player_bank -= bet_per_hand
                     new_hand_position = len(all_player_hands) #
@@ -701,11 +689,7 @@ while playing:
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand: 
             if when_double == 'a': #Ask to double on every hand
-                draw_entire_game('hide','n','not_endgame')
-                decision = yes_no_question('Would you like to double down on any of your hands?',0)
-                while decision == 'bad_input':
-                    draw_entire_game('hide','n','not_endgame')
-                    decision = yes_no_question('Would you like to double down on any of your hands?',1)
+                decision = yes_no_question('print_entire_game','hide','n','not_endgame','Would you like to double down on any of your hands?')
                 if decision == 'y':
                     for i, hand in enumerate(all_player_hands):
                         if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
@@ -725,17 +709,9 @@ while playing:
             Stand = False
             while hand.calculate_value() < 21 and hand.if_doubledown() == False and Stand == False and len(hand.cards)<5:
                 if len(all_player_hands) == 1: #Say this if they only have one hand
-                    draw_entire_game('hide','n','not_endgame')
-                    decision = yes_no_question(f'Would you like to hit?',0)
-                    while decision == 'bad_input':
-                        draw_entire_game('hide','n','not_endgame')
-                        decision = yes_no_question(f'Would you like to hit?',1)
+                    decision = yes_no_question('print_entire_game','hide','n','not_endgame',f'Would you like to hit?')
                 else:                          #Say this if they have multiple hands
-                    draw_entire_game('hide',i,'not_endgame')
-                    decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',0)
-                    while decision == 'bad_input':
-                        draw_entire_game('hide',i,'not_endgame')
-                        decision = yes_no_question(f'Would you like to hit on your{ordinals[i]} hand?',1)
+                    decision = yes_no_question('print_entire_game','hide',i,'not_endgame',f'Would you like to hit on your{ordinals[i]} hand?')
                 if decision == 'y':
                     hand.deal_card(deck)
                 elif decision =='n':     #Player decides to stand
@@ -764,46 +740,45 @@ while playing:
         draw_entire_game('show','n','endgame')
         time.sleep(1)
 
-#Determine Game Outcome, see if player can/wants to play again
-    if nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
+    #Determine what the dealer's outcome was
+    if nate_hand.calculate_value() > 21:
+        dealer_outcome = 'Nate busted!'
+        dealer_outcome2 = ''
+    elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
         if prompted_insurance == 'yes' and bought_insurance == 'yes':
-            player_bank += (bet_per_hand * num_hands)
+            player_bank += (insurance_payout) 
             dealer_outcome = 'Nate got Blackjack.'
-            dealer_outcome2 = f'Your insurance bet paid out ${bet_per_hand * num_hands}.'
-        elif prompted_insurance == 'yes' and bought_insurance == 'no': #add another criteria here to make sure the first card was the ace, if it wasn't it won't make sense to say you should have bought insurance
-            player_bank += (bet_per_hand * num_hands)
+            dealer_outcome2 = f'Your insurance bet paid out ${insurance_cost * 2}.'
+        elif prompted_insurance == 'yes' and bought_insurance == 'no':
             dealer_outcome = 'Nate got Blackjack!'
             dealer_outcome2 = 'You should have bought that insurance: Womp Womp!'
         else:
             dealer_outcome = 'Nate got Blackjack! Womp Womp'
             dealer_outcome2 = ''
+    elif nate_hand.calculate_value() <= 21:
+        dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
+        dealer_outcome2 = ''
 
+    #adjust the player's bank
     player_bank = payout_player(player_bank)
     if player_bank > most_money:
         most_money = player_bank
     profit = player_bank - previous_bank
 
+    #determine what the player's outcome was
     if profit > 0:
         result = f'You won ${profit} this round!'
     elif profit < 0:
         result = f'You lost ${abs(profit)} this round.' #abs removes the negative sign
     elif profit == 0:
         result = f'You broke even this round across your hands.'
-    elif nate_hand.calculate_value() > 21:
-        dealer_outcome = 'Nate busted!'
-    elif nate_hand.calculate_value() <= 21:
-        dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
-     
+ 
     if player_bank < 10:
         draw_entire_game('show','n','endgame')
         text_box(dealer_outcome,dealer_outcome2,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was ${most_money}')
         playing = False
     elif player_bank >= 2000 and highscore_run == False:
-        draw_entire_game('show','n','endgame')
-        go_for_highscore = yes_no_question(dealer_outcome,dealer_outcome2,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',0)
-        while go_for_highscore == 'bad_input':
-            draw_entire_game('show','n','endgame')
-            go_for_highscore = yes_no_question(dealer_outcome,dealer_outcome2,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?',1)
+        go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
             print(top_space)
@@ -813,11 +788,7 @@ while playing:
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
-        draw_entire_game('show','n','endgame')
-        decision = yes_no_question(dealer_outcome,dealer_outcome2,result,f'Continue playing?',0)
-        while decision == 'bad_input':
-            draw_entire_game('show','n','endgame')
-            decision = yes_no_question(dealer_outcome,dealer_outcome2,result,f'Continue playing?',1)
+        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,result,'Continue playing?')
         if decision == 'n':
             clear_terminal()
             chip_total = f'Your largest chip total was ${most_money}'
@@ -825,30 +796,32 @@ while playing:
             text_box(chip_total)
             playing = False
 
-#Make ordinal list unlimited
-#splitting limit based on the screen size
-#if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
-#Add Insurance
-#Add a fun things where if you pay off ralph something cool happens
-#make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
-#Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
-#make the bet spacing not a hard coded calculation like it is now
-#shorten the cursor logic at the bottom of the main card printing function
-#I don't think the bet circles can handle a bet size of four digits right now
-#If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand (this may depend on it's position)
-#if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
-#Can you do the 'while error' thing inside the yes no question function
-#Make the last custom funciton a yes no question implementation
-#optimize code to minimize flicker timer (all graphics are appended to a list, then when ready in two commands screen is cleared and updated)
-#when it says you are playing x hands use a library so it displays the text not the number
-#make insurance not make you pay for player hands that were dealt blackjack
+#new content to add/improvment to existing functions
+    #Make ordinal list unlimited
+    #splitting limit based on the screen size
+    #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
+    #Add a fun things where if you pay off ralph something cool happens
+    #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
+    #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
+    #make the bet spacing not a hard coded calculation like it is now
+    #shorten the cursor logic at the bottom of the main card printing function
+    #if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
+    #Can you do the 'while error' thing inside the yes no question function
+    #Make the last custom funciton a yes no question implementation
+    #optimize code to minimize flicker timer (all graphics are appended to a list, then when ready in two commands screen is cleared and updated)
+    #when it says you are playing x hands use a library so it displays the text not the number
+    #make insurance not make you pay for player hands that were dealt blackjack
+    #center the bet spacing based on the length of the amount bet_per_hand
+    #allow player to input yes or no in addition to y or n
+    #if terminal is really small have smaller graphics
+    #make it not displays like $25.0 dollars if theres no change
 
-#if len(all_player_hands) == 1:
-#        ordinals = ['']
-#    else:
-#        ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
+#Bugs
+    #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand if it was created where hte orginal hand was split
+
 
 #Nate's Casino Rules for later
      #There is not splitting limit (though the game won't let you have more hands than your screen can display)
      #If you split Aces, you are only allowed to hit once after
      #You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)
+     #you can input y or n if you'd like
