@@ -3,7 +3,7 @@ import random
 import platform #For the ability to check the OS
 import time
 #############################################################################################################################################################################################
-##################################### CUSTOM CLASS SETUP ####################################### CUSTOM CLASS SETUP##########################################################################
+##################################### CUSTOM CLASS SETUP ####################################### CUSTOM CLASS SETUP #########################################################################
 #############################################################################################################################################################################################
 class Hand:
     def __init__(self):
@@ -17,13 +17,13 @@ class Hand:
     def card2(self): #This will return the rank of the second card in a hand(eg return 10)
         return (self.cards[1].split(' ')[0])
     def check_for_split_option(self):  #This returns true if you have the option to split
-        split = 'no'
-        if len(self.cards) == 2:  #Make sure the player only has two cards
-            if  self.card1() == self.card2():  #See if the cards are the same
-                split = 'same_card'
-            elif self.card1() in ['K', 'Q', 'J','10'] and self.card2() in ['K', 'Q', 'J','10']: #see if both cards are 10 value cards
-                split = 'different_cards'
-        return split
+        if len(self.cards) !=2:
+            return 'no'
+        elif  self.card1() == self.card2():  #See if the cards are the same
+            return 'same_card'
+        elif self.card1() in ['K', 'Q', 'J','10'] and self.card2() in ['K', 'Q', 'J','10']: #see if both cards are 10 value cards
+            return 'different_cards'
+        return 'no'
     def calculate_value(self):  #ability of the hand class to calculate it's value
         value = 0
         num_aces = 0
@@ -42,16 +42,12 @@ class Hand:
             num_aces -= 1
         return value
     def num_aces(self): #return the number of aces in a hand
-        number_aces = 0
-        for i in self.cards:
-            rank = i.split(' ')[0]
-            if rank == 'A':
-                number_aces += 1
-        return number_aces
-    def doubleddown(self): #Remember if you doubled down
+        return sum(1 for card in self.cards if card.split(' ')[0] == 'A')
+    def doubleddown(self): #Mark a hand as doubled down
         self.double = True
     def if_doubledown(self): #Return whether you doubled down
         return self.double
+    
 #############################################################################################################################################################################################
 ##################################### GAMEPLAY AND USER INPUT FUNCTIONS ####################################### GAMEPLAY AND USER INPUT FUNCTIONS############################################
 #############################################################################################################################################################################################
@@ -85,7 +81,7 @@ def make_bet():
     error_message = ''
     while True:
         draw_dealer_hand(0,1) #draw the player bank
-        text_box(f'You are playing {i} hands.',"How much would you like to bet per hand?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
+        text_box(f'You are playing {numbers[i]} hands.',"How much would you like to bet per hand?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
         bet = input(f'{left_space}                            $')   #the set amount of spaces is to account for half of the text box width
         if not bet.isdigit():
             error_spacing = ' '
@@ -451,6 +447,9 @@ def draw_bets(endgame):
             if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
                 lines[2] += '=BLACKJACK!=           '
                 lines[3] += '=          =           '
+            elif hand.if_doubledown():                                              #The Player doubled down
+                lines[2] += '=  Doubled =           '
+                lines[3] += '=   ${}{}=           '.format(bet,bet_spacing)  
             elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
                 lines[2] += '= Count:21 =           '
                 lines[3] += '=          =           '
@@ -491,6 +490,8 @@ def draw_entire_game(hide,location,endgame):   #leave the all_player_hands and b
 #General Variable Setup
 player_bank = 100 #Player Starting Cash
 ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
+card_ranks_plural = {'A': 'Aces', 'K': 'Kings', 'Q': 'Queens', 'J': 'Jacks','10': '10\'s', '9': '9\'s', '8': '8\'s', '7': '7\'s','6': '6\'s', '5': '5\'s', '4': '4\'s', '3': '3\'s', '2': '2\'s'}
+numbers = {1: 'one', 2: 'two', 3: 'three', 4: 'four',5: 'five', 6: 'six', 7: 'seven', 8: 'eight',9: 'nine', 10: 'ten', 11: 'eleven', 12: 'twelve', 13: 'thirteen'}
 highscore_run = False #For remembering if the player has already beat the dealer
 most_money = 100 #For printing the player's highscore when they lose or quit
 screen_width = os.get_terminal_size()[0] 
@@ -624,8 +625,8 @@ while playing:
         time.sleep(.3)
 
     #Offer Player option to buy insurance if the dealer is showing an Ace
-    prompted_insurance = 'no'
-    bought_insurance = 'no'
+    prompted_insurance = False
+    bought_insurance = False
     hands_not_dealt_blackjack = starting_hands
     for i, hand in enumerate(all_player_hands):
         if hand.calculate_value() == 21 and len(hand.cards) == 2: 
@@ -633,58 +634,51 @@ while playing:
     insurance_cost = .5*bet_per_hand*hands_not_dealt_blackjack
 
     if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (insurance_cost):
-        prompted_insurance = 'yes'
+        prompted_insurance = True
         insurance_payout = insurance_cost * 3 #return the bet amount and two times bet amount
-        decision = yes_no_question('print_entire_game','hide',i,'not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
+        decision = yes_no_question('print_entire_game','hide',i,'not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',' ',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
         if decision == 'y':
             player_bank -= insurance_cost
-            bought_insurance = 'yes'
+            bought_insurance = True
 
     #Don't Give Option to Split, Double Down, or hit if they dealer was dealt blackjack
     if nate_hand.calculate_value() != 21: 
 
         #let the player know that the dealer was not dealt Blackjack they bought insurance
-        if prompted_insurance == 'yes':
+        if prompted_insurance:
             extra_line = ''
-            if bought_insurance == 'yes':
+            if bought_insurance:
                 extra_line = f'Thanks for the ${insurance_cost} bozo.'
             draw_entire_game('hide','n','not_endgame')
             text_box('Nate was not dealt Blackjack.',extra_line)
             time.sleep(4)
         
-    
         #Give Player Option to Split
-        for i, hand in enumerate(all_player_hands):
-            if player_bank >= bet_per_hand and (hand.check_for_split_option() != 'no'):
-                if hand.check_for_split_option() == 'same_card':
-                    card = hand.card1()
-                    if card == 'A':
-                        card = 'Ace'
-                    elif card == 'K':
-                        card = 'King'
-                    elif card == 'Q':
-                        card = 'Queen'
-                    elif card == 'J':
-                        card = 'Jack'
-                    else:
-                        card += '\''
-                    question_string = f'Do you want to split your {card}s?'
-                elif hand.check_for_split_option() == 'different_cards':
-                    question_string = f'Do you want to split your{ordinals[i]} hand?'
+        i = 0
+        while i < len(all_player_hands): #This needs to be done with the index, in case a hand it split and and splittable hand is created in its previous location
+            hand = all_player_hands[i]
+            split_option = hand.check_for_split_option()
+            if player_bank >= bet_per_hand and split_option != 'no': #if you can split the hand
+                if split_option == 'same_card':
+                    question_string = f'Do you want to split your {card_ranks_plural[hand.card1()]}?'
+                elif split_option == 'different_cards':
+                    question_string = f'Do you want to split your {hand.card1()} {hand.card2()}?'
                 decision = yes_no_question('print_entire_game','hide',i,'not_engame',question_string)
                 if decision == 'y':
                     player_bank -= bet_per_hand
                     new_hand_position = len(all_player_hands) #
-                    all_player_hands.append(Hand()) #Make the list one longer
+                    all_player_hands.append(Hand())                                     #add another hand to all_player_hands
                     draw_entire_game('hide','n','not_endgame')
                     time.sleep(.5)
-                    all_player_hands[new_hand_position].cards.append(hand.cards.pop(0))
+                    all_player_hands[new_hand_position].cards.append(hand.cards.pop(0)) #move one card from OG to new hand
                     draw_entire_game('hide','n','not_endgame')
                     time.sleep(.5)
-                    hand.deal_card(deck) #deal one card to the og hand
+                    hand.deal_card(deck)                                                #deal one card to the og hand
                     draw_entire_game('hide','n','not_endgame')
                     time.sleep(.5)
-                    all_player_hands[new_hand_position].deal_card(deck) #deal one card to the new hand
+                    all_player_hands[new_hand_position].deal_card(deck)                 #deal one card to the new hand
+                    i -= 1
+            i += 1
                               
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand: 
@@ -694,15 +688,12 @@ while playing:
                     for i, hand in enumerate(all_player_hands):
                         if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
                             player_bank = double_hand(i,player_bank)
-            elif when_double == 'b': #ask to double down if their total is 9-11
+            else:  # For scenarios b and c
                 for i, hand in enumerate(all_player_hands):
-                        if hand.calculate_value() in [9,10,11] and player_bank >= bet_per_hand:
-                            player_bank = double_hand(i,player_bank)
-            elif when_double == 'c': #ask to double down if their total is 9-11 or soft 16-18
-                for i, hand in enumerate(all_player_hands):
-                        if player_bank >= bet_per_hand:
-                            if hand.calculate_value() in [9,10,11] or (hand.calculate_value() in [16,17,18] and hand.num_aces()):
-                                player_bank = double_hand(i,player_bank)
+                    hand_value = hand.calculate_value()
+                    if (when_double == 'b' and hand_value in [9, 10, 11] and player_bank >= bet_per_hand) or \
+                    (when_double == 'c' and player_bank >= bet_per_hand and (hand_value in [9, 10, 11] or (hand_value in [16, 17, 18] and hand.num_aces()))):
+                        player_bank = double_hand(i, player_bank)
 
         #Give Player Option to Hit
         for i, hand in enumerate(all_player_hands):
@@ -745,11 +736,11 @@ while playing:
         dealer_outcome = 'Nate busted!'
         dealer_outcome2 = ''
     elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
-        if prompted_insurance == 'yes' and bought_insurance == 'yes':
+        if prompted_insurance and bought_insurance:
             player_bank += (insurance_payout) 
             dealer_outcome = 'Nate got Blackjack.'
             dealer_outcome2 = f'Your insurance bet paid out ${insurance_cost * 2}.'
-        elif prompted_insurance == 'yes' and bought_insurance == 'no':
+        elif prompted_insurance and not bought_insurance:
             dealer_outcome = 'Nate got Blackjack!'
             dealer_outcome2 = 'You should have bought that insurance: Womp Womp!'
         else:
@@ -797,7 +788,6 @@ while playing:
             playing = False
 
 #new content to add/improvment to existing functions
-    #Look into ordinal list: i don't remeber why i wanted to look into this
     #splitting limit based on the screen size
     #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
     #Add a fun things where if you pay off ralph something cool happens
@@ -807,14 +797,14 @@ while playing:
     #shorten the cursor logic at the bottom of the main card printing function
     #if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
     #optimize code to minimize flicker timer (all graphics are appended to a list, then when ready in two commands screen is cleared and updated)
-    #when it says you are playing x hands use a library so it displays the text not the number
     #center the bet spacing based on the length of the amount bet_per_hand
     #allow player to input yes or no in addition to y or n
-    #if terminal is really small have smaller graphics
     #make it not displays like $25.0 dollars if theres no change
-
+    #if it asks you to slit 6's it says six's instead of sixes
+    #add a graphic of the dealer's shoe, and the rest of the table?
+    
 #Bugs
-    #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand if it was created where the orginal hand was split
+    #no know bugs
 
 
 #Nate's Casino Rules for later
