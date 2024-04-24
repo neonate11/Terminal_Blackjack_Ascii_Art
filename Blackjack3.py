@@ -797,7 +797,7 @@ while playing:
             playing = False
 
 #new content to add/improvment to existing functions
-    #Make ordinal list unlimited
+    #Look into ordinal list: i don't remeber why i wanted to look into this
     #splitting limit based on the screen size
     #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
     #Add a fun things where if you pay off ralph something cool happens
@@ -806,18 +806,15 @@ while playing:
     #make the bet spacing not a hard coded calculation like it is now
     #shorten the cursor logic at the bottom of the main card printing function
     #if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
-    #Can you do the 'while error' thing inside the yes no question function
-    #Make the last custom funciton a yes no question implementation
     #optimize code to minimize flicker timer (all graphics are appended to a list, then when ready in two commands screen is cleared and updated)
     #when it says you are playing x hands use a library so it displays the text not the number
-    #make insurance not make you pay for player hands that were dealt blackjack
     #center the bet spacing based on the length of the amount bet_per_hand
     #allow player to input yes or no in addition to y or n
     #if terminal is really small have smaller graphics
     #make it not displays like $25.0 dollars if theres no change
 
 #Bugs
-    #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand if it was created where hte orginal hand was split
+    #If you split, and make a new splittable hand through the split the game won't ask you if you want to split the created hand if it was created where the orginal hand was split
 
 
 #Nate's Casino Rules for later
