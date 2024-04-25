@@ -113,18 +113,16 @@ def ask_how_many_starting_hands():
             draw_dealer_hand(0,1)
             text_box('How many hands would you like to play this round?','The table maximum is starting five hands.',error_spacing,error_message,error_message2)
             number_hands = input(input_pointer_with_spacing)
-            if number_hands.isdigit() and 1< int(number_hands) <5:
-                if int(number_hands) * 10 > player_bank:
-                    error_spacing = ' '
-                    error_message = 'You can\'t afford to play that many hands'
-                    error_message2 = 'The table minimum bet is $10'
-                    clear_terminal()
-                else:
-                    return (int(number_hands))
-            else:
+            if not number_hands.isdigit() or (int(number_hands) < 1) or (int(number_hands) > 5):
                 error_spacing = ' '
                 error_message = 'Please provide an integer from 1 to 5.'
                 clear_terminal()
+            elif int(number_hands) * 10 > player_bank:
+                error_spacing = ' '
+                error_message = 'You can\'t afford to play that many hands'
+                error_message2 = 'The table minimum bet is $10'
+                clear_terminal()
+            return(int(number_hands))
     else: #if the player can't afford to play two hands wset the starting_hands variable equal to 1
         return(1)
 
@@ -169,7 +167,8 @@ def yes_no_question(draw_bank_only,hide,location,endgame,*args):
             return answer[0].lower()
         else:
             error_spacing = ' '
-            error_message = 'Please respond with yes or no.'
+            error_message = 'Please respond with y or n.'
+            clear_terminal()
 
 #Function for asking the user when they would like to be asked to double down
 def ask_when_to_double():
@@ -200,23 +199,28 @@ def double_hand(i,player_bank):
 #############################################################################################################################################################################################
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
 def draw_dealer_hand(hide,just_bank): 
-    dealer_cards= []
+    clear_terminal()
+    lines= []
     length_money = len(str(player_bank))
     odd = length_money % 2
-    dealer_cards.append('┌───────────┐' + (dealer_spacing-13)*' ')
-    dealer_cards.append('│Your Chips:│' + (dealer_spacing-13)*' ')
+    lines.append('┌───────────┐' + (dealer_spacing-13)*' ')
+    lines.append('│Your Chips:│' + (dealer_spacing-13)*' ')
     if odd: 
         half_space = int((9-length_money)/2) * ' '
         Bank_three_string = f'│{half_space}${player_bank} {half_space}│'
-        dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
+        lines.append(Bank_three_string + ((dealer_spacing-13)*' '))
     else:
         half_space = int((10-length_money)/2) * ' '
         Bank_three_string= f'│{half_space}${player_bank}{half_space}│'
-        dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
-    dealer_cards.append('└───────────┘' + (dealer_spacing-13)*' ')
-    if not just_bank:   #if drawing the bank and the dealer's cards
+        lines.append(Bank_three_string + ((dealer_spacing-13)*' '))
+    lines.append('└───────────┘' + (dealer_spacing-13)*' ')
+    if just_bank: #if just drawing the bank
+        for i in lines:
+            print(i)
+        print('\n'*24)
+    else:   #if drawing the bank and the dealer's cards
         for i in range(4,7):
-            dealer_cards.append(dealer_spacing*' ') #Add spaces before the 6th and 7th lines of the cards that don't have the bank to their left
+            lines.append(dealer_spacing*' ') #Add spaces before the 6th and 7th lines of the cards that don't have the bank to their left
         cards_to_print_faceup = len(nate_hand.cards)
         cards_to_print_facedown = 0
         if hide == 'hide': #if the argument input is hide draw one card face up
@@ -240,35 +244,32 @@ def draw_dealer_hand(hide,just_bank):
                 left_data = rank + suit + ' '
                 right_data = ' ' + rank + suit
 
-            dealer_cards[0] += '┌─────────┐'
-            dealer_cards[1] += '│{}      │'.format(left_data)
-            dealer_cards[2] += '│         │'
-            dealer_cards[3] += '│    {}    │'.format(suit)
-            dealer_cards[4] += '│         │'
-            dealer_cards[5] += '│      {}│'.format(right_data)
-            dealer_cards[6] += '└─────────┘'
+            lines[0] += '┌─────────┐'
+            lines[1] += '│{}      │'.format(left_data)
+            lines[2] += '│         │'
+            lines[3] += '│    {}    │'.format(suit)
+            lines[4] += '│         │'
+            lines[5] += '│      {}│'.format(right_data)
+            lines[6] += '└─────────┘'
         for card in nate_hand.cards[:cards_to_print_facedown]:  # Iterate over the cards to print
             if hide in ['hide','first','second'] and len(nate_hand.cards)>=1: #Don't print a hidden card before no cards are dealt
-                dealer_cards[0] += '┌─────────┐'
-                dealer_cards[1] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[2] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[3] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[4] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[5] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[6] += '└─────────┘'
-        return dealer_cards
-    elif just_bank: #if just drawing the bank
-        for i in range(13):
-            dealer_cards.append('\n')
-        clear_terminal()
-        for i in dealer_cards:
+                lines[0] += '┌─────────┐'
+                lines[1] += '│ ▓▓▓▓▓▓▓ │'
+                lines[2] += '│ ▓▓▓▓▓▓▓ │'
+                lines[3] += '│ ▓▓▓▓▓▓▓ │'
+                lines[4] += '│ ▓▓▓▓▓▓▓ │'
+                lines[5] += '│ ▓▓▓▓▓▓▓ │'
+                lines[6] += '└─────────┘'
+        for i in lines:
             print(i)
 
 #Function to draw all player hands
-def draw_all_player_hands(lines,location,endgame):
-    player_cards = [''] * 15
-    cursor_and_spacing = [''] * 15
-
+def draw_all_player_hands(location,endgame):
+    lines = []
+    linestoprint = []
+    for i in range(15):
+        lines.append('')
+        linestoprint.append('')
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1))
     for z, hand in enumerate(reversed(all_player_hands)):
         left_edge_data = [] #For left edge data, space is on right
@@ -288,89 +289,102 @@ def draw_all_player_hands(lines,location,endgame):
                 left_edge_data.append(rank+suit+' ')
                 right_edge_data.append(' '+rank+suit)
                 covered_data.append(rank+suit)    
-        for i in range(15):
-            player_cards[i] = '                       ' #this is a blank printed for dealing purposes (before a hand has any cards)
+        lines[0]='                       '
+        lines[1]='                       '
+        lines[2]='                       '
+        lines[3]='                       '
+        lines[4]='                       '
+        lines[5]='                       '
+        lines[6]='                       '
+        lines[7]='                       '
+        lines[8]='                       '
+        lines[9]='                       '
+        lines[10]='                       '
+        lines[11]='                       '
+        lines[12]='                       '
+        lines[13]='                       '
+        lines[14]='                       '
         if len(hand.cards) >= 1:
-            player_cards[8]='┌─────────┐            '
-            player_cards[9]='│{}      │            '.format(left_edge_data[0])
-            player_cards[10]='│         │            '
-            player_cards[11]='│    {}    │            '.format(suits[0])
-            player_cards[12]='│         │            '
-            player_cards[13]='│      {}│            '.format(right_edge_data[0])
-            player_cards[14]='└─────────┘            '
+            lines[8]='┌─────────┐            '
+            lines[9]='│{}      │            '.format(left_edge_data[0])
+            lines[10]='│         │            '
+            lines[11]='│    {}    │            '.format(suits[0])
+            lines[12]='│         │            '
+            lines[13]='│      {}│            '.format(right_edge_data[0])
+            lines[14]='└─────────┘            '
         if len(hand.cards) >= 2:
-            player_cards[6]  = '   ┌─────────┐         '
-            player_cards[7]  = '   │{}      │         '.format(left_edge_data[1])
-            player_cards[8]  = '┌──│         │         '
-            player_cards[9]  = '│{}│    {}    │         '.format(covered_data[0],suits[1])
-            player_cards[10] = '│  │         │         '
-            player_cards[11] = '│  │      {}│         '.format(right_edge_data[1])
-            player_cards[12] = '│  └─────────┘         '
+            lines[6]  = '   ┌─────────┐         '
+            lines[7]  = '   │{}      │         '.format(left_edge_data[1])
+            lines[8]  = '┌──│         │         '
+            lines[9]  = '│{}│    {}    │         '.format(covered_data[0],suits[1])
+            lines[10] = '│  │         │         '
+            lines[11] = '│  │      {}│         '.format(right_edge_data[1])
+            lines[12] = '│  └─────────┘         '
         if hand.if_doubledown() and endgame == 'endgame':
-            player_cards[4]  = '       ┌─────────────┐ '
-            player_cards[5]  = '       │          {}│ '.format(right_edge_data[2])
-            player_cards[6]  = '   ┌───│      {}      │ '.format(suits[2])
-            player_cards[7]  = '   │{} │{}          │ '.format(covered_data[1],left_edge_data[2])
-            player_cards[8]  = '┌──│   └─────────────┘ '
+            lines[4]  = '       ┌─────────────┐ '
+            lines[5]  = '       │          {}│ '.format(right_edge_data[2])
+            lines[6]  = '   ┌───│      {}      │ '.format(suits[2])
+            lines[7]  = '   │{} │{}          │ '.format(covered_data[1],left_edge_data[2])
+            lines[8]  = '┌──│   └─────────────┘ '
         elif hand.if_doubledown() and endgame == 'not_endgame':
-            player_cards[4]  = '       ┌─────────────┐ '
-            player_cards[5]  = '       │ ▓▓▓▓▓▓▓▓▓▓▓ │ '
-            player_cards[6]  = '   ┌───│ ▓▓▓▓▓▓▓▓▓▓▓ │ '
-            player_cards[7]  = '   │{} │ ▓▓▓▓▓▓▓▓▓▓▓ │ '.format(covered_data[1])
-            player_cards[8]  = '┌──│   └─────────────┘ '
+            lines[4]  = '       ┌─────────────┐ '
+            lines[5]  = '       │ ▓▓▓▓▓▓▓▓▓▓▓ │ '
+            lines[6]  = '   ┌───│ ▓▓▓▓▓▓▓▓▓▓▓ │ '
+            lines[7]  = '   │{} │ ▓▓▓▓▓▓▓▓▓▓▓ │ '.format(covered_data[1])
+            lines[8]  = '┌──│   └─────────────┘ '
         elif not hand.if_doubledown():
             if len(hand.cards) >= 3:
-                player_cards[4]  = '      ┌─────────┐      '
-                player_cards[5]  = '      │{}      │      '.format(left_edge_data[2])
-                player_cards[6]  = '   ┌──│         │      '
-                player_cards[7]  = '   │{}│    {}    │      '.format(covered_data[1],suits[2])
-                player_cards[8]  = '┌──│  │         │      '
-                player_cards[9]  = '│{}│  │      {}│      '.format(covered_data[0],right_edge_data[2])
-                player_cards[10] = '│  │  └─────────┘      '
+                lines[4]  = '      ┌─────────┐      '
+                lines[5]  = '      │{}      │      '.format(left_edge_data[2])
+                lines[6]  = '   ┌──│         │      '
+                lines[7]  = '   │{}│    {}    │      '.format(covered_data[1],suits[2])
+                lines[8]  = '┌──│  │         │      '
+                lines[9]  = '│{}│  │      {}│      '.format(covered_data[0],right_edge_data[2])
+                lines[10] = '│  │  └─────────┘      '
             if len(hand.cards) >= 4:
-                player_cards[2]  = '         ┌─────────┐   '
-                player_cards[3]  = '         │{}      │   '.format(left_edge_data[3])
-                player_cards[4]  = '      ┌──│         │   '
-                player_cards[5]  = '      │{}│    {}    │   '.format(covered_data[2],suits[3])
-                player_cards[6] = '   ┌──│  │         │   '
-                player_cards[7] = '   │{}│  │      {}│   '.format(covered_data[1],right_edge_data[3])
-                player_cards[8] = '┌──│  │  └─────────┘   '
+                lines[2]  = '         ┌─────────┐   '
+                lines[3]  = '         │{}      │   '.format(left_edge_data[3])
+                lines[4]  = '      ┌──│         │   '
+                lines[5]  = '      │{}│    {}    │   '.format(covered_data[2],suits[3])
+                lines[6] = '   ┌──│  │         │   '
+                lines[7] = '   │{}│  │      {}│   '.format(covered_data[1],right_edge_data[3])
+                lines[8] = '┌──│  │  └─────────┘   '
             if len(hand.cards) >= 5:
-                player_cards[0]  = '            ┌─────────┐'
-                player_cards[1]  = '            │{}      │'.format(left_edge_data[4])
-                player_cards[2]  = '         ┌──│         │'
-                player_cards[3]  = '         │{}│    {}    │'.format(covered_data[3],suits[4])
-                player_cards[4] = '      ┌──│  │         │'
-                player_cards[5] = '      │{}│  │      {}│'.format(covered_data[2],right_edge_data[4])
-                player_cards[6] = '   ┌──│  │  └─────────┘'
+                lines[0]  = '            ┌─────────┐'
+                lines[1]  = '            │{}      │'.format(left_edge_data[4])
+                lines[2]  = '         ┌──│         │'
+                lines[3]  = '         │{}│    {}    │'.format(covered_data[3],suits[4])
+                lines[4] = '      ┌──│  │         │'
+                lines[5] = '      │{}│  │      {}│'.format(covered_data[2],right_edge_data[4])
+                lines[6] = '   ┌──│  │  └─────────┘'
         for i in range(0,10): #Add the spacing for these lines
-            cursor_and_spacing[i]+= ' '*spacing
+            linestoprint[i]+= ' '*spacing
         for i in range(13,15): #Add the spacing for these lines
-            cursor_and_spacing[i]+= ' '*spacing
+            linestoprint[i]+= ' '*spacing
         if location == (len(all_player_hands) -1)-z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
-            cursor_and_spacing[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-            cursor_and_spacing[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-            cursor_and_spacing[12]+= ' '*(spacing-2)+'➤ ' #Add the cursor
+            linestoprint[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
+            linestoprint[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
+            linestoprint[12]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             if Debug:
-                cursor_and_spacing.append(f'The z value is set to {z} and the current location receved was {location}')
+                linestoprint.append(f'The z value is set to {z} and the current location receved was {location}')
         else:                  #if we aren't referring to this hand currently put just spaces
-            cursor_and_spacing[10]+= ' '*spacing 
-            cursor_and_spacing[11]+= ' '*spacing 
-            cursor_and_spacing[12]+= ' '*spacing 
+            linestoprint[10]+= ' '*spacing 
+            linestoprint[11]+= ' '*spacing 
+            linestoprint[12]+= ' '*spacing 
         for n in range(15):
-            cursor_and_spacing[n]+=player_cards[n]
-    lines.extend(cursor_and_spacing)
-    return lines
+            linestoprint[n]+=lines[n]
+    for i in linestoprint:
+        print(i)
 
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
-def draw_bets(lines,endgame):
-    bet_display = []
+def draw_bets(endgame):
+    lines = []
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
     for i in range(6):
-        bet_display.append('')
+        lines.append('')
     for i, hand in enumerate(reversed(all_player_hands)):
         for n in range(6):
-            bet_display[n]+= ' '*spacing
+            lines[n]+= ' '*spacing
         bet = bet_per_hand
         if hand.if_doubledown():
             bet = bet_per_hand*2
@@ -380,57 +394,56 @@ def draw_bets(lines,endgame):
         bet_spacing = ''
         push_spacing = bet_spacing +(6-len(str(push_return_amt)))* ' '
         bet_spacing += (6-len(str(bet)))* ' '
-        bet_display[0] += '    =  =               '         
-        bet_display[1] += ' =        =            '         
-        bet_display[4] += ' =        =            '    
-        bet_display[5] += '    =  =               '                               
+        lines[0] += '    =  =               '         
+        lines[1] += ' =        =            '         
+        lines[4] += ' =        =            '    
+        lines[5] += '    =  =               '                               
         #these first two scenarios always win or lose so we can print no matter what stage of the game we are in
         if hand.calculate_value() > 21 and not hand.if_doubledown():                   #Player Busted, don't reveal this is the player busted down on a double down since the card is hidden until the end 
-                bet_display[2] += '=  BUSTED  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)   
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)   
         elif len(hand.cards) == 5:                                                     #The Player got 5 cards without busting: 
-                bet_display[2] += '=5 no bust =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)    
+                lines[2] += '=5 no bust =           '
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)    
         #the dealer's hand has already been revealed, you can now show the results of every hand
         elif endgame == 'endgame':
             if hand.calculate_value() > 21:                                             #this is needed if the player busts on a double down card that was hidden previously
-                bet_display[2] += '=  BUSTED  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)    
+                lines[2] += '=  BUSTED  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)    
             elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
-                bet_display[2] += '=   PUSH   =           '
-                bet_display[3] += '=   ${}{}=           '.format(push_return_amt,push_spacing)  
+                lines[2] += '=   PUSH   =           '
+                lines[3] += '=   ${}{}=           '.format(push_return_amt,push_spacing)  
             elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:       #Dealer Blackjack
-                bet_display[2] += '=   Lost:  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)
+                lines[2] += '=   Lost:  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() == 21 and len(hand.cards) == 2:                 #Player Blackjack
-                bet_display[2] += '=BLACKJACK!=           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)  
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)  
             elif nate_hand.calculate_value() > 21:                                      #Dealer Busted
-                bet_display[2] += '=  Payout: =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)
+                lines[2] += '=  Payout: =           '
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() > nate_hand.calculate_value():                  #The Players total was higher:
-                bet_display[2] += '=  Payout: =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)
+                lines[2] += '=  Payout: =           '
+                lines[3] += '=  +${}{}=           '.format(bet,bet_spacing)
             elif hand.calculate_value() < nate_hand.calculate_value():                  #The Dealer Total was higher:
-                bet_display[2] += '=   Lost:  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)
+                lines[2] += '=   Lost:  =           '
+                lines[3] += '=  -${}{}=           '.format(bet,bet_spacing)
         #The dealer's cards have not been shown yet    
         else:
             if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
-                bet_display[2] += '=BLACKJACK!=           '
-                bet_display[3] += '=          =           '
+                lines[2] += '=BLACKJACK!=           '
+                lines[3] += '=          =           '
             elif hand.if_doubledown():                                              #The Player doubled down
-                bet_display[2] += '=  Doubled =           '
-                bet_display[3] += '=   ${}{}=           '.format(bet,bet_spacing)  
+                lines[2] += '=  Doubled =           '
+                lines[3] += '=   ${}{}=           '.format(bet,bet_spacing)  
             elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
-                bet_display[2] += '= Count:21 =           '
-                bet_display[3] += '=          =           '
+                lines[2] += '= Count:21 =           '
+                lines[3] += '=          =           '
             else:                                                                      #It is unknow if the player has won or lost at this point
-                bet_display[2] += '=   Bet:   =           '
-                bet_display[3] += '=   ${}{}=           '.format(bet,bet_spacing)     
-    for n in bet_display:
-        lines.append(n)    
-    return lines
+                lines[2] += '=   Bet:   =           '
+                lines[3] += '=   ${}{}=           '.format(bet,bet_spacing)     
+    for n in lines:
+        print(n)     
 
 #Function for printing information to the user in a formatted box
 def text_box(*args):
@@ -450,12 +463,9 @@ def text_box(*args):
 
 #Function to call all graphics functions
 def draw_entire_game(hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
-    lines = draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
-    lines = draw_all_player_hands(lines,location,endgame)
-    lines = draw_bets(lines,endgame) #put a 1 for endgame if the results of the hand should be shown
-    clear_terminal()
-    for i in lines:
-        print(i)
+    draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
+    draw_all_player_hands(location,endgame)
+    draw_bets(endgame) #put a 1 for endgame if the results of the hand should be shown
     if Debug:
         print(f'Nate has {len(nate_hand.cards)} cards, the value of his cards is {nate_hand.calculate_value()}')
         for i, hand in enumerate(all_player_hands):
@@ -768,26 +778,3 @@ while playing:
             print(top_space)
             text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False 
-
-#new content to add/improvment to existing functions
-    #splitting limit based on the screen size
-    #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
-    #Add a fun things where if you pay off ralph something cool happens
-    #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
-    #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
-    #make the bet spacing not a hard coded calculation like it is now
-    #center the bet spacing based on the length of the amount bet_per_hand
-    #allow player to input yes or no in addition to y or n
-    #make it not displays like $25.0 dollars if theres no change
-    #add a graphic of the dealer's shoe, and the rest of the table?
-    
-#Bugs
-    #no know bugs
-
-
-#Nate's Casino Rules for later
-     #There is not splitting limit (though the game won't let you have more hands than your screen can display)
-     #If you split Aces, you are only allowed to hit once after
-     #You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)
-     #you can input y or n if you'd like
-     #nate stands on soft 17
