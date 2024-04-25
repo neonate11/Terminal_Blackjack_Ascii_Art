@@ -74,37 +74,34 @@ def make_deck():
             
 #Function for accepting a bet from the player
 def make_bet():
-    bet = 0
     i = starting_hands
     clear_terminal()
     error_spacing = ''
     error_message = ''
+    if (starting_hands * 10) == player_bank: #If the player can't afford a bet above the table minimum don't ask
+        return 10
     while True:
         draw_dealer_hand(0,1) #draw the player bank
         text_box(f'You are playing {numbers[i]} hands.',"How much would you like to bet per hand?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
-        bet = input(f'{left_space}                            $')   #the set amount of spaces is to account for half of the text box width
-        if not bet.isdigit():
+        bet_input = input(f'{left_space}                            $')   #the set amount of spaces is to account for half of the text box width
+        if not bet_input.isdigit():
             error_spacing = ' '
             error_message = 'Bet must be a positive, whole number'
-            clear_terminal()
-        elif int(bet) > player_bank:
+        elif int(bet_input) > player_bank:
             error_spacing = ' '
             error_message = 'Bet exceeds available funds'
-            clear_terminal()
-        elif int(bet) > 1000:
+        elif int(bet_input) > 1000:
             error_spacing = ' '
             error_message = 'Bet above table maximum ($1000)'
-            clear_terminal()
-        elif (int(bet)*i) > player_bank:
+        elif (int(bet_input)*i) > player_bank:
             error_spacing = ' '
             error_message = 'Amount bet across all hands exceeds available funds'
-            clear_terminal()
-        elif int(bet) < 10:
+        elif int(bet_input) < 10:
             error_spacing = ' '
             error_message = 'Bet below table minimum ($10)'
-            clear_terminal()
         else:
-            return int(bet)
+            return int(bet_input)
+        clear_terminal()
 
 #Function for determining number of starting hands:
 def ask_how_many_starting_hands():
@@ -119,17 +116,14 @@ def ask_how_many_starting_hands():
             if not number_hands.isdigit() or (int(number_hands) < 1) or (int(number_hands) > 5):
                 error_spacing = ' '
                 error_message = 'Please provide an integer from 1 to 5.'
-                error_message2 = ''
                 clear_terminal()
             elif int(number_hands) * 10 > player_bank:
                 error_spacing = ' '
                 error_message = 'You can\'t afford to play that many hands'
                 error_message2 = 'The table minimum bet is $10'
                 clear_terminal()
-            else:
-                break
-        return(int(number_hands))
-    else: #if the player can't afford to play two hands we still need to set the starting_hands variable equal to 1
+            return(int(number_hands))
+    else: #if the player can't afford to play two hands wset the starting_hands variable equal to 1
         return(1)
 
  #this function will adjust the player bank if they won money
@@ -157,34 +151,24 @@ def payout_player(player_bank):
     return player_bank
 
 #Function for asking the user a yes or no question
-def yes_no_question(just_bank,hide,location,endgame,*args):   
+def yes_no_question(draw_bank_only,hide,location,endgame,*args):   
     error_spacing = ''
     error_message = ''
-    if just_bank == 'just_bank':
-        while True:
+    while True:
+        if draw_bank_only == 'draw_bank_only':
             draw_dealer_hand(1,1)
-            text_box(*args,error_spacing,error_message) 
-            print('\n')
-            answer = input(input_pointer_with_spacing)
-            if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
-                return answer[0].lower()
-            else:
-                error_spacing = ' '
-                error_message = 'Please respond with y or n.'
-                clear_terminal()
-    else:
-        while True:
+        else:
             draw_entire_game(hide,location,endgame)
             print('\n')
-            text_box(*args,error_spacing,error_message) 
-            print('\n')
-            answer = input(input_pointer_with_spacing)
-            if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
-                return answer[0].lower()
-            else:
-                error_spacing = ' '
-                error_message = 'Please respond with y or n.'
-                clear_terminal()
+        text_box(*args,error_spacing,error_message) 
+        print('\n')
+        answer = input(input_pointer_with_spacing)
+        if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
+            return answer[0].lower()
+        else:
+            error_spacing = ' '
+            error_message = 'Please respond with y or n.'
+            clear_terminal()
 
 #Function for asking the user when they would like to be asked to double down
 def ask_when_to_double():
@@ -248,6 +232,7 @@ def draw_dealer_hand(hide,just_bank):
         elif hide == 'second': #if the argument input is first draw no cards face up
             cards_to_print_faceup = 0
             cards_to_print_facedown = 2
+
         for card in nate_hand.cards[:cards_to_print_faceup]:  # Iterate over the cards to print
             rank = card[0]
             rank2 = card[1]
@@ -258,6 +243,7 @@ def draw_dealer_hand(hide,just_bank):
             else:
                 left_data = rank + suit + ' '
                 right_data = ' ' + rank + suit
+
             lines[0] += '┌─────────┐'
             lines[1] += '│{}      │'.format(left_data)
             lines[2] += '│         │'
@@ -517,12 +503,12 @@ screen_width = os.get_terminal_size()[0]
 screen_height = os.get_terminal_size()[1]
 left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
 dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
-top_space = '\n'*27
+top_space = '\n'*28
 input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 
 #Print Introductory Message, Give option to read rules
 Debug = False
-decision = yes_no_question('just_bank',0,0,0,'Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
+decision = yes_no_question('draw_bank_only',0,0,0,'Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 #decision = 'debug'
 if decision == 'debug':
     Debug = True
@@ -655,7 +641,7 @@ while playing:
         
         #Give Player Option to Split
         i = 0
-        while i < len(all_player_hands): #This needs to be done with the index, in case a hand it split and and splittable hand is created in its previous location
+        while i < len(all_player_hands): #This needs to be done with the index, in case a hand it split and a splittable hand is created in its previous location
             hand = all_player_hands[i]
             split_option = hand.check_for_split_option()
             if player_bank >= bet_per_hand and split_option != 'no': #if you can split the hand
@@ -731,61 +717,67 @@ while playing:
         draw_entire_game('show','n','endgame')
         time.sleep(1)
 
-    #Determine what the dealer's outcome was
+    #Determine outcome of Dealer Hand
+    player_all_blackjacks = all(hand.calculate_value() == 21 and len(hand.cards) == 2 for hand in all_player_hands) #return True if player has all blackjacks
+    dealer_outcome = ''
+    dealer_outcome2 = ''
     if nate_hand.calculate_value() > 21:
         dealer_outcome = 'Nate busted!'
-        dealer_outcome2 = ''
     elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:
-        if prompted_insurance and bought_insurance:
-            player_bank += (insurance_payout) 
-            dealer_outcome = 'Nate got Blackjack.'
-            dealer_outcome2 = f'Your insurance bet paid out ${insurance_cost * 2}.'
-        elif prompted_insurance and not bought_insurance:
-            dealer_outcome = 'Nate got Blackjack!'
-            dealer_outcome2 = 'You should have bought that insurance: Womp Womp!'
+        if prompted_insurance:
+            if bought_insurance:
+                player_bank += (insurance_payout) 
+                dealer_outcome = 'Nate got Blackjack.'
+                dealer_outcome2 = f'Your insurance bet paid out ${insurance_cost * 2}.'
+            else:
+                dealer_outcome = 'Nate got Blackjack!'
+                dealer_outcome2 = 'You should have bought that insurance: Womp Womp!'
         else:
             dealer_outcome = 'Nate got Blackjack! Womp Womp'
-            dealer_outcome2 = ''
+    elif player_all_blackjacks:
+        if len(all_player_hands) == 1:
+            dealer_outcome = 'Nice Blackjack!'
+        else:
+            dealer_outcome = 'Nice Blackjacks!'
     elif nate_hand.calculate_value() <= 21:
         dealer_outcome = f'Nate got {nate_hand.calculate_value()}.'
-        dealer_outcome2 = ''
 
-    #adjust the player's bank
+    #Adjust player's bank
     player_bank = payout_player(player_bank)
     if player_bank > most_money:
         most_money = player_bank
     profit = player_bank - previous_bank
 
-    #determine what the player's outcome was
+    #Determine outcome of Player's Hands
     if profit > 0:
         result = f'You won ${profit} this round!'
     elif profit < 0:
         result = f'You lost ${abs(profit)} this round.' #abs removes the negative sign
     elif profit == 0:
         result = f'You broke even this round across your hands.'
- 
+    
+    #Print results to player and prompt them to continue or not
     if player_bank < 10:
         draw_entire_game('show','n','endgame')
-        text_box(dealer_outcome,dealer_outcome2,result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was ${most_money}')
+        text_box(dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was ${most_money}')
         playing = False
-    elif player_bank >= 2000 and highscore_run == False:
-        go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
+    elif player_bank >= 2000 and not highscore_run:
+        go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
         if go_for_highscore == 'n':
             chip_total = f'Your maximum chip total was ${most_money}'
             print(top_space)
-            text_box(chip_total,'Thank you for playing at Nate\'s blackjack table!')
-            text_box(chip_total,'Thank you for playing at Nate\'s blackjack table!')
+            text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False
         elif go_for_highscore == 'y':
             highscore_run == True
     else:
-        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,result,'Continue playing?')
+        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'Continue playing?')
         if decision == 'n':
             clear_terminal()
             chip_total = f'Your largest chip total was ${most_money}'
             print(top_space)
-            text_box(chip_total)
-            playing = False
+            text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
+            playing = False 
 
 #new content to add/improvment to existing functions
     #splitting limit based on the screen size
@@ -795,12 +787,10 @@ while playing:
     #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
     #make the bet spacing not a hard coded calculation like it is now
     #shorten the cursor logic at the bottom of the main card printing function
-    #if player has all blackjacks dealer doesn't hit, but then at the end of the game it says dealer had like 11 or something it should say You had all blackjacks
     #optimize code to minimize flicker timer (all graphics are appended to a list, then when ready in two commands screen is cleared and updated)
     #center the bet spacing based on the length of the amount bet_per_hand
     #allow player to input yes or no in addition to y or n
     #make it not displays like $25.0 dollars if theres no change
-    #if it asks you to slit 6's it says six's instead of sixes
     #add a graphic of the dealer's shoe, and the rest of the table?
     
 #Bugs
