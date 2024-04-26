@@ -1,4 +1,3 @@
-#Blackjack game by Nate V.
 import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
@@ -771,7 +770,7 @@ while playing:
         decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'Continue playing?')
         if decision == 'n':
             clear_terminal()
-            chip_total = f'Your largest chip total was ${most_money}'
+            chip_total = f'Your largest chip count was ${most_money}'
             print(top_space)
             text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False 
@@ -789,7 +788,7 @@ while playing:
     #if the screen is big enough print some blank space above the dealer's cards
     
 #Bugs
-    #no know bugs
+    #no know bugs ??
 
 
 #Nate's Casino Rules for later
