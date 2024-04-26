@@ -575,31 +575,31 @@ while playing:
         for i in range(hand_counter):
             all_player_hands.append(Hand())
         draw_entire_game('hide','n','not_endgame') #draw a blank board with no cards that is shown for a second
-        time.sleep(.3)
+        time.sleep(.5)
 
         #Deal the first card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
             draw_entire_game('hide','n','not_endgame')
-            time.sleep(.3)
+            time.sleep(.5)
         
         #Deal the dealer's first card
         nate_hand.deal_card(deck)
         draw_entire_game('first','n','not_endgame')
-        time.sleep(.3)
+        time.sleep(.5)
 
         #Deal the second card to each of the player's hands
         for i in range(hand_counter):
             all_player_hands[i].deal_card(deck)
             draw_entire_game('first','n','not_endgame')
-            time.sleep(.3)
+            time.sleep(.5)
 
         #Deal Nate's second card
         nate_hand.deal_card(deck)
         draw_entire_game('second','n','not_endgame')
-        time.sleep(.3)
+        time.sleep(.5)
         draw_entire_game('hide','n','not_endgame')
-        time.sleep(.3)
+        time.sleep(.5)
 
     #Offer Player option to buy insurance if the dealer is showing an Ace
     prompted_insurance = False
@@ -779,7 +779,7 @@ while playing:
     #make the bet spacing not a hard coded calculation like it is now
     #center the bet spacing based on the length of the amount bet_per_hand
     #allow player to input yes or no in addition to y or n
-    #make it not displays like $25.0 dollars if theres no change
+    #make it not displays like $25.0 dollars if theres no change, but if there is change make it show two places after decimal ie $25.50
     #add a graphic of the dealer's shoe, and the rest of the table?
     
 #Bugs
