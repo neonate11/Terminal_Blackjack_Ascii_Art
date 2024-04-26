@@ -1,4 +1,4 @@
-#Blackjack game by Nate V. reach me at nathan.vowinkel@gmail.com
+#Blackjack game by Nate V.
 import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
@@ -615,7 +615,7 @@ while playing:
     if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (insurance_cost):
         prompted_insurance = True
         insurance_payout = insurance_cost * 3 #return the bet amount and two times bet amount
-        decision = yes_no_question('print_entire_game','hide',i,'not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',' ',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
+        decision = yes_no_question('print_entire_game','hide','n','not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',' ',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
         if decision == 'y':
             player_bank -= insurance_cost
             bought_insurance = True
