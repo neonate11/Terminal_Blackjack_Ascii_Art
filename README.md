@@ -12,5 +12,6 @@ Navigate to the project directory.
 Run the game using: python3 Blackjack.py
 
 # Sample Gameplay:
-![Blackjack Photo](https://github.com/neonate11/Terminal_Blackjack_Ascii_Art/assets/162996499/1093d70f-764c-425a-97bf-b7cd9aa1c47b)
+![Blackjack Photo](https://github.com/neonate11/Terminal_Blackjack_Ascii_Art/assets/162996499/1804ebaf-e1c7-41a3-ae60-b2d6f4bf3570)
+
 
