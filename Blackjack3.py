@@ -76,14 +76,16 @@ def make_deck():
 #Function for accepting a bet from the player
 def make_bet():
     i = starting_hands
-    clear_terminal()
     error_spacing = ''
     error_message = ''
     if (starting_hands * 10) == player_bank: #If the player can't afford a bet above the table minimum don't ask
         return 10
     while True:
+        clear_terminal()
         draw_dealer_hand(0,1) #draw the player bank
-        text_box(f'You are playing {numbers[i]} hands.',"How much would you like to bet per hand?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
+        string = 'hands' if i != 1 else 'hand'
+        string2 = 'bet per hand' if i != 1 else 'bet'
+        text_box(f'You are playing {numbers[i]} {string}.',f"How much would you like to {string2}?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
         bet_input = input(f'{left_space}                            $')   #the set amount of spaces is to account for half of the text box width
         if not bet_input.isdigit():
             error_spacing = ' '
@@ -102,7 +104,6 @@ def make_bet():
             error_message = 'Bet below table minimum ($10)'
         else:
             return int(bet_input)
-        clear_terminal()
 
 #Function for determining number of starting hands:
 def ask_how_many_starting_hands():
@@ -111,6 +112,7 @@ def ask_how_many_starting_hands():
         error_message = ''
         error_message2 = ''
         while True:
+            clear_terminal()
             draw_dealer_hand(0,1)
             text_box('How many hands would you like to play this round?','The table maximum is starting five hands.',error_spacing,error_message,error_message2)
             number_hands = input(input_pointer_with_spacing)
@@ -119,13 +121,11 @@ def ask_how_many_starting_hands():
                     error_spacing = ' '
                     error_message = 'You can\'t afford to play that many hands'
                     error_message2 = 'The table minimum bet is $10'
-                    clear_terminal()
                 else:
                     return (int(number_hands))
             else:
                 error_spacing = ' '
                 error_message = 'Please provide an integer from 1 to 5.'
-                clear_terminal()
     else: #if the player can't afford to play two hands wset the starting_hands variable equal to 1
         return(1)
 
@@ -189,7 +189,11 @@ def ask_when_to_double():
 
 #Function for asking the user if they want to double down on a specific hand
 def double_hand(i,player_bank):
-    decision = yes_no_question('print_entire_game','hide',i,'not_endgame',f"Would you like to double down on your{ordinals[i]} hand?")
+    if len(all_player_hands) == 1:
+        question_string = 'Do you want to double down on your hand?'
+    else:
+        question_string = f"Do you want to double down on your{ordinals[i]} hand?"
+    decision = yes_no_question('print_entire_game','hide',i,'not_endgame',question_string)
     if decision == 'y':
         player_bank -= bet_per_hand
         hand.doubleddown()
@@ -203,14 +207,14 @@ def double_hand(i,player_bank):
 def draw_dealer_hand(hide,just_bank): 
     dealer_cards= []
     length_money = len(str(player_bank))
-    odd = length_money % 2
+    even = length_money % 2 == 0
     dealer_cards.append('┌───────────┐' + (dealer_spacing-13)*' ')
     dealer_cards.append('│Your Chips:│' + (dealer_spacing-13)*' ')
-    if odd: 
+    if not even: 
         half_space = int((9-length_money)/2) * ' '
         Bank_three_string = f'│{half_space}${player_bank} {half_space}│'
         dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
-    else:
+    elif even:
         half_space = int((10-length_money)/2) * ' '
         Bank_three_string= f'│{half_space}${player_bank}{half_space}│'
         dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
@@ -365,10 +369,8 @@ def draw_all_player_hands(lines,location,endgame):
 
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
 def draw_bets(lines,endgame):
-    bet_display = []
+    bet_display = ['' for i in range(6)]
     spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
-    for i in range(6):
-        bet_display.append('')
     for i, hand in enumerate(reversed(all_player_hands)):
         for n in range(6):
             bet_display[n]+= ' '*spacing
@@ -439,11 +441,11 @@ def text_box(*args):
     print(f'{left_space}│                                                    │')
     for arg in args:
         raw_spacing = 52-len(arg) #total box is 54 chars wide, minus edges is 52 spaces available to print on per line
-        odd = raw_spacing % 2
-        if arg!= '' and odd == False: #I added the functionality where the programmer can input a '' as a placeholder for a potential error message that won't be printed
+        even = raw_spacing % 2 == 0
+        if arg!= '' and even: #I added the functionality where the programmer can input a '' as a placeholder for a potential error message that won't be printed
             half_spacing = int(raw_spacing/2)* ' '
             print(f'{left_space}│{half_spacing}{arg}{half_spacing}│')
-        elif arg!= '' and odd == True:
+        elif arg!= '' and not even:
             half_spacing = int((raw_spacing-1)/2)* ' '
             print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
     print(f'{left_space}│                                                    │')
@@ -627,6 +629,7 @@ while playing:
             if bought_insurance:
                 extra_line = f'Thanks for the ${insurance_cost} bozo.'
             draw_entire_game('hide','n','not_endgame')
+            print('\n')
             text_box('Nate was not dealt Blackjack.',extra_line)
             time.sleep(4)
         
@@ -660,7 +663,10 @@ while playing:
         #Give Player Option to Double Down
         if player_bank >= bet_per_hand: 
             if when_double == 'a': #Ask to double on every hand
-                decision = yes_no_question('print_entire_game','hide','n','not_endgame','Would you like to double down on any of your hands?')
+                if len(all_player_hands) > 2:
+                    decision = yes_no_question('print_entire_game','hide','n','not_endgame','Would you like to double down on any of your hands?')
+                else:
+                    decision = 'y'
                 if decision == 'y':
                     for i, hand in enumerate(all_player_hands):
                         if hand.calculate_value() < 21 and player_bank >= bet_per_hand:
@@ -773,14 +779,14 @@ while playing:
 #new content to add/improvment to existing functions
     #splitting limit based on the screen size
     #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
-    #Add a fun things where if you pay off ralph something cool happens
-    #make all questions like hitting, where if the player only has one hand ask them "do you want to split" instead of do you want to split your first hand
+    #Add a fun things where if you pay off ralph or win the game something cool happens
     #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
     #make the bet spacing not a hard coded calculation like it is now
     #center the bet spacing based on the length of the amount bet_per_hand
     #allow player to input yes or no in addition to y or n
     #make it not displays like $25.0 dollars if theres no change, but if there is change make it show two places after decimal ie $25.50
     #add a graphic of the dealer's shoe, and the rest of the table?
+    #if the screen is big enough print some blank space above the dealer's cards
     
 #Bugs
     #no know bugs
