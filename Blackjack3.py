@@ -1,3 +1,4 @@
+#Blackjack game by Nate V. reach me at nathan.vowinkel@gmail.com
 import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
@@ -113,7 +114,7 @@ def ask_how_many_starting_hands():
             draw_dealer_hand(0,1)
             text_box('How many hands would you like to play this round?','The table maximum is starting five hands.',error_spacing,error_message,error_message2)
             number_hands = input(input_pointer_with_spacing)
-            if number_hands.isdigit() and 1< int(number_hands) <5:
+            if number_hands.isdigit() and 1<= int(number_hands) <=5:
                 if int(number_hands) * 10 > player_bank:
                     error_spacing = ' '
                     error_message = 'You can\'t afford to play that many hands'
@@ -165,7 +166,7 @@ def yes_no_question(draw_bank_only,hide,location,endgame,*args):
         text_box(*args,error_spacing,error_message) 
         print('\n')
         answer = input(input_pointer_with_spacing)
-        if answer.isalpha() and (answer.lower() in ['y','n','yes','no','DEBUG']):
+        if answer.isalpha() and (answer.lower() in ['y','n','yes','no','debug']):
             return answer[0].lower()
         else:
             error_spacing = ' '
@@ -500,7 +501,7 @@ input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 Debug = False
 decision = yes_no_question('draw_bank_only',0,0,0,'Welcome to Nate\'s blackjack table','Your friend Ralph has lent you $100 in chips','Win $2000 to bankrupt Nate','Would you like to read the rules?')
 #decision = 'debug'
-if decision == 'debug':
+if decision == 'd':
     Debug = True
 elif decision == 'y':
     clear_terminal()
