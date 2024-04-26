@@ -506,32 +506,52 @@ if decision == 'd':
     Debug = True
 elif decision == 'y':
     clear_terminal()
+    instruction_spacing = int((screen_width - 141)/2)* ' '
     while True:
-        print('How to play Blackjack')
-        print('     You will be dealt 2 cards, and have to decide if you want to be dealt more cards')
-        print('     Get your card total as close to 21 without going over')
-        print('     If your total is below 21, but higher than the dealer, you win')
-        print('     Aces can count as 11s or 1s, whichever will help you more')
-        print('     Totaling 21 with only two cards is called Blackjack')
-        print('')
-        print('Casino Rules:')
-        print('     Nate will hit on 16 and stand on 17')
-        print('     You can split your hand into two hands if you have two cards of the same value')
-        print('     Before hitting, you can double down on any hand')
-        print('     If you double down, your bet is doubled and you will be dealt exactly one more card')
-        print('     This table uses 6 decks')
-        print('')
-        print('Betting:')
-        print('     A hand created by splitting will inherit the original hand bet')
-        print('     If you double down, the bet associated with that hand is doubled')
-        print('     You will not be allowed to split or double down if you can\'t afford to')
-        print('     The table minimum bet is $10, the maximum is $500')
-        print('     Winning bets are paid even money')
-        print('     Blackjack pays 3 to 2')
-        print('')
-        input("[press enter to continue]")
+        print(f'{instruction_spacing}┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ How to play Blackjack                                                                                                                     │')
+        print(f'{instruction_spacing}│      Your goal is to have the value of your cards be as close to 21 without going over                                                    │')
+        print(f'{instruction_spacing}│      You will be competing against the dealer, Nate to see who gets closer                                                                │')
+        print(f'{instruction_spacing}│      You will be dealt two cards to start with and have to decide whether to hit (be dealt another card) or stand (receive no more cards) │')
+        print(f'{instruction_spacing}│      Face cards are worth 10, Aces can be worth 11 or 1                                                                                   │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ Betting                                                                                                                                   │')
+        print(f'{instruction_spacing}│      You will decide how much to bet per hand you play                                                                                    │')
+        print(f'{instruction_spacing}│      If you are dealt blackjack, 21 total with only 2 cards, you will be paid out 3:2                                                     │')
+        print(f'{instruction_spacing}│      Otherwise, if your hand is less than 21, but higher than the dealer\'s total, you will be paid 1:1                                    │')
+        print(f'{instruction_spacing}│      If your total is more than 21, or if the dealer is closer to 21 than you are, you will lose your bet                                 │')
+        print(f'{instruction_spacing}│      If you and the dealer have the same total your bet will be returned to you (no profit)                                               │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ Splitting                                                                                                                                 │')
+        print(f'{instruction_spacing}│      If your first two cards have the same value, for example a 10 and a K, you will be asked if you want to split your hand              │')
+        print(f'{instruction_spacing}│      Splitting your hand means one card will be taken from this hand, and used to start a new hand                                        │')
+        print(f'{instruction_spacing}│      The hand a card was taken from, and the new created hand will then be dealt a second card                                            │')
+        print(f'{instruction_spacing}│      In order to split you must be able to afford another bet to create the second hand                                                   │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ Doubling Down                                                                                                                             │')
+        print(f'{instruction_spacing}│      To double down means to double the initial amount you bet on a hand, and in exchange be dealt exactly one more card                  │')
+        print(f'{instruction_spacing}│      If you double down you won\'t be able to hit anymore after receiving this card                                                        │')
+        print(f'{instruction_spacing}│      Your new card will be hidden until after the dealer shows                                                                            │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ Insurance                                                                                                                                 │')
+        print(f'{instruction_spacing}│      If the dealer\'s faceup card is an Ace, there is a good chance that the dealer could have blackjack with their hidden card            │')
+        print(f'{instruction_spacing}│      If this happens, you will be asked if you would like to buy insurance                                                                │')
+        print(f'{instruction_spacing}│      Insurance costs half the amount you bet per hand, for everyhand you have except hands dealt blackjack                                │')
+        print(f'{instruction_spacing}│      Insurance is paid out 2:1                                                                                                            │')
+        print(f'{instruction_spacing}│      If you buy insurance and the dealer had blackjack, you will break even for the hand                                                  │')
+        print(f'{instruction_spacing}│      If you don\'t buy insurance and the dealer had blackjack, you will lose all your bets, except for any hands dealt Blackjack           │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│ Nate\'s Casino Rules                                                                                                                       │')
+        print(f'{instruction_spacing}│      If you split Aces you will only be allowed to hit once on each hand after                                                            │')
+        print(f'{instruction_spacing}│      If you can be dealt 5 cards without busting your hand will be paid out regardless of the count                                       │')
+        print(f'{instruction_spacing}│      The dealer will always hit on 16, and stand on 17, including soft 17                                                                 │')
+        print(f'{instruction_spacing}│      There is no splitting limit, though the game will limit how many hands you can play based on your screen size                        │')
+        print(f'{instruction_spacing}│      For all yes/no questions you can respond with y or n to play quicker                                                                 │')
+        print(f'{instruction_spacing}│                                                                                                                                           │')
+        print(f'{instruction_spacing}│                                                         [press enter to continue]                                                         │')
+        input(f'{instruction_spacing}└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘')
         break
-
 if Debug:
     when_double = 'c'
 else:
@@ -782,7 +802,6 @@ while playing:
     #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
     #make the bet spacing not a hard coded calculation like it is now
     #center the bet spacing based on the length of the amount bet_per_hand
-    #allow player to input yes or no in addition to y or n
     #make it not displays like $25.0 dollars if theres no change, but if there is change make it show two places after decimal ie $25.50
     #add a graphic of the dealer's shoe, and the rest of the table?
     #if the screen is big enough print some blank space above the dealer's cards
