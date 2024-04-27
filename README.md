@@ -7,8 +7,8 @@ Let me know if you have any suggestions for improvement in gameplay features to 
 Also let me know if you find any bugs.
 
 # How to Play:
-Open your terminal, expand terminal to desired size.
-Navigate to the project directory.
+Open your terminal, navigate to where you saved the directory. 
+cd into Personal Projects.
 Run the game using: python3 Blackjack.py
 
 # Sample Gameplay:
