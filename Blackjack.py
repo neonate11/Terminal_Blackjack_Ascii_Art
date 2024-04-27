@@ -74,6 +74,8 @@ def make_deck():
             
 #Function for accepting a bet from the player
 def make_bet():
+    screen_width = os.get_terminal_size()[0] 
+    left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
     i = starting_hands
     error_spacing = ''
     error_message = ''
@@ -107,6 +109,8 @@ def make_bet():
 #Function for determining number of starting hands:
 def ask_how_many_starting_hands():
     if player_bank >= 20: #Player can't play two hands if they don't have at least $20
+        screen_width = os.get_terminal_size()[0] 
+        input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
         error_spacing = ''
         error_message = ''
         error_message2 = ''
@@ -154,6 +158,8 @@ def payout_player(player_bank):
 
 #Function for asking the user a yes or no question
 def yes_no_question(draw_bank_only,hide,location,endgame,*args):   
+    screen_width = os.get_terminal_size()[0]
+    input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
     error_spacing = ''
     error_message = ''
     while True:
@@ -173,6 +179,8 @@ def yes_no_question(draw_bank_only,hide,location,endgame,*args):
 
 #Function for asking the user when they would like to be asked to double down
 def ask_when_to_double():
+    screen_width = os.get_terminal_size()[0] 
+    input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
     error_spacing = ''
     error_message = ''
     while True:
@@ -199,25 +207,30 @@ def double_hand(i,player_bank):
         hand.deal_card(deck)
     return player_bank
 
+def format_money(number_to_format): #This function will format the player bank or amount bet per hand with commas, and round to 2 decimals if necessary
+    string = str(number_to_format)
+    if '.' in string:
+        parts = string.split('.')
+        if not all(char == '0' for char in parts[1]): #only if there is a decimal number thats not all zeroes will it print the decimal number
+            return f'${number_to_format:,.2f}'
+        else:
+            return f'${number_to_format:,.0f}'
+    else:
+        return f'${number_to_format:,.0f}'
+
 #############################################################################################################################################################################################
 ##################################### GRAPHICS FUNCTIONS ####################################### GRAPHICS FUNCTIONS##########################################################################
 #############################################################################################################################################################################################
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
 def draw_dealer_hand(hide,just_bank): 
+    screen_width = os.get_terminal_size()[0] 
+    dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
     dealer_cards= []
-    length_money = len(str(player_bank))
-    even = length_money % 2 == 0
-    dealer_cards.append('┌───────────┐' + (dealer_spacing-13)*' ')
-    dealer_cards.append('│Your Chips:│' + (dealer_spacing-13)*' ')
-    if not even: 
-        half_space = int((9-length_money)/2) * ' '
-        Bank_three_string = f'│{half_space}${player_bank} {half_space}│'
-        dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
-    elif even:
-        half_space = int((10-length_money)/2) * ' '
-        Bank_three_string= f'│{half_space}${player_bank}{half_space}│'
-        dealer_cards.append(Bank_three_string + ((dealer_spacing-13)*' '))
-    dealer_cards.append('└───────────┘' + (dealer_spacing-13)*' ')
+    after_bank_spacing = ((dealer_spacing-13)*' ') #13 is how wide the player bank box is
+    dealer_cards.append( '┌───────────┐' + after_bank_spacing)
+    dealer_cards.append( '│Your Chips:│' + after_bank_spacing)
+    dealer_cards.append(f'│{format_money(player_bank):^11}│' + after_bank_spacing)
+    dealer_cards.append( '└───────────┘' + after_bank_spacing)
     if not just_bank:   #if drawing the bank and the dealer's cards
         for i in range(4,7):
             dealer_cards.append(dealer_spacing*' ') #Add spaces before the 6th and 7th lines of the cards that don't have the bank to their left
@@ -269,11 +282,9 @@ def draw_dealer_hand(hide,just_bank):
             print(i)
 
 #Function to draw all player hands
-def draw_all_player_hands(lines,location,endgame):
+def draw_all_player_hands(lines,location,endgame,spacing):
     player_cards = [''] * 15
     cursor_and_spacing = [''] * 15
-
-    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1))
     for z, hand in enumerate(reversed(all_player_hands)):
         left_edge_data = [] #For left edge data, space is on right
         right_edge_data = [] #For right edge data, space is on left
@@ -351,6 +362,7 @@ def draw_all_player_hands(lines,location,endgame):
             cursor_and_spacing[i]+= ' '*spacing
         for i in range(13,15): #Add the spacing for these lines
             cursor_and_spacing[i]+= ' '*spacing
+
         if location == (len(all_player_hands) -1)-z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
             cursor_and_spacing[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
             cursor_and_spacing[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
@@ -361,15 +373,15 @@ def draw_all_player_hands(lines,location,endgame):
             cursor_and_spacing[10]+= ' '*spacing 
             cursor_and_spacing[11]+= ' '*spacing 
             cursor_and_spacing[12]+= ' '*spacing 
+            
         for n in range(15):
             cursor_and_spacing[n]+=player_cards[n]
     lines.extend(cursor_and_spacing)
     return lines
 
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
-def draw_bets(lines,endgame):
+def draw_bets(lines,endgame,spacing):
     bet_display = ['' for i in range(6)]
-    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #This determines appropriate spacing between the bet graphics
     for i, hand in enumerate(reversed(all_player_hands)):
         for n in range(6):
             bet_display[n]+= ' '*spacing
@@ -379,82 +391,81 @@ def draw_bets(lines,endgame):
         push_return_amt = bet  #In case player pushes a blackjack you want to return the original bet placed, not how much blackjack would have paid
         if hand.calculate_value() == 21 and len(hand.cards) == 2: 
             bet = bet * 1.5
-        bet_spacing = ''
-        push_spacing = bet_spacing +(6-len(str(push_return_amt)))* ' '
-        bet_spacing += (6-len(str(bet)))* ' '
+        bet_string_payout = f'+{format_money(bet)}' #appends a plus sign
+        bet_string_lost = f'-{format_money(bet)}' #appends a neg sign
         bet_display[0] += '    =  =               '         
         bet_display[1] += ' =        =            '         
         bet_display[4] += ' =        =            '    
         bet_display[5] += '    =  =               '                               
         #these first two scenarios always win or lose so we can print no matter what stage of the game we are in
         if hand.calculate_value() > 21 and not hand.if_doubledown():                   #Player Busted, don't reveal this is the player busted down on a double down since the card is hidden until the end 
-                bet_display[2] += '=  BUSTED  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)   
+                bet_display[2] += f'=  BUSTED  =           '
+                bet_display[3] += f'={bet_string_lost:^10}=           '
         elif len(hand.cards) == 5:                                                     #The Player got 5 cards without busting: 
-                bet_display[2] += '=5 no bust =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)    
+                bet_display[2] += f'=5 no bust =           '
+                bet_display[3] += f'={bet_string_payout:^10}=           '
         #the dealer's hand has already been revealed, you can now show the results of every hand
         elif endgame == 'endgame':
             if hand.calculate_value() > 21:                                             #this is needed if the player busts on a double down card that was hidden previously
-                bet_display[2] += '=  BUSTED  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)    
+                bet_display[2] += f'=  BUSTED  =           '
+                bet_display[3] += f'={bet_string_lost:^10}=           '
             elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
-                bet_display[2] += '=   PUSH   =           '
-                bet_display[3] += '=   ${}{}=           '.format(push_return_amt,push_spacing)  
+                bet_display[2] += f'=   PUSH   =           '
+                bet_display[3] += f'={format_money(push_return_amt):^10}=           '
             elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:       #Dealer Blackjack
-                bet_display[2] += '=   Lost:  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)
+                bet_display[2] += f'=   Lost:  =           '
+                bet_display[3] += f'={bet_string_lost:^10}=           '
             elif hand.calculate_value() == 21 and len(hand.cards) == 2:                 #Player Blackjack
-                bet_display[2] += '=BLACKJACK!=           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)  
+                bet_display[2] += f'=BLACKJACK!=           '
+                bet_display[3] += f'={bet_string_payout:^10}=           '
             elif nate_hand.calculate_value() > 21:                                      #Dealer Busted
-                bet_display[2] += '=  Payout: =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)
+                bet_display[2] += f'=  Payout: =           '
+                bet_display[3] += f'={bet_string_payout:^10}=           '
             elif hand.calculate_value() > nate_hand.calculate_value():                  #The Players total was higher:
-                bet_display[2] += '=  Payout: =           '
-                bet_display[3] += '=  +${}{}=           '.format(bet,bet_spacing)
+                bet_display[2] += f'=  Payout: =           '
+                bet_display[3] += f'={bet_string_payout:^10}=           '
             elif hand.calculate_value() < nate_hand.calculate_value():                  #The Dealer Total was higher:
-                bet_display[2] += '=   Lost:  =           '
-                bet_display[3] += '=  -${}{}=           '.format(bet,bet_spacing)
+                bet_display[2] += f'=   Lost:  =           '
+                bet_display[3] += f'={bet_string_lost:^10}=           '
         #The dealer's cards have not been shown yet    
         else:
             if hand.calculate_value()==21 and len(hand.cards) == 2:                    #The player has blackjack, we don't know if the dealer got blackjack as well
-                bet_display[2] += '=BLACKJACK!=           '
-                bet_display[3] += '=          =           '
+                bet_display[2] += f'=BLACKJACK!=           '
+                bet_display[3] += f'=          =           '
             elif hand.if_doubledown():                                              #The Player doubled down
-                bet_display[2] += '=  Doubled =           '
-                bet_display[3] += '=   ${}{}=           '.format(bet,bet_spacing)  
+                bet_display[2] += f'=  Doubled =           '
+                bet_display[3] += f'={format_money(bet):^10}=           ' 
             elif hand.calculate_value()==21:                                              #The Player has a count of 21 and should not hit anymore
-                bet_display[2] += '= Count:21 =           '
-                bet_display[3] += '=          =           '
+                bet_display[2] += f'= Count:21 =           '
+                bet_display[3] += f'=          =           '
             else:                                                                      #It is unknow if the player has won or lost at this point
-                bet_display[2] += '=   Bet:   =           '
-                bet_display[3] += '=   ${}{}=           '.format(bet,bet_spacing)     
+                bet_display[2] += f'=   Bet:   =           '
+                bet_display[3] += f'={format_money(bet):^10}=           '
     for n in bet_display:
         lines.append(n)    
     return lines
 
 #Function for printing information to the user in a formatted box
 def text_box(*args):
+    screen_width = os.get_terminal_size()[0] 
+    left_space = int((screen_width/2)-28)* ' ' 
     print(f'{left_space}┌────────────────────────────────────────────────────┐')
     print(f'{left_space}│                                                    │')
     for arg in args:
-        raw_spacing = 52-len(arg) #total box is 54 chars wide, minus edges is 52 spaces available to print on per line
-        even = raw_spacing % 2 == 0
-        if arg!= '' and even: #I added the functionality where the programmer can input a '' as a placeholder for a potential error message that won't be printed
-            half_spacing = int(raw_spacing/2)* ' '
-            print(f'{left_space}│{half_spacing}{arg}{half_spacing}│')
-        elif arg!= '' and not even:
-            half_spacing = int((raw_spacing-1)/2)* ' '
-            print(f'{left_space}│ {half_spacing}{arg}{half_spacing}│')
+        if arg!= '':
+            print(f'{left_space}│{arg:^52}│')
     print(f'{left_space}│                                                    │')
     print(f'{left_space}└────────────────────────────────────────────────────┘')
 
 #Function to call all graphics functions
-def draw_entire_game(hide,location,endgame):   #leave the all_player_hands and bet_per_hand when you paste just put an integer for hide (1 means hide?) and for location put 'n' for no cursor, and for endgame put a 1 for its the end, a 0 otherwise
-    lines = draw_dealer_hand(hide,0)                                      #if you just want to draw the bank you can do draw_dealer_hand(1,1)
-    lines = draw_all_player_hands(lines,location,endgame)
-    lines = draw_bets(lines,endgame) #put a 1 for endgame if the results of the hand should be shown
+def draw_entire_game(hide,location,endgame): 
+    screen_width = os.get_terminal_size()[0] 
+    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #spacing amount between hands and bets based on width of player hands
+
+    lines = draw_dealer_hand(hide,0)                             #if you just want to draw the bank you can do draw_dealer_hand(1,1)
+    lines = draw_all_player_hands(lines,location,endgame,spacing) 
+    lines = draw_bets(lines,endgame,spacing) 
+
     clear_terminal()
     for i in lines:
         print(i)
@@ -489,14 +500,6 @@ print(bj_space,'▄█████████▀  █████▄▄██  
 print(bj_space,'             ▀                                   ▀         ▀▀▀▀▀▀                            ▀        ')
 time.sleep(3)
 clear_terminal()
-
-#Calculate the Spacing and Recalculate some of the same values, in case the player made the screen larger after the initial message was diaplayed
-screen_width = os.get_terminal_size()[0] 
-screen_height = os.get_terminal_size()[1]
-left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
-dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
-top_space = '\n'*28
-input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
 
 #Print Introductory Message, Give option to read rules
 Debug = False
@@ -561,7 +564,6 @@ else:
 #############################################################################################################################################################################################
 playing = True
 while playing:
-    clear_terminal()
     deck = make_deck()  
     previous_bank = player_bank
     all_player_hands = []
@@ -634,7 +636,7 @@ while playing:
     if nate_hand.cards[0].split(' ')[0] == 'A' and player_bank >= (insurance_cost):
         prompted_insurance = True
         insurance_payout = insurance_cost * 3 #return the bet amount and two times bet amount
-        decision = yes_no_question('print_entire_game','hide','n','not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',' ',f'Insurance will cost ${insurance_cost} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
+        decision = yes_no_question('print_entire_game','hide','n','not_endgame','Nate is showing an Ace. Do you want to','buy insurance for your hands not dealt Blackjack?',' ',f'Insurance will cost {format_money(insurance_cost)} for your hands.','Insurance pays out 2:1 if Nate is dealt Blackjack.')
         if decision == 'y':
             player_bank -= insurance_cost
             bought_insurance = True
@@ -646,11 +648,12 @@ while playing:
         if prompted_insurance:
             extra_line = ''
             if bought_insurance:
-                extra_line = f'Thanks for the ${insurance_cost} bozo.'
+                extra_line = f'Thanks for the {format_money(insurance_cost)} bozo.'
             draw_entire_game('hide','n','not_endgame')
             print('\n')
-            text_box('Nate was not dealt Blackjack.',extra_line)
-            time.sleep(4)
+            text_box('Nate was not dealt Blackjack.',extra_line,'[press enter to continue]')
+            input()
+            
         
         #Give Player Option to Split
         i = 0
@@ -744,7 +747,7 @@ while playing:
             if bought_insurance:
                 player_bank += (insurance_payout) 
                 dealer_outcome = 'Nate got Blackjack.'
-                dealer_outcome2 = f'Your insurance bet paid out ${insurance_cost * 2}.'
+                dealer_outcome2 = f'Your insurance bet paid out {format_money(insurance_cost * 2)}.'
             else:
                 dealer_outcome = 'Nate got Blackjack!'
                 dealer_outcome2 = 'You should have bought that insurance: Womp Womp!'
@@ -766,21 +769,22 @@ while playing:
 
     #Determine outcome of Player's Hands
     if profit > 0:
-        result = f'You won ${profit} this round!'
+        result = f'You won {format_money(profit)} this round!'
     elif profit < 0:
-        result = f'You lost ${abs(profit)} this round.' #abs removes the negative sign
+        result = f'You lost {format_money(abs(profit))} this round.' #abs removes the negative sign
     elif profit == 0:
         result = f'You broke even this round across your hands.'
     
     #Print results to player and prompt them to continue or not
+    top_space = (29*'\n') #set height, you could make this a calculation for how many lines are printed in the draw entire game function
     if player_bank < 10:
         draw_entire_game('show','n','endgame')
-        text_box(dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was ${most_money}')
+        text_box(dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was {formate_money(most_money)}')
         playing = False
     elif player_bank >= 2000 and not highscore_run:
         go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
         if go_for_highscore == 'n':
-            chip_total = f'Your maximum chip total was ${most_money}'
+            chip_total = f'Your maximum chip total was {format_money(most_money)}'
             print(top_space)
             text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False
@@ -790,7 +794,7 @@ while playing:
         decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'Continue playing?')
         if decision == 'n':
             clear_terminal()
-            chip_total = f'Your largest chip count was ${most_money}'
+            chip_total = f'Your largest chip count was {format_money(most_money)}'
             print(top_space)
             text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False 
@@ -801,18 +805,9 @@ while playing:
     #Add a fun things where if you pay off ralph or win the game something cool happens
     #Right now the cursor replaces nothing, meaning if the screen is narrow enough the cursor will shift certain lines of the display?
     #make the bet spacing not a hard coded calculation like it is now
-    #center the bet spacing based on the length of the amount bet_per_hand
-    #make it not displays like $25.0 dollars if theres no change, but if there is change make it show two places after decimal ie $25.50
     #add a graphic of the dealer's shoe, and the rest of the table?
     #if the screen is big enough print some blank space above the dealer's cards
+    #check the screen dimensions everyt time you print the game
     
 #Bugs
     #no know bugs ??
-
-
-#Nate's Casino Rules for later
-     #There is not splitting limit (though the game won't let you have more hands than your screen can display)
-     #If you split Aces, you are only allowed to hit once after
-     #You are allowed to split any cards of the same value, irregardless of if they are the same rank (eg you can split a J and a Q)
-     #you can input y or n if you'd like
-     #nate stands on soft 17
