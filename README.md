@@ -8,8 +8,8 @@ Also let me know if you find any bugs.
 
 # How to Play:
 Open your terminal, navigate to downloads or wherever you saved the files.
-> cd Terminal_Blackjack_Ascii_Art
-> python3 Blackjack.py
+cd Terminal_Blackjack_Ascii_Art
+python3 Blackjack.py
 
 # Sample Gameplay:
 ![image](https://github.com/neonate11/Terminal_Blackjack_Ascii_Art/assets/162996499/d75673ed-1423-441c-9132-6fda04325d63)
