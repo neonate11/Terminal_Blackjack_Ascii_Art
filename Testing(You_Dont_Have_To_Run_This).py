@@ -82,6 +82,7 @@ print(f'{decimal_number:,.2f}')
     lines[7] += '└⎻⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾⎻⎺‾'
     lines[0] += '     __⎽⎽⎼┐┐┐┐┐┐'
 '''
+'''
 def format_money(number_to_format): #This function will format the player bank or amount bet per hand with commas, and round to 2 decimals if necessary
     string = str(number_to_format)
     if '.' in string:
@@ -94,3 +95,15 @@ def format_money(number_to_format): #This function will format the player bank o
         return f'${number_to_format:,.0f}'
     
 print(format_money(25.00))
+'''
+strings = ['blue', 'red', 'yellow', 'green', 'orange']
+width = 100
+
+# Concatenate all strings into one string with spaces between them
+combined_string = ' '.join(strings)
+
+# Calculate padding for centering the combined string within the width
+padding = (width - len(combined_string)) // 2
+
+# Print the combined string with padding on both sides
+print(f"{' ' * padding}{combined_string}{' ' * padding}")

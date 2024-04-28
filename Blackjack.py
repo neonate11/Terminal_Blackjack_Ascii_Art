@@ -83,7 +83,8 @@ def make_bet():
         return 10
     while True:
         clear_terminal()
-        draw_dealer_hand(0,1) #draw the player bank
+        screen_width = os.get_terminal_size()[0] 
+        draw_dealer_hand(0,1,screen_width) #draw the player bank
         string = 'hands' if i != 1 else 'hand'
         string2 = 'bet per hand' if i != 1 else 'bet'
         text_box(f'You are playing {numbers[i]} {string}.',f"How much would you like to {string2}?",' ','(You will be unable to split or double down','if you don\'t have money leftover)',error_spacing,error_message)
@@ -116,7 +117,8 @@ def ask_how_many_starting_hands():
         error_message2 = ''
         while True:
             clear_terminal()
-            draw_dealer_hand(0,1)
+            screen_width = os.get_terminal_size()[0] 
+            draw_dealer_hand(0,1,screen_width)
             text_box('How many hands would you like to play this round?','The table maximum is starting five hands.',error_spacing,error_message,error_message2)
             number_hands = input(input_pointer_with_spacing)
             if number_hands.isdigit() and 1<= int(number_hands) <=5:
@@ -164,7 +166,8 @@ def yes_no_question(draw_bank_only,hide,location,endgame,*args):
     error_message = ''
     while True:
         if draw_bank_only == 'draw_bank_only':
-            draw_dealer_hand(1,1)
+            screen_width = os.get_terminal_size()[0] 
+            draw_dealer_hand(1,1,screen_width)
         else:
             draw_entire_game(hide,location,endgame)
             print('\n')
@@ -184,7 +187,8 @@ def ask_when_to_double():
     error_spacing = ''
     error_message = ''
     while True:
-        draw_dealer_hand(0,1)
+        screen_width = os.get_terminal_size()[0] 
+        draw_dealer_hand(0,1,screen_width)
         text_box('When would you like to be asked to double down?',' ','A: for every hand','B: your count is hard 9-11','C: your count is hard 9-11 or soft 16-18','D: never',error_spacing,error_message)
         when_double = input(input_pointer_with_spacing)
         if when_double.isalpha() and when_double.lower() in ['a','b','c','d']:
@@ -222,8 +226,7 @@ def format_money(number_to_format): #This function will format the player bank o
 ##################################### GRAPHICS FUNCTIONS ####################################### GRAPHICS FUNCTIONS##########################################################################
 #############################################################################################################################################################################################
 #Function to draw the top of the board (either just player bank or player bank and the dealer's hands)
-def draw_dealer_hand(hide,just_bank): 
-    screen_width = os.get_terminal_size()[0] 
+def draw_dealer_hand(hide,just_bank,screen_width): 
     dealer_spacing = int((screen_width -36)/2) #used to the left of the dealers hand
     dealer_cards= []
     after_bank_spacing = ((dealer_spacing-13)*' ') #13 is how wide the player bank box is
@@ -282,9 +285,11 @@ def draw_dealer_hand(hide,just_bank):
             print(i)
 
 #Function to draw all player hands
-def draw_all_player_hands(lines,location,endgame,spacing):
+def draw_all_player_hands(lines,location,endgame,screen_width):
     player_cards = [''] * 15
     cursor_and_spacing = [''] * 15
+    final_formatting = [''] * 15
+    side_spacing = ((screen_width - (25*len(all_player_hands)))//2) * ' '
     for z, hand in enumerate(reversed(all_player_hands)):
         left_edge_data = [] #For left edge data, space is on right
         right_edge_data = [] #For right edge data, space is on left
@@ -358,25 +363,19 @@ def draw_all_player_hands(lines,location,endgame,spacing):
                 player_cards[4] = '      ┌──│  │         │'
                 player_cards[5] = '      │{}│  │      {}│'.format(covered_data[2],right_edge_data[4])
                 player_cards[6] = '   ┌──│  │  └─────────┘'
-        for i in range(0,10): #Add the spacing for these lines
-            cursor_and_spacing[i]+= ' '*spacing
-        for i in range(13,15): #Add the spacing for these lines
-            cursor_and_spacing[i]+= ' '*spacing
 
+        for i in range(0,15): #Add the spacing for these lines
+            cursor_and_spacing[i]= '  '
         if location == (len(all_player_hands) -1)-z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
-            cursor_and_spacing[10]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-            cursor_and_spacing[11]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-            cursor_and_spacing[12]+= ' '*(spacing-2)+'➤ ' #Add the cursor
-            if Debug:
-                cursor_and_spacing.append(f'The z value is set to {z} and the current location receved was {location}')
-        else:                  #if we aren't referring to this hand currently put just spaces
-            cursor_and_spacing[10]+= ' '*spacing 
-            cursor_and_spacing[11]+= ' '*spacing 
-            cursor_and_spacing[12]+= ' '*spacing 
-            
+            cursor_and_spacing[10]= '➤ ' #Add the cursor
+            cursor_and_spacing[11]= '➤ ' #Add the cursor
+            cursor_and_spacing[12]= '➤ ' #Add the cursor
         for n in range(15):
-            cursor_and_spacing[n]+=player_cards[n]
-    lines.extend(cursor_and_spacing)
+            final_formatting[n]+= (cursor_and_spacing[n]+player_cards[n])
+
+    for i in range(15):
+        final_formatting[i] = (side_spacing+final_formatting[i]+side_spacing)
+    lines.extend(final_formatting)
     return lines
 
 #Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
@@ -460,10 +459,10 @@ def text_box(*args):
 #Function to call all graphics functions
 def draw_entire_game(hide,location,endgame): 
     screen_width = os.get_terminal_size()[0] 
-    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #spacing amount between hands and bets based on width of player hands
+    spacing = int((screen_width-(len(all_player_hands)*23))/(len(all_player_hands)+1)) #DELETE THIS DELETE THIS DELETE THIS DELEKJLDJFSLKJDL:FKJSDL:JFK:LSDJKF:LSDJF:LKSDJF:LKSJD:LFKJSD:LFKJDSKL
 
-    lines = draw_dealer_hand(hide,0)                             #if you just want to draw the bank you can do draw_dealer_hand(1,1)
-    lines = draw_all_player_hands(lines,location,endgame,spacing) 
+    lines = draw_dealer_hand(hide,0,screen_width)                
+    lines = draw_all_player_hands(lines,location,endgame,screen_width) 
     lines = draw_bets(lines,endgame,spacing) 
 
     clear_terminal()
@@ -779,7 +778,7 @@ while playing:
     top_space = (29*'\n') #set height, you could make this a calculation for how many lines are printed in the draw entire game function
     if player_bank < 10:
         draw_entire_game('show','n','endgame')
-        text_box(dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was {formate_money(most_money)}')
+        text_box(dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','Ralph is coming to collect on his loan',f'Your largest chip total was {format_money(most_money)}')
         playing = False
     elif player_bank >= 2000 and not highscore_run:
         go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
@@ -807,7 +806,6 @@ while playing:
     #make the bet spacing not a hard coded calculation like it is now
     #add a graphic of the dealer's shoe, and the rest of the table?
     #if the screen is big enough print some blank space above the dealer's cards
-    #check the screen dimensions everyt time you print the game
     
 #Bugs
     #no know bugs ??
