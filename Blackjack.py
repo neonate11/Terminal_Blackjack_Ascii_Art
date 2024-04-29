@@ -816,6 +816,8 @@ while playing:
             text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
             playing = False 
 
+print('Something to update')
+print('blah')
 #new content to add/improvment to existing functions
     #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
     #Add a fun things where if you pay off ralph or win the game something cool happens
@@ -824,4 +826,4 @@ while playing:
     #if the screen is big enough print some blank space above the dealer's cards
     
 #Bugs
-    #no know bugs ??
+    #no known bugs ??
