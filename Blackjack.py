@@ -841,7 +841,6 @@ text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
 #new content to add/improvment to existing functions
     #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
     #Add a fun things where if you pay off ralph or win the game something cool happens
-    #make the bet spacing not a hard coded calculation like it is now
     #add a graphic of the dealer's shoe, and the rest of the table?
     #add ability to count cards with a deck that dosn't reshuffle each time, adn that has a hsoe you can see run out
     
