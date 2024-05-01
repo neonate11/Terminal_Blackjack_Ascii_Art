@@ -843,6 +843,7 @@ text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
     #Add a fun things where if you pay off ralph or win the game something cool happens
     #add a graphic of the dealer's shoe, and the rest of the table?
     #add ability to count cards with a deck that dosn't reshuffle each time, adn that has a hsoe you can see run out
+    #Right now it will continue to ask if you want to keep playing for a highscore even if I already said yes the first time i was over 2000
     
 #Bugs
     #no known bugs ??
