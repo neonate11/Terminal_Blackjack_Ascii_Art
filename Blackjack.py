@@ -846,6 +846,7 @@ text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
     #Right now it will continue to ask if you want to keep playing for a highscore even if I already said yes the first time i was over 2000
     #it says the dealer got '10' if player has all busts
     #if player doesn't have enough for insurance, but dealer shows ace still need to say, dealer did not have blackjack
+    #or if the dealer is not ashowing an ace but like a King it should still say dealre did not have blackjack
     
 #Bugs
     #no known bugs ??
