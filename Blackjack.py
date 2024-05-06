@@ -155,12 +155,13 @@ def payout_player(player_bank):
             pass
         elif len(hand.cards) == 5:                                  #The Player got 5 cards without busting:    
             player_bank += payout
+        elif hand.calculate_value() == 21 and len(hand.cards) == 2:  #Player Blackjack
+            if nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2: #and Dealer Blackjack
+                player_bank += .5 * payout #Push
+            else:
+                player_bank += ((1.5 * bet_per_hand) + bet_per_hand) #Player Paid out for Blackjack
         elif hand.calculate_value() == nate_hand.calculate_value(): #The Player and Dealer Pushed
             player_bank += .5 * payout
-        elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2: #Dealer Blackjack
-            pass
-        elif hand.calculate_value() == 21 and len(hand.cards) == 2:  #Player Blackjack
-            player_bank += ((1.5 * bet_per_hand) + bet_per_hand)
         elif nate_hand.calculate_value() > 21:                       #Dealer Busted
             player_bank += payout
         elif hand.calculate_value() > nate_hand.calculate_value():   #The Players total was higher:
@@ -424,15 +425,15 @@ def draw_bets(lines,endgame,side_spacing):
             if hand.calculate_value() > 21:                                             #this is needed if the player busts on a double down card that was hidden previously
                 bet_display[2] += f'  =  BUSTED  =           '
                 bet_display[3] += f'  ={bet_string_lost:^10}=           '
-            elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
-                bet_display[2] += f'  =   PUSH   =           '
-                bet_display[3] += f'  ={format_money(push_return_amt):^10}=           '
-            elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2:       #Dealer Blackjack
+            elif nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2 and not (hand.calculate_value() == 21 and len(hand.cards) == 2): #Dealer Blackjack, Player no Blackjack
                 bet_display[2] += f'  =   Lost:  =           '
                 bet_display[3] += f'  ={bet_string_lost:^10}=           '
             elif hand.calculate_value() == 21 and len(hand.cards) == 2:                 #Player Blackjack
                 bet_display[2] += f'  =BLACKJACK!=           '
                 bet_display[3] += f'  ={bet_string_payout:^10}=           '
+            elif hand.calculate_value() == nate_hand.calculate_value():                 #The Player and Dealer Pushed
+                bet_display[2] += f'  =   PUSH   =           '
+                bet_display[3] += f'  ={format_money(push_return_amt):^10}=           '
             elif nate_hand.calculate_value() > 21:                                      #Dealer Busted
                 bet_display[2] += f'  =  Payout: =           '
                 bet_display[3] += f'  ={bet_string_payout:^10}=           '
@@ -680,6 +681,11 @@ while playing:
             print('\n')
             text_box('Nate was not dealt Blackjack.',extra_line,' ','[press enter to continue]')
             input()
+        elif nate_hand.cards[0].split(' ')[0] in ['A','K','Q','J','10']: #the dealer is showing a ten value card, or player could not afford insurance
+            draw_entire_game('hide','n','not_endgame')
+            print('\n')
+            text_box('Nate was not dealt Blackjack.',' ','[press enter to continue]')
+            input()
             
         
         #Give Player Option to Split
@@ -845,9 +851,8 @@ text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
     #add ability to count cards with a deck that dosn't reshuffle each time, adn that has a hsoe you can see run out
     #Right now it will continue to ask if you want to keep playing for a highscore even if I already said yes the first time i was over 2000
     #it says the dealer got '10' if player has all busts
-    #if player doesn't have enough for insurance, but dealer shows ace still need to say, dealer did not have blackjack
     #or if the dealer is not ashowing an ace but like a King it should still say dealre did not have blackjack
+    #add side bets, like 21+3
     
 #Bugs
     #no known bugs ??
-    #Mike showed me he was dealt blackjac, dealer drew to 21 but it still pushed when he should have won
