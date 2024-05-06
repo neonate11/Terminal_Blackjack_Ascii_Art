@@ -850,3 +850,4 @@ text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
     
 #Bugs
     #no known bugs ??
+    #Mike showed me he was dealt blackjac, dealer drew to 21 but it still pushed when he should have won
