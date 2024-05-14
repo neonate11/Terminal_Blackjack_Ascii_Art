@@ -71,7 +71,7 @@ clear_terminal() #Try and Get Screen blank asap
 #Makes the Deck
 def make_deck():
     suits = ['\u2663', '\u2665', '\u2666', '\u2660']
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A',]
+    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
     deck = []
     for i in range(6): #Use 6 Decks
         for suit in suits:
@@ -168,7 +168,10 @@ def payout_player(player_bank):
             if nate_hand.calculate_value() == 21 and len(nate_hand.cards) == 2: #and Dealer Blackjack
                 player_bank += .5 * payout #Push
             else:
-                player_bank += ((1.5 * bet_per_hand) + bet_per_hand) #Player Paid out for Blackjack
+                if not hand.check_if_split_aces(): 
+                    player_bank += ((1.5 * bet_per_hand) + bet_per_hand) #Player Paid out for Blackjack on a non split aces hand
+                else:
+                    player_bank += payout
         elif hand.calculate_value() == nate_hand.calculate_value(): #The Player and Dealer Pushed
             player_bank += .5 * payout
         elif nate_hand.calculate_value() > 21:                       #Dealer Busted
@@ -417,7 +420,7 @@ def draw_bets(lines,endgame,side_spacing):
         if hand.if_doubledown():
             bet = bet_per_hand*2
         push_return_amt = bet  #In case player pushes a blackjack you want to return the original bet placed, not how much blackjack would have paid
-        if hand.calculate_value() == 21 and len(hand.cards) == 2: 
+        if hand.calculate_value() == 21 and len(hand.cards) == 2 and not hand.check_if_split_aces(): #Don't increase payout if blackjack is made on split aces
             bet = bet * 1.5
         bet_string_payout = f'+{format_money(bet)}' #appends a plus sign
         bet_string_lost = f'-{format_money(bet)}' #appends a neg sign
@@ -510,7 +513,7 @@ def draw_entire_game(hide,location,endgame):
 ##################################### STARTUP ACTIONS ####################################### STARTUP ACTIONS ###############################################################################
 #############################################################################################################################################################################################
 #General Variable Setup
-player_bank = 100 #Player Starting Cash
+player_bank = 10000 #Player Starting Cash
 amount_lent_from_ralph = 100
 ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
 card_ranks_plural = {'A': 'Aces', 'K': 'Kings', 'Q': 'Queens', 'J': 'Jacks','10': '10\'s', '9': '9\'s', '8': '8\'s', '7': '7\'s','6': '6\'s', '5': '5\'s', '4': '4\'s', '3': '3\'s', '2': '2\'s'}
@@ -853,7 +856,7 @@ while playing:
         if go_for_highscore == 'n':
             playing = False
         elif go_for_highscore == 'y':
-            highscore_run == True
+            highscore_run = True
     else:
         decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'Continue playing?')
         if decision == 'n':
@@ -867,7 +870,6 @@ print(top_space)
 text_box(chip_total,' ','Thank you for playing at Nate\'s blackjack table!')
 
 #new content to add/improvment to existing functions
-    #if you split aces you only get one more card(sideways), and if you get blackjack this way it only pays 1 to 1
     #Add a fun things where if you pay off ralph or win the game something cool happens
     #add a graphic of the dealer's shoe, and the rest of the table?
     #add ability to count cards with a deck that dosn't reshuffle each time, adn that has a hsoe you can see run out
