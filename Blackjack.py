@@ -3,7 +3,7 @@ import random
 import platform #For the ability to check the OS
 import time
 #############################################################################################################################################################################################
-##################################### CUSTOM CLASS SETUP ####################################### CUSTOM CLASS SETUP #########################################################################
+######################## CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ########################### CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ####################################################
 #############################################################################################################################################################################################
 class Hand:
     def __init__(self):
@@ -55,11 +55,6 @@ class Hand:
     def check_if_split_aces(self): #Return whether this hand is from splitting Aces
         return self.split_Aces
 
-        
-    
-#############################################################################################################################################################################################
-##################################### GAMEPLAY AND USER INPUT FUNCTIONS ####################################### GAMEPLAY AND USER INPUT FUNCTIONS############################################
-#############################################################################################################################################################################################
 #Function to clear terminal
 def clear_terminal():
     if platform.system() == 'Windows':
@@ -80,7 +75,45 @@ def make_deck():
     random.shuffle(deck)
     random.shuffle(deck)
     return deck
-            
+
+#Function for asking the user a yes or no question
+def yes_no_question(draw_bank_only,hide,location,endgame,*args):   
+    screen_width = os.get_terminal_size()[0]
+    input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
+    error_spacing = ''
+    error_message = ''
+    while True:
+        if draw_bank_only == 'draw_bank_only':
+            screen_width = os.get_terminal_size()[0] 
+            draw_dealer_hand(1,1,screen_width)
+        else:
+            draw_entire_game(hide,location,endgame)
+            print('\n')
+        text_box(*args,error_spacing,error_message) 
+        print('\n')
+        answer = input(input_pointer_with_spacing)
+        if answer.isalpha() and (answer.lower() in ['y','n','yes','no','debug']):
+            return answer[0].lower()
+        elif answer.isalpha() and answer == 'DEBUG':
+            return 'debug'
+        else:
+            error_spacing = ' '
+            error_message = 'Please respond with yes or no.'
+
+#Function to nicely print numbers with correct amount of decimals, dollar signs, and commas
+def format_money(number_to_format):
+    string = str(number_to_format)
+    if '.' in string:
+        parts = string.split('.')
+        if not all(char == '0' for char in parts[1]): #only if there is a decimal number thats not all zeroes will it print the decimal number
+            return f'${number_to_format:,.2f}'
+        else:
+            return f'${number_to_format:,.0f}'
+    else:
+        return f'${number_to_format:,.0f}'
+#############################################################################################################################################################################################
+##################################### GAMEPLAY AND USER INPUT FUNCTIONS ####################################### GAMEPLAY AND USER INPUT FUNCTIONS############################################
+#############################################################################################################################################################################################          
 #Function for accepting a bet from the player
 def make_bet():
     screen_width = os.get_terminal_size()[0] 
@@ -182,30 +215,6 @@ def payout_player(player_bank):
             pass
     return player_bank
 
-#Function for asking the user a yes or no question
-def yes_no_question(draw_bank_only,hide,location,endgame,*args):   
-    screen_width = os.get_terminal_size()[0]
-    input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
-    error_spacing = ''
-    error_message = ''
-    while True:
-        if draw_bank_only == 'draw_bank_only':
-            screen_width = os.get_terminal_size()[0] 
-            draw_dealer_hand(1,1,screen_width)
-        else:
-            draw_entire_game(hide,location,endgame)
-            print('\n')
-        text_box(*args,error_spacing,error_message) 
-        print('\n')
-        answer = input(input_pointer_with_spacing)
-        if answer.isalpha() and (answer.lower() in ['y','n','yes','no','debug']):
-            return answer[0].lower()
-        elif answer.isalpha() and answer == 'DEBUG':
-            return 'debug'
-        else:
-            error_spacing = ' '
-            error_message = 'Please respond with yes or no.'
-
 #Function for asking the user when they would like to be asked to double down
 def ask_when_to_double():
     screen_width = os.get_terminal_size()[0] 
@@ -236,17 +245,6 @@ def double_hand(i,player_bank):
         hand.doubleddown()
         hand.deal_card(deck)
     return player_bank
-
-def format_money(number_to_format): #This function will format the player bank or amount bet per hand with commas, and round to 2 decimals if necessary
-    string = str(number_to_format)
-    if '.' in string:
-        parts = string.split('.')
-        if not all(char == '0' for char in parts[1]): #only if there is a decimal number thats not all zeroes will it print the decimal number
-            return f'${number_to_format:,.2f}'
-        else:
-            return f'${number_to_format:,.0f}'
-    else:
-        return f'${number_to_format:,.0f}'
 
 #############################################################################################################################################################################################
 ##################################### GRAPHICS FUNCTIONS ####################################### GRAPHICS FUNCTIONS##########################################################################
@@ -513,7 +511,7 @@ def draw_entire_game(hide,location,endgame):
 ##################################### STARTUP ACTIONS ####################################### STARTUP ACTIONS ###############################################################################
 #############################################################################################################################################################################################
 #General Variable Setup
-player_bank = 10000 #Player Starting Cash
+player_bank = 100 #Player Starting Cash
 amount_lent_from_ralph = 100
 ordinals = [' first',' second',' third',' fourth',' fifth',' sixth',' seventh',' eighth',' ninth',' tenth']
 card_ranks_plural = {'A': 'Aces', 'K': 'Kings', 'Q': 'Queens', 'J': 'Jacks','10': '10\'s', '9': '9\'s', '8': '8\'s', '7': '7\'s','6': '6\'s', '5': '5\'s', '4': '4\'s', '3': '3\'s', '2': '2\'s'}
@@ -536,6 +534,11 @@ print(bj_space,'  ███    ██▄ ███         ███    ██�
 print(bj_space,'  ███    ███ ███▌    ▄   ███    ███ ███    ███   ███ ▀███▄     ███   ███    ███ ███    ███   ███ ▀███▄')
 print(bj_space,'▄█████████▀  █████▄▄██   ███    █▀  ████████▀    ███   ▀█▀ █▄ ▄███   ███    █▀  ████████▀    ███   ▀█▀')
 print(bj_space,'             ▀                                   ▀         ▀▀▀▀▀▀                            ▀        ')
+print(bj_space,'                                                                          _           _  _      _        __   __')
+print(bj_space,'                                                                         | |__ _  _  | \| |__ _| |_ ___  \ \ / /')
+print(bj_space,'                                                                         | \'_ \ || | | .` / _` |  _/ -_)  \ V / ')
+print(bj_space,'                                                                         |_.__/\_, | |_|\_\__,_|\__\___|   \_/  ')
+print(bj_space,'                                                                               |__/   ')
 time.sleep(3)
 clear_terminal()
 
@@ -580,8 +583,8 @@ elif decision == 'y':
         print(f'{instruction_spacing}│      If you don\'t buy insurance and the dealer had blackjack, you will lose all your bets, except for any hands dealt Blackjack │')
         print(f'{instruction_spacing}│                                                                                                                                 │')
         print(f'{instruction_spacing}│ Nate\'s Casino Rules                                                                                                             │')
-        print(f'{instruction_spacing}│      You can only split Aces once, and can\'t hit on split Aces                                                                  │')
-        print(f'{instruction_spacing}│      If you can be dealt 5 cards without busting your hand will be paid out regardless of the count                             │')
+        print(f'{instruction_spacing}│      You can only split Aces once, and can\'t hit on split Aces, split Aces that make Blackjack are paid 1:1                     │')
+        print(f'{instruction_spacing}│      If you can hit to 5 cards without busting your hand will be paid out regardless of the count                               │')
         print(f'{instruction_spacing}│      The dealer will always hit on 16, and stand on 17, including soft 17                                                       │')
         print(f'{instruction_spacing}│      There is no splitting limit, though the game will limit how many hands you can play based on your screen size              │')
         print(f'{instruction_spacing}│      For all yes/no questions you can respond with y or n to play quicker                                                       │')
@@ -845,20 +848,20 @@ while playing:
     top_space = (29*'\n') #set height, you could make this a calculation for how many lines are printed in the draw entire game function
     if player_bank < 10:
         draw_entire_game('show','n','endgame')
-        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'You can no longer afford the table minimum bet.','','Hustle Ralph for more money?')
+        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,' ','You can no longer afford the table minimum bet.','','Hustle Ralph for more money?')
         if decision == 'y':
             player_bank += 100
             amount_lent_from_ralph += 100
         elif decision == 'n':       
             playing = False
     elif player_bank >= 2000 and not highscore_run:
-        go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
+        go_for_highscore = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,' ','You Bankrupt Nate!','You and Ralph are planning a trip to Spain','Would you like to keep playing for a highscore?')
         if go_for_highscore == 'n':
             playing = False
         elif go_for_highscore == 'y':
             highscore_run = True
     else:
-        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,'Continue playing?')
+        decision = yes_no_question('print_entire_game','show','n','endgame',dealer_outcome,dealer_outcome2,' ',result,' ','Continue playing?')
         if decision == 'n':
             clear_terminal()
             playing = False 
