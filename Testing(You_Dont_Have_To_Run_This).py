@@ -10,25 +10,178 @@ def clear_terminal():
         os.system('cls')
     else:
         os.system('clear')
+'''
+//        ⎹          ╱               ⟋            ⎽⎼⎻⎺                                       
+//        |         ╱              ⟋           ⎽⎼⎻⎺                                          
+//        ⎸        ╱             ⟋          ⎽⎼⎻⎺                                             
+//       ⎹        ╱            ⟋         ⎽⎼⎻⎺       _-‾                                      
+//       |       ╱           ⟋        ⎽⎼⎻⎺       _-‾               __---‾‾         _⎽⎽⎼⎼⎻⎻⎺⎺ 
+//       ⎸      ╱          ⟋       ⎽⎼⎻⎺       _-‾           __---‾‾         _⎽⎽⎼⎼⎻⎻⎺⎺‾       
+//      ⎹      ╱         ⟋      ⎽⎼⎻⎺       _-‾       __---‾‾       _⎽⎽⎼⎼⎻⎻⎺⎺‾                
+//      |     ╱        ⟋     ⎽⎼⎻⎺       _-‾   __---‾‾       _⎽⎽⎼⎼⎻⎻⎺⎺‾                       
+//      ⎸    ╱       ⟋    ⎽⎼⎻⎺                                                               
+//          ╳      ⤫                                                                         
+//      ⎸    ╲       ⟍    ⎺⎻⎼⎽          ‾-_   ‾‾---__       ‾⎺⎺⎻⎻⎼⎼⎽⎽_                       
+//      |     ╲        ⟍     ⎺⎻⎼⎽          ‾-_       ‾‾---__        ‾⎺⎺⎻⎻⎼⎼⎽⎽_               
+//      ⎹      ╲         ⟍      ⎺⎻⎼⎽          ‾-_           ‾‾---__        ‾⎺⎺⎻⎻⎼⎼⎽⎽_        
+//       ⎸      ╲          ⟍       ⎺⎻⎼⎽          ‾-_                ‾‾---__       ‾⎺⎺⎻⎻⎼⎼⎽⎽_ 
+//       |       ╲           ⟍        ⎺⎻⎼⎽          ‾-_                                      
+//       ⎹        ╲            ⟍         ⎺⎻⎼⎽                                                
+//        ⎸        ╲             ⟍          ⎺⎻⎼⎽                                             
+//        |         ╲              ⟍           ⎺⎻⎼⎽ 
+//        ⎹          ╲               ⟍         
 
-def make_a_firework():
-    left_spacing = (random.randint(0,screen_width-1 ))*' ' #random horizontal position for firework to start in
-    spaces_above_firework = os.get_terminal_size()[1]
-    for i in range(10):
-        printing_list = []
-        for x in range((spaces_above_firework-1)//2):
-            printing_list.append('\n')
-        printing_list.append(left_spacing+'|')
-        clear_terminal()
-        for n in printing_list:
-            print(n)
-        time.sleep(.3)
-        spaces_above_firework-=1
+           .....
+        _d^^^^^^^^^b_
+     .d''           ``b.
+   .p'     Objects     `q.
+  .d'   in mirror may   `b.
+ .d'   be less virtual   `b.
+ ::   than they appear.   ::
+ ::  ...................  ::
+ ::                       ::
+ `p.  johnca@netcom.com  .q'
+  `p.   John Abbe aka   .q'
+   `b.     Rademir     .d'
+     `q..          ..p'
+        ^q........p^
 
-make_a_firework()
-clear_terminal()
-make_a_firework()
+            
+
+        _.,,,,,,,,,._
+     .d''           ``b.
+   .p'     Objects     `q.
+ .d'   in mirror may    `b.
+ .d'   be less virtual   `b.
+ ::   than they appear.   ::
+ `p.  johnca@netcom.com  .q'
+  `p.   John Abbe aka   .q'
+   `b.     Rademir     .d'
+     `q..            ..,'
+        '',,,,,,,,,,''
+
+
+        . -- ~~~ -- .
+    .-~               ~-.
+   /                     \
+  /                       \
+ |                         |
+ |                         |
+ |                         |
+  \                       /
+   \                     /
+    `-.               .-'
+        ~- . ___ . -~
+
+
+         , - ~ ~ - ,
+     , '             ' ,
+   ,                     ,
+  ,                       ,
+ ,                         ,
+ ,                         ,
+ ,                         ,
+  ,                       ,
+   ,                      ,
+     ,                 , '
+       ' - , _ _ , - '
+
+        *  *              *  *
+     *        *        *        *
+    *          *      *          *
+    *          *      *          *
+     *        *        *        *
+        *  *              *  *
+
+
+        /  /              /  /
+     /        /        /        /
+    /          /      /          /
+    /          /      /          /
+     /        /        /        /
+        /  /              /  /
+
+
+        o  o              o  o
+     o        o        o        o
+    o          o      o          o
+    o          o      o          o
+     o        o        o        o
+        o  o              o  o
+
+
+        =  =              =  =
+     =        =        =        =
+    =          =      =          =
+    =          =      =          =
+     =        =        =        =
+        =  =              =  =
 
 
 
+        x  x              x  x
+     x        x        x        x
+    x          x      x          x
+    x          x      x          x
+     x        x        x        x
+        x  x              x  x
 
+
+
+                                              _  _
+             =  =                          =        =
+          =        =                     =            =
+         =          =                   =              =
+         =          =                   =              =
+          =        =                     =            =
+             =  =                          =        =
+                                              ~  ~
+
+
+           %%%    %%%
+      %%%              %%%
+
+  %%%                      %%%
+
+ %%%                         %%%
+
+ %%%                         %%%
+
+ %%%                        %%%
+
+    %%%                  %%%
+
+          %%%     %%%
+
+                                                                                                                                                            
+                                                                                                                                                  
+                                                                          ▓▓▓▓▓▓                                                                  
+                                                                  ▒▒░░            ░░▒▒                                                            
+                                                              ▒▒                        ▒▒                                                        
+                                                            ▒▒                            ▒▒                                                      
+                                                          ▒▒                                ▓▓                                                    
+                                                        ░░                                    ▒▒                                                  
+                                                        ▒▒                                    ░░                                                  
+                                                                                                ▒▒                                                
+                                                      ▒▒                                        ░░                                                
+                                                      ▒▒                                                                                          
+                                                      ░░                                                                          
+                                                      ░░                                                                               
+                                                      ▒▒                                        ░░░                                    
+                                                      ██                                        ▓▓                                        
+                                                                                                ▒▒                                          
+                                                        ▓▓                                    ▓▓                                                  
+                                                          ▓▓                                ░░                                             
+                                                          ▓▓▒▒                              ▓▓                                                    
+                                                             ▒▒                        ░░░░░        
+                                                                ▒▒░░                  ▒▒      
+                                                                      ▒▒▒▒░░  ▒▒▒▒▒▒           
+                                                                                                                 
+                                                                                                                                                  
+                                                                                                                                                  
+                                                                                                                                                  
+                                                                                                                                                  
+                                                                                                                                                  
+
+
+'''
