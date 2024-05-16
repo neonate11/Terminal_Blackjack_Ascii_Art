@@ -45,6 +45,17 @@ print('╰──────────╯')
 '8 of hearts'
 print('╭──────────╮')
 print('│{}         │'.format(8))
+print('│  {}    {}  │'.format(heart,heart,heart))
+print('│     {}    │'.format(heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│     {}    │'.format(heart))
+print('│  {}    {}  │'.format(heart,heart,heart))
+print('│         {}│'.format(8))
+print('╰──────────╯')
+
+'8 of hearts'
+print('╭──────────╮')
+print('│{}         │'.format(8))
 print('│{} {}    {}  │'.format(heart,heart,heart))
 print('│     {}    │'.format(heart))
 print('│  {}    {}  │'.format(heart,heart))
