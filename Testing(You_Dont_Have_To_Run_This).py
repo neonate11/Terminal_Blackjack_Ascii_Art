@@ -32,11 +32,15 @@ print('│         {}│'.format(heart))
 print('│         {}│'.format(8))
 print('╰──────────╯')
 
-
-
-
-
-
+print('╭──────────╮')
+print('│8         │')
+print('│{}   _ _   │'.format(heart,heart))
+print('│   ( V )  │')
+print('│    \ /   │')
+print('│     V    │')
+print('│         {}│'.format(heart,heart))
+print('│         8│')
+print('╰──────────╯')
 
 '8 of hearts'
 print('╭──────────╮')
@@ -96,11 +100,11 @@ print('╰──────────╯')
 'King of Hearts'
 print('╭──────────╮')
 print('│K┌──────┐ │')
-print('│{}│    ww│ │'.format(heart,heart))
-print('│ │    {)│ │')
-print('│ │    ##│ │')
-print('│ │   ###│ │')
-print('│ │   ###│{}│'.format(heart,heart))
+print('│{}│ ww   │ │'.format(heart,heart))
+print('│ │ (}  ‖│ │')
+print('│ │ ##  ‖│ │')
+print('│ │ ####O│ │')
+print('│ │ ##   │{}│'.format(heart,heart))
 print('│ └──────┘K│')
 print('╰──────────╯')
 'Ace of Hearts'
