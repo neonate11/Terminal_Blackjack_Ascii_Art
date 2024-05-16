@@ -10,6 +10,109 @@ def clear_terminal():
         os.system('cls')
     else:
         os.system('clear')
+
+clear_terminal()
+
+heart = '\u2665'
+print('┌─────────┐')
+print('│{}{}       │'.format(8,heart))
+print('│         │')
+print('│    {}    │'.format(heart))
+print('│         │')
+print('│       {}{}│'.format(8,heart))
+print('└─────────┘')
+
+print('╭──────────╮')
+print('│{}         │'.format(8))
+print('│{}         │'.format(heart))
+print('│          │')
+print('│    {}     │'.format(heart))
+print('│          │')
+print('│         {}│'.format(heart))
+print('│         {}│'.format(8))
+print('╰──────────╯')
+
+
+
+
+
+
+
+'8 of hearts'
+print('╭──────────╮')
+print('│{}         │'.format(8))
+print('│{} {}    {}  │'.format(heart,heart,heart))
+print('│     {}    │'.format(heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│     {}    │'.format(heart))
+print('│  {}    {} {}│'.format(heart,heart,heart))
+print('│         {}│'.format(8))
+print('╰──────────╯')
+
+print('')
+print('')
+print('')
+print('')
+'9 of hearts'
+print('╭──────────╮')
+print('│{}         │'.format(9))
+print('│{} {}    {}  │'.format(heart,heart,heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│     {}    │'.format(heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│  {}    {} {}│'.format(heart,heart,heart))
+print('│         {}│'.format(9))
+print('╰──────────╯')
+'10 of hearts'
+print('╭──────────╮')
+print('│{}        │'.format(10))
+print('│{} {}    {}  │'.format(heart,heart,heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│  {}    {}  │'.format(heart,heart))
+print('│  {}    {} {}│'.format(heart,heart,heart))
+print('│        {}│'.format(10))
+print('╰──────────╯')
+'Jack of Hearts'
+print('╭──────────╮')
+print('│J┌──────┐ │')
+print('│{}│    ww│ │'.format(heart,heart))
+print('│ │    {)│ │')
+print('│ │    # │ │')
+print('│ │    # │ │')
+print('│ │    # │{}│'.format(heart,heart))
+print('│ └──────┘J│')
+print('╰──────────╯')
+'Queen of Hearts'
+print('╭──────────╮')
+print('│Q┌──────┐ │')
+print('│{}│    ww│ │'.format(heart,heart))
+print('│ │    {(│ │')
+print('│ │    ##│ │')
+print('│ │   ###│ │')
+print('│ │   ###│{}│'.format(heart,heart))
+print('│ └──────┘Q│')
+print('╰──────────╯')
+'King of Hearts'
+print('╭──────────╮')
+print('│K┌──────┐ │')
+print('│{}│    ww│ │'.format(heart,heart))
+print('│ │    {)│ │')
+print('│ │    ##│ │')
+print('│ │   ###│ │')
+print('│ │   ###│{}│'.format(heart,heart))
+print('│ └──────┘K│')
+print('╰──────────╯')
+'Ace of Hearts'
+print('╭──────────╮')
+print('│A         │')
+print('│{}   _ _   │'.format(heart,heart))
+print('│   ( V )  │')
+print('│    \ /   │')
+print('│     V    │')
+print('│         {}│'.format(heart,heart))
+print('│         A│')
+print('╰──────────╯')
 '''
 
           _____
