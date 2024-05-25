@@ -24,6 +24,9 @@ def make_deck():
     random.shuffle(deck)
     return deck
 
+
+print('This is an update line to test if I can commit to the repository')
+
 def return_card(card,double):
    rank,suit = card.split()
 
