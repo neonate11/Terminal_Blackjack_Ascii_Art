@@ -27,6 +27,8 @@ def make_deck():
 
 print('This is an update line to test if I can commit to the repository')
 
+print('This is a secondn update line to test if I can commit to the repository')
+
 def return_card(card,double):
    rank,suit = card.split()
 
