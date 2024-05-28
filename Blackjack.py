@@ -2,6 +2,7 @@ import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
 import time
+from Card_Graphics import *
 #############################################################################################################################################################################################
 ######################## CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ########################### CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ####################################################
 #############################################################################################################################################################################################
@@ -17,6 +18,8 @@ class Hand:
         return (self.cards[0].split(' ')[0])
     def card2(self): #This will return the rank of the second card in a hand(eg return 10)
         return (self.cards[1].split(' ')[0])
+    def card_rank_and_suit(i,self):
+        return (self.cards[i].split(' ')[0])
     def check_for_split_option(self):  #This returns true if you have the option to split
         if len(self.cards) !=2:
             return 'no'
@@ -56,11 +59,20 @@ class Hand:
         return self.split_Aces
 
 #Function to clear terminal
-def clear_terminal():
+def what_OS():
     if platform.system() == 'Windows':
+        return 'Windows'
+    else:
+        return 'Linux'
+    
+Op_Sys = what_OS()
+
+def clear_terminal():
+    if Op_Sys == 'Windows':
         os.system('cls')
     else:
         os.system('clear')
+
 clear_terminal() #Try and Get Screen blank asap
 
 #Makes the Deck
@@ -276,33 +288,16 @@ def draw_dealer_hand(hide,just_bank,screen_width):
             cards_to_print_faceup = 0
             cards_to_print_facedown = 2
 
-        for card in nate_hand.cards[:cards_to_print_faceup]:  # Iterate over the cards to print
-            rank = card[0]
-            rank2 = card[1]
-            suit = card[-1]
-            if rank2.isdigit(): #If the card is a 10, need to print the second integer (0) and delete the extra space
-                left_data = rank + rank2 + suit
-                right_data = rank + rank2 + suit
-            else:
-                left_data = rank + suit + ' '
-                right_data = ' ' + rank + suit
-
-            dealer_cards[0] += '┌─────────┐'
-            dealer_cards[1] += '│{}      │'.format(left_data)
-            dealer_cards[2] += '│         │'
-            dealer_cards[3] += '│    {}    │'.format(suit)
-            dealer_cards[4] += '│         │'
-            dealer_cards[5] += '│      {}│'.format(right_data)
-            dealer_cards[6] += '└─────────┘'
+        for card in nate_hand.cards[:cards_to_print_faceup]:
+            card_graphic = return_card(card,False,Op_Sys)
+            for i in range(7):
+                dealer_cards[i]+= card_graphic[i]
         for card in nate_hand.cards[:cards_to_print_facedown]:  # Iterate over the cards to print
             if hide in ['hide','first','second'] and len(nate_hand.cards)>=1: #Don't print a hidden card before no cards are dealt
-                dealer_cards[0] += '┌─────────┐'
-                dealer_cards[1] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[2] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[3] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[4] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[5] += '│ ▓▓▓▓▓▓▓ │'
-                dealer_cards[6] += '└─────────┘'
+                card_graphic = return_card('back side',False,Op_Sys)
+                for i in range(7):
+                    dealer_cards[i]+= card_graphic[i]
+
         return dealer_cards
     elif just_bank: #if just drawing the bank
         for i in range(13):
@@ -313,104 +308,75 @@ def draw_dealer_hand(hide,just_bank,screen_width):
 
 #Function to draw all player hands
 def draw_all_player_hands(lines,location,endgame,side_spacing):
-    player_cards = [''] * 15
+    #Reference Printing Formatting
+    #player_cards[0]  = '            ┌─────────┐'
+    #player_cards[1]  = '            │         │'
+    #player_cards[2]  = '         ┌──│         │'
+    #player_cards[3]  = '         │  │         │'
+    #player_cards[4]  = '      ┌──│  │         │'
+    #player_cards[5]  = '      │  │  │         │'
+    #player_cards[6]  = '   ┌──│  │  └─────────┘'
+    #player_cards[7]  = '   │  │  │         │   '
+    #player_cards[8]  = '┌──│  │  └─────────┘   '
+    #player_cards[9]  = '│  │  │         │      '
+    #player_cards[10] = '│  │  └─────────┘      '
+    #player_cards[11] = '│  │         │         '
+    #player_cards[12] = '│  └─────────┘         '
+    #player_cards[13] = '│         │            '
+    #player_cards[14] = '└─────────┘            '
     cursor_and_spacing = [''] * 15
     final_formatting = [''] * 15
     for z, hand in enumerate(reversed(all_player_hands)):
-        left_edge_data = [] #For left edge data, space is on right
-        right_edge_data = [] #For right edge data, space is on left
-        covered_data = [] #if a 10 is underneath another card, don't print the suit
-        suits = [] #just for printing the middle part of card
-        for card in hand.cards:
-            rank=card[0]
-            rank2 = card[1]
-            suit=card[-1]
-            suits.append(suit)
-            if rank2.isdigit(): #If the hidden card is a 10, need the 10 to not print its suit
-                left_edge_data.append(rank+rank2+suit)
-                right_edge_data.append(rank+rank2+suit)
-                covered_data.append(rank+rank2)
-            else: #If the card is not a 10, need an extra space for the top cards, and for the hidden non 10 card to print its suit
-                left_edge_data.append(rank+suit+' ')
-                right_edge_data.append(' '+rank+suit)
-                covered_data.append(rank+suit)    
-        for i in range(15):
-            player_cards[i] = '                       ' #this is a blank printed for dealing purposes (before a hand has any cards)
-        if len(hand.cards) >= 1:
-            player_cards[8]='┌─────────┐            '
-            player_cards[9]='│{}      │            '.format(left_edge_data[0])
-            player_cards[10]='│         │            '
-            player_cards[11]='│    {}    │            '.format(suits[0])
-            player_cards[12]='│         │            '
-            player_cards[13]='│      {}│            '.format(right_edge_data[0])
-            player_cards[14]='└─────────┘            '
-        if len(hand.cards) >= 2 and hand.check_if_split_aces():
-            player_cards[6]  = '    ┌─────────────┐    '
-            player_cards[7]  = '    │          {}│    '.format(right_edge_data[1])
-            player_cards[8]  = '┌───│      {}      │    '.format(suits[1])
-            player_cards[9]  = '│{} │{}          │    '.format(covered_data[0],left_edge_data[1])
-            player_cards[10]  = '│   └─────────────┘    '
-        if len(hand.cards) >= 2 and not hand.check_if_split_aces():
-            player_cards[6]  = '   ┌─────────┐         '
-            player_cards[7]  = '   │{}      │         '.format(left_edge_data[1])
-            player_cards[8]  = '┌──│         │         '
-            player_cards[9]  = '│{}│    {}    │         '.format(covered_data[0],suits[1])
-            player_cards[10] = '│  │         │         '
-            player_cards[11] = '│  │      {}│         '.format(right_edge_data[1])
-            player_cards[12] = '│  └─────────┘         '
-        if hand.if_doubledown() and (endgame == 'endgame' or not hide_double):
-            player_cards[4]  = '       ┌─────────────┐ '
-            player_cards[5]  = '       │          {}│ '.format(right_edge_data[2])
-            player_cards[6]  = '   ┌───│      {}      │ '.format(suits[2])
-            player_cards[7]  = '   │{} │{}          │ '.format(covered_data[1],left_edge_data[2])
-            player_cards[8]  = '┌──│   └─────────────┘ '
-        elif hand.if_doubledown() and endgame == 'not_endgame':
-            player_cards[4]  = '       ┌─────────────┐ '
-            player_cards[5]  = '       │ ▓▓▓▓▓▓▓▓▓▓▓ │ '
-            player_cards[6]  = '   ┌───│ ▓▓▓▓▓▓▓▓▓▓▓ │ '
-            player_cards[7]  = '   │{} │ ▓▓▓▓▓▓▓▓▓▓▓ │ '.format(covered_data[1])
-            player_cards[8]  = '┌──│   └─────────────┘ '
+        player_cards = ['                       '] * 15 #Need a blank for dealing animation
+        if len(hand.cards) >= 1:                                               #First Card
+            card_graphic = return_card(hand.cards[0],False,Op_Sys)
+            for b in range(7):
+                player_cards[b+8]=card_graphic[b]+'            '
+        if len(hand.cards) >= 2 and hand.check_if_split_aces():                #Second Card (Doubled Down)
+            card_graphic = return_card(hand.cards[1],True,Op_Sys)
+            for c in range(5):
+                player_cards[c+6]=player_cards[c+6][0:3]+card_graphic[c]+'    '
+        if len(hand.cards) >= 2 and not hand.check_if_split_aces():            #Second Card
+            card_graphic = return_card(hand.cards[1],False,Op_Sys)
+            for d in range(7):
+                player_cards[d+6]=player_cards[d+6][0:3]+card_graphic[d]+'         '
+        if hand.if_doubledown() and (endgame == 'endgame' or not hide_double): #Third card (Doubled Down, Faceup)
+            card_graphic = return_card(hand.cards[2],True,Op_Sys)
+            for e in range(5):
+                player_cards[e+4]=player_cards[e+4][0:7]+card_graphic[e]+' '
+        elif hand.if_doubledown() and endgame == 'not_endgame':                #Third Card (Doubled Down, Face Down)
+            card_graphic = return_card('back side',True,Op_Sys)
+            for f in range(5):
+                player_cards[f+4]=player_cards[f+4][0:7]+card_graphic[f]+' '
         elif not hand.if_doubledown():
-            if len(hand.cards) >= 3:
-                player_cards[4]  = '      ┌─────────┐      '
-                player_cards[5]  = '      │{}      │      '.format(left_edge_data[2])
-                player_cards[6]  = '   ┌──│         │      '
-                player_cards[7]  = '   │{}│    {}    │      '.format(covered_data[1],suits[2])
-                player_cards[8]  = '┌──│  │         │      '
-                player_cards[9]  = '│{}│  │      {}│      '.format(covered_data[0],right_edge_data[2])
-                player_cards[10] = '│  │  └─────────┘      '
-            if len(hand.cards) >= 4:
-                player_cards[2]  = '         ┌─────────┐   '
-                player_cards[3]  = '         │{}      │   '.format(left_edge_data[3])
-                player_cards[4]  = '      ┌──│         │   '
-                player_cards[5]  = '      │{}│    {}    │   '.format(covered_data[2],suits[3])
-                player_cards[6] = '   ┌──│  │         │   '
-                player_cards[7] = '   │{}│  │      {}│   '.format(covered_data[1],right_edge_data[3])
-                player_cards[8] = '┌──│  │  └─────────┘   '
-            if len(hand.cards) >= 5:
-                player_cards[0]  = '            ┌─────────┐'
-                player_cards[1]  = '            │{}      │'.format(left_edge_data[4])
-                player_cards[2]  = '         ┌──│         │'
-                player_cards[3]  = '         │{}│    {}    │'.format(covered_data[3],suits[4])
-                player_cards[4] = '      ┌──│  │         │'
-                player_cards[5] = '      │{}│  │      {}│'.format(covered_data[2],right_edge_data[4])
-                player_cards[6] = '   ┌──│  │  └─────────┘'
+            if len(hand.cards) >= 3:                                           #Third Card
+                card_graphic = return_card(hand.cards[2],False,Op_Sys)
+                for g in range(7):
+                    player_cards[g+4]=player_cards[g+4][0:6]+card_graphic[g]+'      '
+            if len(hand.cards) >= 4:                                           #Fourth Card
+                card_graphic = return_card(hand.cards[3],False,Op_Sys)
+                for h in range(7):
+                    player_cards[h+2]=player_cards[h+2][0:9]+card_graphic[h]+'   '
+            if len(hand.cards) >= 5:                                           #Fifth Card
+                card_graphic = return_card(hand.cards[4],False,Op_Sys)
+                for i in range(7):
+                    player_cards[i]=player_cards[i][0:12]+card_graphic[i]
 
-        for i in range(0,15): #Add the spacing for these lines
-            cursor_and_spacing[i]= '  '
+        for j in range(0,15): #Add the spacing for these lines
+            cursor_and_spacing[j]= '  '
         if location == (len(all_player_hands) -1)-z:      #if we are referring to this hand currently add the cursor (this part also adds the spacing between hands -2 to account for the cursor)
             cursor_and_spacing[10]= '➤ ' #Add the cursor
             cursor_and_spacing[11]= '➤ ' #Add the cursor
             cursor_and_spacing[12]= '➤ ' #Add the cursor
-        for n in range(15):
-            final_formatting[n]+= (cursor_and_spacing[n]+player_cards[n])
+        for k in range(15):
+            final_formatting[k]+= (cursor_and_spacing[k]+player_cards[k])
 
-    for i in range(15):
-        final_formatting[i] = (side_spacing+final_formatting[i]+side_spacing)
+    for l in range(15):
+        final_formatting[l] = (side_spacing+final_formatting[l]+side_spacing)
     lines.extend(final_formatting)
     return lines
 
-#Function to draw bets under their associated hand, this will also print the result of hand within the bet circle
+#Function to draw bets under their associated hand, this will also print the result of hand within the bet circl
 def draw_bets(lines,endgame,side_spacing):
     bet_display = ['' for i in range(6)]
     for i, hand in enumerate(reversed(all_player_hands)):
@@ -560,7 +526,7 @@ elif decision == 'y':
         print(spacing_above_instructions)
         print(f'{instruction_spacing}┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐')
         print(f'{instruction_spacing}│ How to play Blackjack                                                                                                           │')
-        print(f'{instruction_spacing}│      You will be competing against the dealer, Nate get the value of your cards as close to 21 without going over               │')
+        print(f'{instruction_spacing}│      You will be competing against the dealer, Nate to get the value of your cards as close to 21 without going over            │')
         print(f'{instruction_spacing}│      You will be dealt two cards and then decide whether to hit (be dealt another card) or stand (receive no more cards)        │')
         print(f'{instruction_spacing}│      Face cards are worth 10, Aces can be worth 11 or 1                                                                         │')
         print(f'{instruction_spacing}│                                                                                                                                 │')

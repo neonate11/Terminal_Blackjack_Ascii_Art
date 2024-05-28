@@ -13,6 +13,11 @@ def clear_terminal():
 
 clear_terminal()
 
+test_list = ['orange','blue']
+
+print(test_list[0][0:3])
+
+
 '''
 
           _____

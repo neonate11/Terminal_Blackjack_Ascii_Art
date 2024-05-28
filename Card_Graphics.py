@@ -1,35 +1,4 @@
-import random
-
-class Hand:
-    def __init__(self):
-        self.cards = [] #the cards in a hand, starting empty
-    def deal_card(self, deck):  #ability of the hand class to be dealt a card
-        card=deck.pop()
-        self.cards.append(card)
-    def card1(self): #This will return the rank of the first card in a hand(eg return 10)
-        return (self.cards[0].split(' ')[0])
-    def card2(self): #This will return the rank of the second card in a hand(eg return 10)
-        return (self.cards[1].split(' ')[0])
-    
-#Makes the Deck
-def make_deck():
-    suits = ['\u2663', '\u2665', '\u2666', '\u2660']
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-    deck = []
-    for i in range(6): #Use 6 Decks
-        for suit in suits:
-            for rank in ranks:
-                deck.append(f'{rank} {suit}')
-    random.shuffle(deck)
-    random.shuffle(deck)
-    return deck
-
-
-print('This is an update line to test if I can commit to the repository')
-
-print('This is a secondn update line to test if I can commit to the repository')
-
-def return_card(card,double):
+def return_card(card,double,Op_Sys):
    rank,suit = card.split()
 
    card_graphics = {
@@ -74,9 +43,9 @@ def return_card(card,double):
             '╰─────────╯'],
          'double': [
             '╭─────────────╮',
-            '│           3 │',
-            f'│ {suit}    {suit}    {suit} │',
-            '│ 3           │',
+            f'│   {suit}     {suit} 4 │',
+            f'│             │',
+            f'│ 4 {suit}     {suit}   │',
             '╰─────────────╯']},
       '5': {
          'not_double': [
@@ -169,20 +138,36 @@ def return_card(card,double):
             f'│10 {suit} {suit} {suit} {suit}   │',
             '╰─────────────╯']},
       'face': {
-         'not_double': [
-            '╭─────────╮',
-            f'│{rank} ▓▓▒▒▓▓ │',
-            f'│{suit} ░░░░░░ │',
-            '│ ▒░░░░░▒ │',
-            f'│ ░░░░░░ {suit}│',
-            f'│ ▓▓▒▒▓▓ {rank}│',
-            '╰─────────╯'],
-         'double': [
-            '╭─────────────╮',
-            f'│  ▓░░▒░░░▓ {suit}{rank}│',
-            '│  ▒▒░░░░░▒▒  │',
-            f'│{rank}{suit} ▓░░░▒░░▓  │',
-            '╰─────────────╯']},
+         'not_double': {
+             'Windows': [
+               '╭─────────╮',
+               f'│{rank} ██▓▓██ │',
+               f'│{suit} ▓▓▓▓▓▓ │',
+               '│ ▓▓▓▓▓▓▓ │',
+               f'│ ▓▓▓▓▓▓ {suit}│',
+               f'│ ██▓▓██ {rank}│',
+               '╰─────────╯'],
+            'Linux': [
+                '╭─────────╮',
+               f'│{rank} ▓▓▒▒▓▓ │',
+               f'│{suit} ░░░░░░ │',
+               '│ ▒░░░░░▒ │',
+               f'│ ░░░░░░ {suit}│',
+               f'│ ▓▓▒▒▓▓ {rank}│',
+               '╰─────────╯']},
+        'double': {
+            'Windows': [
+                '╭─────────────╮',
+               f'│  █▓▓▓▓▓▓█ {suit}{rank}│',
+               '│  ▓▓▓▓▓▓▓▓▓  │',
+               f'│{rank}{suit} █▓▓▓▓▓▓█  │',
+               '╰─────────────╯'],
+            'Linux': [
+                '╭─────────────╮',
+               f'│  ▓░░▒░░░▓ {suit}{rank}│',
+               '│  ▒▒░░░░░▒▒  │',
+               f'│{rank}{suit} ▓░░░▒░░▓  │',
+               '╰─────────────╯']}},
       'A ♥': {
          'not_double': [
             '╭─────────╮',
@@ -203,8 +188,8 @@ def return_card(card,double):
             '╭─────────╮',
             '│A   ^    │',
             '│♦ /   \  │',
-            '│  \   /  │'
-            '│    v   ♦│'
+            '│  \   /  │',
+            '│    v   ♦│',
             '│        A│',
             '╰─────────╯'],
          'double': [
@@ -216,7 +201,7 @@ def return_card(card,double):
       'A ♠': {
          'not_double': [
             '╭─────────╮',
-            '│A   ߍ    │',
+            '│A   ^    │',
             '│♠  / \   │',
             '│  (_._)  │',
             '│    |   ♠│',
@@ -244,20 +229,36 @@ def return_card(card,double):
             '│ A ♣         │',
             '╰─────────────╯']},
       'back side': {
-         'not_double': [
-            '╭─────────╮',
-            '│⚜ ⚜ ⚜ ⚜  │',
-            '│ ⚜ ⚜ ⚜ ⚜ │',
-            '│⚜ ⚜ ⚜ ⚜  │',
-            '│ ⚜ ⚜ ⚜ ⚜ │',
-            '│⚜ ⚜ ⚜ ⚜  │',
-            '╰─────────╯'],
-         'double': [
-            '╭─────────────╮',
-            '│ ⚜ ⚜ ⚜ ⚜ ⚜ ⚜ │',
-            '│  ⚜ ⚜ ⚜ ⚜ ⚜  │',
-            '│ ⚜ ⚜ ⚜ ⚜ ⚜ ⚜ │',
-            '╰─────────────╯']},
+         'not_double': {
+             'Windows': [
+               '╭─────────╮',
+               '│▓▓▓▓▓▓▓▓▓│',
+               '│▓▓▓▓▓▓▓▓▓│',
+               '│▓▓▓▓▓▓▓▓▓│',
+               '│▓▓▓▓▓▓▓▓▓│',
+               '│▓▓▓▓▓▓▓▓▓│',
+               '╰─────────╯'],
+            'Linux': [
+                '╭─────────╮',
+                '│⚜ ☠ ⚜ ☠  │',
+                '│ ☠ ⚜ ☠ ⚜ │',
+                '│⚜ ☠ ⚜ ☠  │',
+                '│ ☠ ⚜ ☠ ⚜ │',
+                '│⚜ ☠ ⚜ ☠  │',
+                '╰─────────╯']},
+        'double': {
+            'Windows': [
+                '╭─────────────╮',
+                '│▓▓▓▓▓▓▓▓▓▓▓▓▓│',
+                '│▓▓▓▓▓▓▓▓▓▓▓▓▓│',
+                '│▓▓▓▓▓▓▓▓▓▓▓▓▓│',
+                '╰─────────────╯'],
+            'Linux': [
+                '╭─────────────╮',
+                '│ ☠ ⚜ ☠ ⚜ ☠ ⚜ │',
+                '│  ⚜ ☠ ⚜ ☠ ⚜  │',
+                '│ ☠ ⚜ ☠ ⚜ ☠ ⚜ │',
+                '╰─────────────╯']}},
       'shoe card': {
          'not_double': [
             '▗▄▄▄▄▄▄▄▄▄',
@@ -274,16 +275,21 @@ def return_card(card,double):
            return card_graphics[rank]['double']
        else:
            return card_graphics[rank]['not_double']
-   elif card in card_graphics: #Aces, Reverse, and Shoe Card
+   elif card == 'back side': #Reverse Side
+       if double:
+           return card_graphics[card]['double'][Op_Sys]
+       else:
+           return card_graphics[card]['not_double'][Op_Sys]
+   elif card in card_graphics: #Aces and Shoe Card
        if double:
            return card_graphics[card]['double']
        else:
            return card_graphics[card]['not_double']
-   elif rank in ('J','Q','K'):
+   elif rank in ('J','Q','K'): #Face Cards
        if double:
-           return card_graphics['face']['double']
+           return card_graphics['face']['double'][Op_Sys]
        else:
-           return card_graphics['face']['not_double']
+           return card_graphics['face']['not_double'][Op_Sys]
    else: 
        if double:
            return [
@@ -302,35 +308,3 @@ def return_card(card,double):
       '│error    │',
       '╰─────────╯']
        
-deck = make_deck()
-example_hand = Hand()
-example_hand.deal_card(deck)
-example_hand.deal_card(deck)
-example_hand.deal_card(deck)
-example_hand.deal_card(deck)
-example_hand.deal_card(deck)
-example_hand.deal_card(deck)
-card1 = example_hand.cards[0]
-card2 = example_hand.cards[1]
-card3 = example_hand.cards[2]
-card4 = example_hand.cards[3]
-card5 = example_hand.cards[4]
-card6 = example_hand.cards[5]
-graphic1 = return_card(card1,False)
-graphic2 = return_card(card2,False)
-graphic3 = return_card(card3,False)
-graphic4 = return_card(card4,True)
-graphic5 = return_card(card5,True)
-graphic6 = return_card(card6,True)
-for i in graphic1:
-   print(i)
-for z in graphic2:
-   print(z)
-for n in graphic3:
-   print(n)
-for x in graphic4:
-   print(x)
-for k in graphic5:
-   print(k)
-for j in graphic6:
-   print(j)
