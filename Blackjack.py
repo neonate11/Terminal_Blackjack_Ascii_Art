@@ -2,7 +2,7 @@ import os #For the ability to clear terminal on windows or linux
 import random
 import platform #For the ability to check the OS
 import time
-from Card_Graphics import *
+from card_graphics import *
 #############################################################################################################################################################################################
 ######################## CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ########################### CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ####################################################
 #############################################################################################################################################################################################
