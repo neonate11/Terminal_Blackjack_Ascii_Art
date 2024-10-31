@@ -857,3 +857,4 @@ text_box(bought_in_total,game_result,chip_total,' ','Thank you for playing at Na
     #there is a glitch where sometimes it doesn't ask you if you want to keep playing??
     #don't ask to double down if you split aces and make a doubleable hand
     #there may be a glitch about doubling down when multiple hands are duobleable and you say double down to the first one it doubels down the other one?
+    #add ability to go back, for example you choose 5 hands, then when you see the betting screen you want to change
