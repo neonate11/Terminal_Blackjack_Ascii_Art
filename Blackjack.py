@@ -856,11 +856,6 @@ text_box(bought_in_total,game_result,chip_total,' ','Thank you for playing at Na
     #Make the sequence of asking to double down, split, hit all in clockwise order
     #there is a glitch where sometimes it doesn't ask you if you want to keep playing??
     #don't ask to double down if you split aces and make a doubleable hand
-<<<<<<< HEAD:Blackjack.py
-    #test comment
-    #there may be a glitch about doubling down when multiple hands are duobleable and you say double down to the first one it doubels down the other one?
-=======
     #there may be a glitch about doubling down when multiple hands are duobleable and you say double down to the first one it doubels down the other one?
     #add ability to go back, for example you choose 5 hands, then when you see the betting screen you want to change
     #the player should type in their action every hand, instead of being prompted when they would like to double down. 
->>>>>>> b30afa03056b6eac288de35489f5954791021d27:blackjack.py
