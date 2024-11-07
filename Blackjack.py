@@ -1,11 +1,27 @@
-import os #For the ability to clear terminal on windows or linux
+import os #For the ability to clear terminal, and pull terminal dimensions
 import random
 import platform #For the ability to check the OS
-import time
-from Card_Graphics import *
+import time #For the ability to pause for animations
+from card_graphics import *
 #############################################################################################################################################################################################
 ######################## CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ########################### CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ####################################################
 #############################################################################################################################################################################################
+#Function to check the OS
+def what_OS():
+    if platform.system() == 'Windows':
+        return 'Windows'
+    else:
+        return 'Linux'
+Op_Sys = what_OS()
+
+#Function to clear the terminal screen
+def clear_terminal():
+    if Op_Sys == 'Windows':
+        os.system('cls')
+    else:
+        os.system('clear')
+clear_terminal() #want to clear terminal as soon as possible so the game looks cleaner
+
 class Hand:
     def __init__(self):
         self.cards = [] #the cards in a hand, starting empty
@@ -58,23 +74,6 @@ class Hand:
     def check_if_split_aces(self): #Return whether this hand is from splitting Aces
         return self.split_Aces
 
-#Functions to tell the OS and to clear terminal
-def what_OS():
-    if platform.system() == 'Windows':
-        return 'Windows'
-    else:
-        return 'Linux'
-    
-Op_Sys = what_OS()
-
-def clear_terminal():
-    if Op_Sys == 'Windows':
-        os.system('cls')
-    else:
-        os.system('clear')
-
-clear_terminal() #Try and Get Screen blank asap
-
 #Makes the Deck
 def make_deck():
     suits = ['\u2663', '\u2665', '\u2666', '\u2660']
@@ -92,8 +91,8 @@ def make_deck():
 def yes_no_question(draw_bank_only,hide,location,endgame,*args):   
     screen_width = os.get_terminal_size()[0]
     input_pointer_with_spacing = ((int((screen_width/2)-1)* ' ')+'>')
-    error_spacing = ''
-    error_message = ''
+    error_spacing = '' #error_spacing is a blank line printed before an error message, only if an error message is generated
+    error_message = '' 
     while True:
         if draw_bank_only == 'draw_bank_only':
             screen_width = os.get_terminal_size()[0] 
@@ -106,7 +105,7 @@ def yes_no_question(draw_bank_only,hide,location,endgame,*args):
         answer = input(input_pointer_with_spacing)
         if answer.isalpha() and (answer.lower() in ['y','n','yes','no','debug']):
             return answer[0].lower()
-        elif answer.isalpha() and answer == 'DEBUG':
+        elif answer.isalpha() and answer == 'DEBUG': #Player can enter debug mode by answering DEBUG to the first question
             return 'debug'
         else:
             error_spacing = ' '
@@ -129,7 +128,7 @@ def format_money(number_to_format):
 #Function for accepting a bet from the player
 def make_bet():
     screen_width = os.get_terminal_size()[0] 
-    left_space = int((screen_width/2)-28)* ' ' #half of 56 is 28, this is just used for the text boxes I think
+    left_space = int((screen_width/2)-28)* ' ' #28 accounts for half the width of text boxes
     i = starting_hands
     error_spacing = ''
     error_message = ''
@@ -196,7 +195,7 @@ def ask_how_many_starting_hands():
                 error_message2 = ''
             else:
                 return (int(number_hands))
-    else: #if the player can't afford to play two hands wset the starting_hands variable equal to 1
+    else: #if the player can't afford to play two hands set the starting_hands variable equal to 1
         return(1)
 
  #this function will adjust the player bank if they won money
@@ -396,8 +395,9 @@ def draw_all_player_hands(lines,location,endgame,side_spacing):
     #player_cards[13] = '│         │            '
     #player_cards[14] = '└─────────┘            '
     #The way the following logic works is by updating certain lines within the list player_cards, for instance 
-    #to update the third card we are updating lines 4 through 10, when we update we have to keep part of the 
-    #underneath card visible, then add the new card, then add appropriate spacing so player_cards is a consistent length
+    #to update the third card we are updating lines 4 through 10, when we update we have to keep the 
+    #underneath card visible, then add the new card, then add appropriate spacing on the right side so 
+    #player_cards is a consistent length
     cursor_and_spacing = [''] * 15
     final_formatting = [''] * 15
     for z, hand in enumerate(reversed(all_player_hands)):
@@ -450,7 +450,7 @@ def draw_all_player_hands(lines,location,endgame,side_spacing):
     lines.extend(final_formatting)
     return lines
 
-#Function to draw bets under their associated hand, this will also print the result of hand within the bet circl
+#Function to draw bets under their associated hand, this will also print the result of a hand within the bet circle
 def draw_bets(lines,endgame,side_spacing):
     bet_display = ['' for i in range(6)]
     for i, hand in enumerate(reversed(all_player_hands)):
@@ -856,5 +856,11 @@ text_box(bought_in_total,game_result,chip_total,' ','Thank you for playing at Na
     #Make the sequence of asking to double down, split, hit all in clockwise order
     #there is a glitch where sometimes it doesn't ask you if you want to keep playing??
     #don't ask to double down if you split aces and make a doubleable hand
+<<<<<<< HEAD:Blackjack.py
     #test comment
     #there may be a glitch about doubling down when multiple hands are duobleable and you say double down to the first one it doubels down the other one?
+=======
+    #there may be a glitch about doubling down when multiple hands are duobleable and you say double down to the first one it doubels down the other one?
+    #add ability to go back, for example you choose 5 hands, then when you see the betting screen you want to change
+    #the player should type in their action every hand, instead of being prompted when they would like to double down. 
+>>>>>>> b30afa03056b6eac288de35489f5954791021d27:blackjack.py
