@@ -1,52 +1,73 @@
+"""
+Main File for a command line blackjack game with ASCII graphics
+"""
+
 import os #For the ability to clear terminal, and pull terminal dimensions
 import random
 import platform #For the ability to check the OS
 import time #For the ability to pause for animations
-from card_graphics import *
-#############################################################################################################################################################################################
-######################## CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ########################### CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS ####################################################
-#############################################################################################################################################################################################
-#Function to check the OS test comment
-def what_OS():
+from card_graphics import return_card
+
+# =============================================================================
+#             CUSTOM HAND CLASS and LOW LEVEL FUNCTIONS
+# =============================================================================
+
+
+def what_os():
+    """Function to check the OS"""
     if platform.system() == 'Windows':
         return 'Windows'
     else:
         return 'Linux'
-Op_Sys = what_OS()
+OP_SYS = what_os()
 
-#Function to clear the terminal screen
 def clear_terminal():
-    if Op_Sys == 'Windows':
+    """Function to clear the terminal screen"""
+    if OP_SYS == 'Windows':
         os.system('cls')
     else:
         os.system('clear')
 clear_terminal() #want to clear terminal as soon as possible so the game looks cleaner
 
 class Hand:
+    """Class to represent a hand of cards"""
     def __init__(self):
         self.cards = [] #the cards in a hand, starting empty
         self.double = False
-        self.split_Aces = False
-    def deal_card(self, deck):  #ability of the hand class to be dealt a card
+        self.split_aces = False
+
+    def deal_card(self, deck):
+        """ability of the hand class to be dealt a card"""
         card=deck.pop()
         self.cards.append(card)
-    def card1(self): #This will return the rank of the first card in a hand(eg return 10)
-        return (self.cards[0].split(' ')[0])
-    def card2(self): #This will return the rank of the second card in a hand(eg return 10)
-        return (self.cards[1].split(' ')[0])
-    def card_rank_and_suit(i,self):
-        return (self.cards[i].split(' ')[0])
-    def check_for_split_option(self):  #This returns true if you have the option to split
+
+    def card1(self):
+        """This will return the rank of the first card in a hand(eg return 10)"""
+        return self.cards[0].split(' ')[0]
+
+    def card2(self):
+        """This will return the rank of the second card in a hand(eg return 10)"""
+        return self.cards[1].split(' ')[0]
+
+    def card_rank_and_suit(self, i):
+        """This will return the rank and suit of the ith card in a hand(eg return 10 ♠)""" #DO I EVER USE THIS?????????
+        return self.cards[i].split(' ')[0]
+
+    def check_for_split_option(self):
+        """This returns true if you have the option to split"""
         if len(self.cards) !=2:
             return 'no'
         elif self.check_if_split_aces():
             return 'no'
         elif  self.card1() == self.card2():  #See if the cards are the same
             return 'same_card'
-        elif self.card1() in ['K', 'Q', 'J','10'] and self.card2() in ['K', 'Q', 'J','10']: #see if both cards are 10 value cards
+        elif self.card1() in ['K', 'Q', 'J','10'] and self.card2() in ['K', 'Q', 'J','10']:
+            # See if both card values are 10, but not the same card
             return 'different_cards'
         return 'no'
-    def calculate_value(self):  #ability of the hand class to calculate it's value
+
+    def calculate_value(self):
+        """ability of the hand class to calculate it's value"""
         value = 0
         num_aces = 0
         for i in self.cards:
@@ -63,16 +84,26 @@ class Hand:
             value -= 10
             num_aces -= 1
         return value
-    def num_aces(self): #return the number of aces in a hand
+
+    def num_aces(self):
+        """return the number of aces in a hand"""
         return sum(1 for card in self.cards if card.split(' ')[0] == 'A')
-    def doubleddown(self): #Mark a hand as doubled down
+
+    def doubleddown(self):
+        """Mark a hand as doubled down"""
         self.double = True
-    def if_doubledown(self): #Return whether you doubled down
+
+    def if_doubledown(self):
+        """Return whether you doubled down"""
         return self.double
-    def remember_split_aces(self): #Mark a hand as being from split aces
-        self.split_Aces = True
-    def check_if_split_aces(self): #Return whether this hand is from splitting Aces
-        return self.split_Aces
+
+    def remember_split_aces(self):
+        """Mark a hand as being from split aces"""
+        self.split_aces = True
+
+    def check_if_split_aces(self):
+        """Return whether this hand is from splitting Aces"""
+        return self.split_aces
 
 #Makes the Deck
 def make_deck():
@@ -359,12 +390,12 @@ def draw_dealer_hand(hide,just_bank,screen_width):
             cards_to_print_facedown = 2
 
         for card in nate_hand.cards[:cards_to_print_faceup]:
-            card_graphic = return_card(card,False,Op_Sys)
+            card_graphic = return_card(card,False,OP_SYS)
             for i in range(7):
                 dealer_cards[i]+= card_graphic[i]
         for card in nate_hand.cards[:cards_to_print_facedown]:  # Iterate over the cards to print
             if hide in ['hide','first','second'] and len(nate_hand.cards)>=1: #Don't print a hidden card before no cards are dealt
-                card_graphic = return_card('back side',False,Op_Sys)
+                card_graphic = return_card('back side',False,OP_SYS)
                 for i in range(7):
                     dealer_cards[i]+= card_graphic[i]
 
@@ -403,36 +434,36 @@ def draw_all_player_hands(lines,location,endgame,side_spacing):
     for z, hand in enumerate(reversed(all_player_hands)):
         player_cards = ['                       '] * 15 #Need a blank for dealing animation
         if len(hand.cards) >= 1:                                               #First Card
-            card_graphic = return_card(hand.cards[0],False,Op_Sys)
+            card_graphic = return_card(hand.cards[0],False,OP_SYS)
             for b in range(7):
                 player_cards[b+8]=card_graphic[b]+'            '
         if len(hand.cards) >= 2 and hand.check_if_split_aces():                #Second Card (Doubled Down)
-            card_graphic = return_card(hand.cards[1],True,Op_Sys)
+            card_graphic = return_card(hand.cards[1],True,OP_SYS)
             for c in range(5):
                 player_cards[c+6]=player_cards[c+6][0:3]+card_graphic[c]+'     '
         if len(hand.cards) >= 2 and not hand.check_if_split_aces():            #Second Card
-            card_graphic = return_card(hand.cards[1],False,Op_Sys)
+            card_graphic = return_card(hand.cards[1],False,OP_SYS)
             for d in range(7):
                 player_cards[d+6]=player_cards[d+6][0:3]+card_graphic[d]+'         '
         if hand.if_doubledown() and (endgame == 'endgame' or not hide_double): #Third card (Doubled Down, Faceup)
-            card_graphic = return_card(hand.cards[2],True,Op_Sys)
+            card_graphic = return_card(hand.cards[2],True,OP_SYS)
             for e in range(5):
                 player_cards[e+4]=player_cards[e+4][0:7]+card_graphic[e]+' '
         elif hand.if_doubledown() and endgame == 'not_endgame':                #Third Card (Doubled Down, Face Down)
-            card_graphic = return_card('back side',True,Op_Sys)
+            card_graphic = return_card('back side',True,OP_SYS)
             for f in range(5):
                 player_cards[f+4]=player_cards[f+4][0:7]+card_graphic[f]+' '
         elif not hand.if_doubledown():
             if len(hand.cards) >= 3:                                           #Third Card
-                card_graphic = return_card(hand.cards[2],False,Op_Sys)
+                card_graphic = return_card(hand.cards[2],False,OP_SYS)
                 for g in range(7):
                     player_cards[g+4]=player_cards[g+4][0:6]+card_graphic[g]+'      '
             if len(hand.cards) >= 4:                                           #Fourth Card
-                card_graphic = return_card(hand.cards[3],False,Op_Sys)
+                card_graphic = return_card(hand.cards[3],False,OP_SYS)
                 for h in range(7):
                     player_cards[h+2]=player_cards[h+2][0:9]+card_graphic[h]+'   '
             if len(hand.cards) >= 5:                                           #Fifth Card
-                card_graphic = return_card(hand.cards[4],False,Op_Sys)
+                card_graphic = return_card(hand.cards[4],False,OP_SYS)
                 for i in range(7):
                     player_cards[i]=player_cards[i][0:12]+card_graphic[i]
 

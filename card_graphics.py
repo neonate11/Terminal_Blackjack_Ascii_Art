@@ -1,7 +1,15 @@
-def return_card(card,double,Op_Sys):
-   rank,suit = card.split()
+"""
+This file contains the function to return the ASCII graphics for each card
+The below pylint disables enable the card graphics to be formatted neatly in the editor
+"""
+# pylint: disable=f-string-without-interpolation
+# pylint: disable=anomalous-backslash-in-string
 
-   card_graphics = {
+def return_card(card,double,op_sys):
+    """ Function to return the ASCII graphics for each card"""
+    rank,suit = card.split()
+
+    card_graphics = {
       '2': {
          'not_double': [
             '╭─────────╮',
@@ -269,42 +277,36 @@ def return_card(card,double,Op_Sys):
             '▐█████████',
             '▝▀▀▀▀▀▀▀▀▀'],
          'double': ['this card is not needed']}}
-   
-   if rank in card_graphics: #number Cards
-       if double:
-           return card_graphics[rank]['double']
-       else:
-           return card_graphics[rank]['not_double']
-   elif card == 'back side': #Reverse Side
-       if double:
-           return card_graphics[card]['double'][Op_Sys]
-       else:
-           return card_graphics[card]['not_double'][Op_Sys]
-   elif card in card_graphics: #Aces and Shoe Card
-       if double:
-           return card_graphics[card]['double']
-       else:
-           return card_graphics[card]['not_double']
-   elif rank in ('J','Q','K'): #Face Cards
-       if double:
-           return card_graphics['face']['double'][Op_Sys]
-       else:
-           return card_graphics['face']['not_double'][Op_Sys]
-   else: 
-       if double:
-           return [
-      '╭─────────────╮',
-      '│error        │',
-      '│        error│',
-      '│error        │',
-      '╰─────────────╯']   
-       else:
-           return [
-      '╭─────────╮',
-      '│error    │',
-      '│    error│',
-      '│error    │',
-      '│    error│',
-      '│error    │',
-      '╰─────────╯']
+
+    if rank in card_graphics: #number Cards
+        if double:
+            return card_graphics[rank]['double']
+        return card_graphics[rank]['not_double']
+    if card == 'back side': #Reverse Side
+        if double:
+            return card_graphics[card]['double'][op_sys]
+        return card_graphics[card]['not_double'][op_sys]
+    if card in card_graphics: #Aces and Shoe Card
+        if double:
+            return card_graphics[card]['double']
+        return card_graphics[card]['not_double']
+    if rank in ('J','Q','K'): #Face Cards
+        if double:
+            return card_graphics['face']['double'][op_sys]
+        return card_graphics['face']['not_double'][op_sys]
+    if double:
+        return [
+            '╭─────────────╮',
+            '│error        │',
+            '│        error│',
+            '│error        │',
+            '╰─────────────╯']   
+    return [
+        '╭─────────╮',
+        '│error    │',
+        '│    error│',
+        '│error    │',
+        '│    error│',
+        '│error    │',
+        '╰─────────╯']
        
